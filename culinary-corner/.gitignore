@@ -7,6 +7,17 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Environment Variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Firebase
+firebase-config.js
+firebase-config.ts
+
 node_modules
 dist
 dist-ssr
