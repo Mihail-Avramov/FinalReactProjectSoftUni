@@ -1,7 +1,7 @@
 # React.js Project Assignment
 
 ## Overview
-Design and implement a Single Page Application (SPA) using React.js. You can use services like:
+Design and implement a Single Page Application (SPA) using Vite and React.js. You can use services like:
 - Kinvey or Firebase for backend
 - Create your own using Node.js and MongoDB
 - Use any other framework (ASP.NET, Spring, Symfony)
