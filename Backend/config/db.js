@@ -1,0 +1,43 @@
+const mongoose = require('mongoose');
+
+// Database connection options for better reliability and performance
+// Updated to remove deprecated options
+const options = {
+  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of default 30s
+  socketTimeoutMS: 45000,         // Close sockets after 45s of inactivity
+};
+
+/**
+ * Connect to MongoDB database
+ * @returns {Promise<typeof mongoose>} Mongoose connection instance
+ */
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, options);
+    
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    
+    // Handle connection errors after initial connection
+    mongoose.connection.on('error', err => {
+      console.error(`MongoDB connection error: ${err}`);
+    });
+
+    mongoose.connection.on('disconnected', () => {
+      console.log('MongoDB disconnected');
+    });
+
+    // Graceful shutdown handling
+    process.on('SIGINT', async () => {
+      await mongoose.connection.close();
+      console.log('MongoDB connection closed due to app termination');
+      process.exit(0);
+    });
+    
+    return mongoose;
+  } catch (error) {
+    console.error(`MongoDB connection error: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+module.exports = connectDB;

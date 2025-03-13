@@ -3,12 +3,12 @@
     "version": "1.0.0",
     "description": "Recipe sharing platform",
     "scripts": {
-      "start:frontend": "cd Frontend && npm run dev",
-      "start:backend": "cd Backend && npm run dev",
-      "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-      "install:all": "npm install && cd Backend && npm install && cd ../Frontend && npm install"
+        "start:frontend": "cd Frontend && npm run dev",
+        "start:backend": "cd Backend && npm run dev",
+        "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+        "install:all": "npm install && cd Backend && npm install && cd ../Frontend && npm install"
     },
     "devDependencies": {
-      "concurrently": "^8.2.2"
+        "concurrently": "^9.1.2"
     }
-  }
+}
