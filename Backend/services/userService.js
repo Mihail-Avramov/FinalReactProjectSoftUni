@@ -19,38 +19,27 @@ const userService = {
    * @returns {Promise<Object>} User object
    */
   async getUserById(userId, includePrivateData = false) {
+    // Базовите полета трябва да включват всички публични данни
+    const baseFields = 'username firstName lastName profilePicture bio';
+    
+    // Добавяме личните полета когато е нужно
+    const fieldsToSelect = includePrivateData 
+      ? `${baseFields} email favoriteRecipes createdAt updatedAt` 
+      : baseFields;
+    
     const user = await User.findById(userId)
-      .select(includePrivateData ? '+email' : '-email')
+      .select(fieldsToSelect)
       .lean();
     
     if (!user) {
       throw new AppError(errorMessages.user.notFound, 404);
     }
     
-    return user;
-  },
-
-  /**
-   * Get user profile by username
-   * @param {String} username - Username to find
-   * @returns {Promise<Object>} User profile data
-   */
-  async getUserByUsername(username) {
-    const user = await User.findOne({ username })
-      .select('-__v')
-      .lean();
-    
-    if (!user) {
-      throw new AppError('User not found', 404);
-    }
-    
     // Count recipes
     const recipeCount = await Recipe.countDocuments({ author: user._id });
+    user.recipeCount = recipeCount;
     
-    return {
-      ...user,
-      recipeCount
-    };
+    return user;
   },
 
   /**

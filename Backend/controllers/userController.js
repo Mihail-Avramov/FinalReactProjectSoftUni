@@ -8,19 +8,37 @@ const {
 } = require('../utils/validation');
 
 /**
- * Get user profile by ID or username
+ * Smart profile access function that supports:
+ * - Public profile view by ID (if not authenticated or not own profile)
+ * - Full profile view for authenticated users viewing their own profile
+ * - Full profile view when no ID is provided (current user)
  */
-exports.getUserProfile = async (req, res, next) => {
+exports.getProfileById = async (req, res, next) => {
   try {
-    let user;
+    let userId = req.params.id;
+    let isOwnProfile = false;
     
-    if (req.params.username) {
-      user = await userService.getUserByUsername(req.params.username);
-    } else if (req.params.id) {
-      user = await userService.getUserById(req.params.id);
-    } else {
-      return next(new AppError(errorMessages.user.identifierRequired, 400));
+    // Случай: GET /profile без ID = текущия потребител (само за логнати потребители)
+    if (!userId && req.user) {
+      userId = req.user._id;
+      isOwnProfile = true;
     }
+    
+    // Валидация на ID формата 
+    if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
+      return next(new AppError(errorMessages.validation.invalidObjectId, 400));
+    }
+    
+    // Проверка дали това е профилът на текущия потребител
+    if (!isOwnProfile && req.user && req.user._id.toString() === userId) {
+      isOwnProfile = true;
+    }
+    
+    // Дали да включим лична информация? Само ако това е собственият профил
+    const includePrivateData = isOwnProfile;
+    
+    // Взимаме профила с подходящите полета
+    const user = await userService.getUserById(userId, includePrivateData);
     
     res.status(200).json({
       success: true,
