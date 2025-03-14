@@ -9,7 +9,4 @@ const { optionalImageUpload } = require('../middleware/upload');
 router.post('/register', optionalImageUpload, registerValidation, authController.register);
 router.post('/login', loginValidation, authController.login);
 
-// Protected routes
-router.get('/me', protect, authController.getCurrentUser);
-
 module.exports = router;

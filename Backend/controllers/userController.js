@@ -165,20 +165,33 @@ exports.deleteAccount = async (req, res, next) => {
 };
 
 /**
- * Get user statistics
+ * Get user statistics - supports public and private stats
+ * - Returns full stats for the current user
+ * - Returns limited stats for other users
  */
 exports.getUserStats = async (req, res, next) => {
   try {
-    const userId = req.params.id || req.user._id;
+    let userId = req.params.id;
+    let isOwnProfile = false;
     
-    // Validate MongoDB ObjectId format if provided in URL
-    if (req.params.id && !mongoose.Types.ObjectId.isValid(req.params.id)) {
+    // Case: GET /stats without ID = current user's stats
+    if (!userId) {
+      userId = req.user._id;
+      isOwnProfile = true;
+    }
+    
+    // Validate ID format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
       return next(new AppError(errorMessages.validation.invalidObjectId, 400));
     }
     
-    console.log(`Getting stats for user ID: ${userId}`);
+    // Check if accessing own profile
+    if (!isOwnProfile && req.user && req.user._id.toString() === userId) {
+      isOwnProfile = true;
+    }
     
-    const stats = await userService.getUserStats(userId);
+    // Get stats with a flag indicating if we should include private data
+    const stats = await userService.getUserStats(userId, isOwnProfile);
     
     res.status(200).json({
       success: true,

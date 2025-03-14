@@ -62,26 +62,3 @@ exports.login = async (req, res, next) => {
     next(error);
   }
 };
-
-/**
- * Get current logged in user
- */
-exports.getCurrentUser = async (req, res, next) => {
-  try {
-    // req.user is already set by the protect middleware
-    res.status(200).json({
-      success: true,
-      data: {
-        _id: req.user._id,
-        email: req.user.email,
-        username: req.user.username,
-        firstName: req.user.firstName,
-        lastName: req.user.lastName,
-        profilePicture: req.user.profilePicture,
-        bio: req.user.bio
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
-};

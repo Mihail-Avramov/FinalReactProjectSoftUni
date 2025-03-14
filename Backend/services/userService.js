@@ -320,9 +320,10 @@ const userService = {
   /**
    * Get user statistics
    * @param {String} userId - User ID
+   * @param {Boolean} includePrivateData - Whether to include private stats
    * @returns {Promise<Object>} User statistics
    */
-  async getUserStats(userId) {
+  async getUserStats(userId, includePrivateData = false) {
     const user = await User.findById(userId);
     
     if (!user) {
@@ -334,6 +335,18 @@ const userService = {
     
     // Calculate total likes across all recipes
     const totalLikes = recipes.reduce((sum, recipe) => sum + (recipe.likes?.length || 0), 0);
+    
+    // Get common public metrics
+    const publicStats = {
+      recipesCount: recipes.length,
+      totalLikes,
+      averageLikesPerRecipe: recipes.length > 0 ? (totalLikes / recipes.length).toFixed(1) : 0,
+    };
+    
+    // If not including private data, return basic public stats
+    if (!includePrivateData) {
+      return publicStats;
+    }
     
     // Get comment count
     const commentsCount = await Comment.countDocuments({ author: userId });
@@ -372,10 +385,9 @@ const userService = {
     const memberSince = user.createdAt;
     const daysActive = Math.floor((Date.now() - memberSince) / (1000 * 60 * 60 * 24));
     
+    // Return full stats including private data
     return {
-      recipesCount: recipes.length,
-      totalLikes,
-      averageLikesPerRecipe: recipes.length > 0 ? (totalLikes / recipes.length).toFixed(1) : 0,
+      ...publicStats,
       commentsCount,
       favoriteRecipesCount,
       mostPopularCategory,
