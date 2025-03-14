@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const { AppError } = require('../middleware/errorHandler');
+const { AppError, AuthenticationError } = require('../middleware/errorHandler');
 const config = require('../config/default');
+const errorMessages = require('../utils/errorMessages');
 
 const authService = {
   /**
@@ -12,17 +13,16 @@ const authService = {
   async registerUser(userData) {
     const { email, username } = userData;
     
-    // Check if user already exists
-    const existingUser = await User.findOne({
-      $or: [{ email }, { username }]
-    });
+    // Check if email exists
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      throw new AppError(errorMessages.auth.accountExists, 409);
+    }
     
-    if (existingUser) {
-      if (existingUser.email === email) {
-        throw new AppError('Email already in use', 409);
-      } else {
-        throw new AppError('Username already taken', 409);
-      }
+    // Check if username exists
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      throw new AppError(errorMessages.auth.usernameTaken, 409);
     }
     
     // Create new user
@@ -39,37 +39,36 @@ const authService = {
         username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
-        profilePicture: user.profilePicture
+        profilePicture: user.profilePicture,
+        bio: user.bio
       },
       token
     };
   },
   
   /**
-   * Log in a user
+   * Login user
    * @param {String} email - User email
    * @param {String} password - User password
-   * @returns {Object} User data and token
+   * @returns {Promise<Object>} User data and token
    */
   async loginUser(email, password) {
     // Find user by email
     const user = await User.findOne({ email }).select('+password');
     
     if (!user) {
-      throw new AppError('Invalid email or password', 401);
+      throw new AuthenticationError(errorMessages.auth.invalidCredentials);
     }
     
-    // Check password
+    // Check if password is correct
     const isPasswordValid = await user.comparePassword(password);
-    
     if (!isPasswordValid) {
-      throw new AppError('Invalid email or password', 401);
+      throw new AuthenticationError(errorMessages.auth.invalidCredentials);
     }
     
-    // Generate token
+    // Generate JWT token
     const token = this.generateToken(user._id);
     
-    // Return user data without password and token
     return {
       user: {
         _id: user._id,
@@ -77,7 +76,8 @@ const authService = {
         username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
-        profilePicture: user.profilePicture
+        profilePicture: user.profilePicture,
+        bio: user.bio
       },
       token
     };

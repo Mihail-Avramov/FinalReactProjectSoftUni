@@ -1,6 +1,7 @@
 const multer = require('multer');
 const { AppError } = require('./errorHandler');
 const config = require('../config/default');
+const errorMessages = require('../utils/errorMessages');
 
 // Setup in-memory storage for Multer
 const storage = multer.memoryStorage();
@@ -9,13 +10,13 @@ const storage = multer.memoryStorage();
 const fileFilter = (req, file, cb) => {
   // Check if file is an image
   if (!file.mimetype.startsWith('image/')) {
-    return cb(new AppError('Only image files are allowed', 400), false);
+    return cb(new AppError(errorMessages.image.invalidFormat, 400), false);
   }
   
   // Check for allowed extensions
   const fileExt = file.originalname.split('.').pop().toLowerCase();
   if (!config.upload.images.allowedFormats.includes(fileExt)) {
-    return cb(new AppError(`Only ${config.upload.images.allowedFormats.join(', ')} files are allowed`, 400), false);
+    return cb(new AppError(errorMessages.image.invalidFormat, 400), false);
   }
   
   cb(null, true);
@@ -40,7 +41,7 @@ const uploadMultipleImages = upload.array('images', config.recipe.maxImagesCount
 const handleMulterErrors = (err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
-      return next(new AppError(`Image size should be less than ${config.upload.images.maxSize / (1024 * 1024)}MB`, 400));
+      return next(new AppError(errorMessages.image.tooLarge, 400));
     }
     return next(new AppError(err.message, 400));
   }

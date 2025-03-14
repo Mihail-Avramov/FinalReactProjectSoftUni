@@ -2,13 +2,33 @@
  * Custom error handler middleware
  */
 class AppError extends Error {
-  constructor(message, statusCode) {
+  constructor(message, statusCode, fields = null) {
     super(message);
     this.statusCode = statusCode;
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
     this.isOperational = true;
-
+    this.fields = fields;
+    
     Error.captureStackTrace(this, this.constructor);
+  }
+}
+
+class ValidationError extends AppError {
+  constructor(message = 'Validation failed', statusCode = 422, fields = {}) {
+    super(message, statusCode);
+    this.fields = fields;
+  }
+}
+
+class AuthenticationError extends AppError {
+  constructor(message = 'Authentication failed', statusCode = 401) {
+    super(message, statusCode);
+  }
+}
+
+class NotFoundError extends AppError {
+  constructor(message = 'Resource not found', statusCode = 404) {
+    super(message, statusCode);
   }
 }
 
@@ -59,18 +79,31 @@ const sendErrorDev = (err, res) => {
 const sendErrorProd = (err, res) => {
   // Operational, trusted error: send message to client
   if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message
-    });
-  // Programming or other unknown error: don't leak error details
-  } else {
-    console.error('ERROR 💥', err);
-    res.status(500).json({
-      status: 'error',
-      message: 'Something went wrong'
-    });
+    const response = {
+      success: false,
+      error: {
+        code: err.statusCode,
+        message: err.message
+      }
+    };
+    
+    // Add fields to response if they exist
+    if (err.fields) {
+      response.error.fields = err.fields;
+    }
+    
+    return res.status(err.statusCode).json(response);
   }
+  
+  // Programming or other unknown error: don't leak error details
+  console.error('ERROR 💥', err);
+  res.status(500).json({
+    success: false,
+    error: {
+      code: 500,
+      message: 'Something went wrong'
+    }
+  });
 };
 
 /**
@@ -81,48 +114,55 @@ const errorHandler = (err, req, res, next) => {
   err.status = err.status || 'error';
 
   if (process.env.NODE_ENV === 'development') {
+    console.error(`
+      ERROR 💥 ${err.message}
+      URL: ${req.originalUrl}
+      Method: ${req.method}
+      Body: ${JSON.stringify(req.body)}
+      User: ${req.user?._id || 'unauthenticated'}
+      Stack: ${err.stack}
+    `);
     sendErrorDev(err, res);
   } else {
     let error = { ...err };
     error.message = err.message;
+    error.statusCode = err.statusCode || 500;
+    error.fields = err.fields; // Preserve any fields from validation
 
     // Log error for debugging
     console.error('ERROR 💥', err);
     
-    // Mongoose bad ObjectId
+    // Handle specific error types
     if (err.name === 'CastError') {
       error = handleCastError(err);
     }
     
-    // Mongoose duplicate key
     if (err.code === 11000) {
       error = handleDuplicateFieldsError(err);
     }
     
-    // Mongoose validation error
     if (err.name === 'ValidationError') {
       error = handleValidationError(err);
     }
     
-    // Send error response
-    if (error.isOperational) {
-      // Operational, trusted error: send message to client
-      res.status(error.statusCode).json({
-        success: false,
-        message: error.message
-      });
-    } else {
-      // Programming or other unknown error: don't leak error details
-      console.error('ERROR 💥', err);
-      res.status(500).json({
-        success: false,
-        message: 'Something went wrong'
-      });
+    // JWT errors
+    if (err.name === 'JsonWebTokenError') {
+      error = handleJWTError();
     }
+    
+    if (err.name === 'TokenExpiredError') {
+      error = handleJWTExpiredError();
+    }
+    
+    // Use the sendErrorProd function for ALL errors
+    sendErrorProd(error, res);
   }
 };
 
 module.exports = {
   AppError,
+  ValidationError,
+  AuthenticationError,
+  NotFoundError,
   errorHandler
 };

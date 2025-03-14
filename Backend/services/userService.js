@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const { AppError } = require('../middleware/errorHandler');
 const imageService = require('./imageService');
 const { extractPublicIdFromUrl } = require('../utils/cloudinary');
+const errorMessages = require('../utils/errorMessages');
 
 /**
  * User Service - Handles business logic for user operations
@@ -23,7 +24,7 @@ const userService = {
       .lean();
     
     if (!user) {
-      throw new AppError('User not found', 404);
+      throw new AppError(errorMessages.user.notFound, 404);
     }
     
     return user;
@@ -59,36 +60,66 @@ const userService = {
    * @returns {Promise<Object>} Updated user
    */
   async updateProfile(userId, updateData) {
-    // Don't allow updating sensitive fields
-    const { username, firstName, lastName, bio } = updateData;
-    
-    // Check if username is being changed and is already taken
-    if (username) {
-      const existingUser = await User.findOne({ username, _id: { $ne: userId } });
-      if (existingUser) {
-        throw new AppError('Username already taken', 400);
+    try {
+      const { username, firstName, lastName, bio } = updateData;
+      
+      // Create update object
+      const updates = {};
+      
+      // Only include properties that are defined (this handles empty strings properly)
+      if (username !== undefined && username !== '') updates.username = username;
+      if (firstName !== undefined && firstName !== '') updates.firstName = firstName;
+      if (lastName !== undefined && lastName !== '') updates.lastName = lastName;
+      if (bio !== undefined) updates.bio = bio; // Bio can be empty string
+      
+      // Check if there's actually anything to update
+      if (Object.keys(updates).length === 0) {
+        throw new AppError('No valid changes provided', 400);
       }
+      
+      // If updating username, check if it's already taken
+      if (updates.username) {
+        const existingUser = await User.findOne({ 
+          username: updates.username, 
+          _id: { $ne: userId } 
+        });
+        
+        if (existingUser) {
+          throw new AppError(errorMessages.auth.usernameTaken, 400);
+        }
+      }
+      
+      // Update user profile
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        updates,
+        { new: true, runValidators: true }
+      );
+      
+      if (!updatedUser) {
+        throw new AppError(errorMessages.user.notFound, 404);
+      }
+      
+      return {
+        _id: updatedUser._id,
+        email: updatedUser.email,
+        username: updatedUser.username,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        profilePicture: updatedUser.profilePicture,
+        bio: updatedUser.bio
+      };
+    } catch (error) {
+      // Re-throw mongoose validation errors as AppError
+      if (error.name === 'ValidationError') {
+        const errorFields = {};
+        Object.keys(error.errors).forEach(key => {
+          errorFields[key] = error.errors[key].message;
+        });
+        throw new AppError('Validation failed', 422, errorFields);
+      }
+      throw error;
     }
-
-    // Update user
-    const user = await User.findByIdAndUpdate(
-      userId, 
-      { username, firstName, lastName, bio },
-      { new: true, runValidators: true }
-    );
-    
-    if (!user) {
-      throw new AppError('User not found', 404);
-    }
-    
-    return {
-      id: user._id,
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      bio: user.bio,
-      profilePicture: user.profilePicture
-    };
   },
 
   /**
@@ -98,11 +129,10 @@ const userService = {
    * @returns {Promise<Object>} Updated user data
    */
   async updateProfilePicture(userId, imageData) {
-    // Find the current user to get their existing profile picture
     const currentUser = await User.findById(userId);
     
     if (!currentUser) {
-      throw new AppError('User not found', 404);
+      throw new AppError(errorMessages.user.notFound, 404);
     }
     
     // Only delete the old picture if it's not the default
@@ -185,24 +215,38 @@ const userService = {
    * @returns {Promise<Boolean>} Success indicator
    */
   async changePassword(userId, currentPassword, newPassword) {
-    // Find user with password
-    const user = await User.findById(userId).select('+password');
-    
-    if (!user) {
-      throw new AppError('User not found', 404);
+    try {
+      const user = await User.findById(userId).select('+password');
+      
+      if (!user) {
+        throw new AppError(errorMessages.user.notFound, 404);
+      }
+      
+      // Check if current password is correct
+      const isPasswordCorrect = await user.comparePassword(currentPassword);
+      if (!isPasswordCorrect) {
+        throw new AppError(errorMessages.user.incorrectPassword, 401);
+      }
+      
+      // Update password
+      user.password = newPassword;
+      await user.save();
+      
+      return true;
+    } catch (error) {
+      // Handle mongoose validation errors
+      if (error.name === 'ValidationError') {
+        const fields = {};
+        
+        // Map password validation errors to newPassword field
+        if (error.errors.password) {
+          fields.newPassword = errorMessages.validation.weakPassword;
+        }
+        
+        throw new AppError(errorMessages.validation.validationFailed, 422, fields);
+      }
+      throw error;
     }
-    
-    // Check if current password is correct
-    const isPasswordCorrect = await user.comparePassword(currentPassword);
-    if (!isPasswordCorrect) {
-      throw new AppError('Current password is incorrect', 401);
-    }
-    
-    // Update password
-    user.password = newPassword;
-    await user.save();
-    
-    return true;
   },
 
   /**
@@ -215,14 +259,14 @@ const userService = {
     const user = await User.findById(userId).select('+password');
     
     if (!user) {
-      throw new AppError('User not found', 404);
+      throw new AppError(errorMessages.user.notFound, 404);
     }
     
     // Verify password
     const isPasswordValid = await user.comparePassword(password);
     
     if (!isPasswordValid) {
-      throw new AppError('Invalid password', 401);
+      throw new AppError(errorMessages.user.incorrectPassword, 401);
     }
     
     const session = await mongoose.startSession();
@@ -277,7 +321,7 @@ const userService = {
       // If an error occurs, abort the transaction
       await session.abortTransaction();
       console.error('Error deleting user account:', error);
-      throw new AppError('Failed to delete account', 500);
+      throw new AppError(errorMessages.user.deleteError, 500);
     } finally {
       // End the session
       session.endSession();
@@ -290,11 +334,10 @@ const userService = {
    * @returns {Promise<Object>} User statistics
    */
   async getUserStats(userId) {
-    // Verify user exists
     const user = await User.findById(userId);
     
     if (!user) {
-      throw new AppError('User not found', 404);
+      throw new AppError(errorMessages.user.notFound, 404);
     }
     
     // Get all recipes by the user

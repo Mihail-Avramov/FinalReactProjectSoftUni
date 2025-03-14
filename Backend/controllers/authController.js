@@ -1,6 +1,7 @@
 const authService = require('../services/authService');
 const imageService = require('../services/imageService');
 const { AppError } = require('../middleware/errorHandler');
+const errorMessages = require('../utils/errorMessages'); // Add this import
 
 /**
  * Register a new user
@@ -12,13 +13,17 @@ exports.register = async (req, res, next) => {
     // Handle profile picture if provided
     let profilePicture;
     if (req.file) {
-      // Convert buffer to base64 string for Cloudinary
-      const b64 = Buffer.from(req.file.buffer).toString('base64');
-      const dataURI = `data:${req.file.mimetype};base64,${b64}`;
-      
-      // Upload to Cloudinary with profile picture optimizations
-      const uploadResult = await imageService.uploadProfilePicture(dataURI);
-      profilePicture = uploadResult.url;
+      try {
+        // Convert buffer to base64 string for Cloudinary
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+        
+        // Upload to Cloudinary with profile picture optimizations
+        const uploadResult = await imageService.uploadProfilePicture(dataURI);
+        profilePicture = uploadResult.url;
+      } catch (error) {
+        return next(new AppError(errorMessages.image.uploadFailed, 400));
+      }
     }
     
     // Register user
@@ -72,7 +77,8 @@ exports.getCurrentUser = async (req, res, next) => {
         username: req.user.username,
         firstName: req.user.firstName,
         lastName: req.user.lastName,
-        profilePicture: req.user.profilePicture
+        profilePicture: req.user.profilePicture,
+        bio: req.user.bio
       }
     });
   } catch (error) {

@@ -1,71 +1,60 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { AppError } = require('./errorHandler');
+const errorMessages = require('../utils/errorMessages');
 
 exports.protect = async (req, res, next) => {
   let token;
 
-  // Check if token exists in headers
+  // Check for token in headers
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
 
   // Make sure token exists
   if (!token) {
-    return res.status(401).json({ 
-      success: false, 
-      message: 'Not authorized to access this route' 
-    });
+    return next(new AppError(errorMessages.auth.unauthorized, 401));
   }
 
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Find user by id
+    // Check if user still exists
     const user = await User.findById(decoded.id);
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not found'
-      });
+      return next(new AppError(errorMessages.user.notFound, 401));
     }
 
-    // Set user in request
+    // Add user to request object
     req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: 'Not authorized to access this route'
-    });
+    if (error.name === 'TokenExpiredError') {
+      return next(new AppError(errorMessages.auth.tokenExpired, 401));
+    }
+    return next(new AppError(errorMessages.auth.invalidToken, 401));
   }
 };
 
-// Optional: middleware to check if user is recipe owner
+// Check if user is recipe author
 exports.isRecipeOwner = async (req, res, next) => {
   try {
-    // This assumes the recipe ID is in the URL parameter
     const recipeId = req.params.id;
-    
-    // Find the recipe
+    const userId = req.user._id;
+
     const recipe = await require('../models/Recipe').findById(recipeId);
-    
+
     if (!recipe) {
-      return res.status(404).json({
-        success: false,
-        message: 'Recipe not found'
-      });
+      return next(new AppError(errorMessages.recipe.notFound, 404));
     }
-    
-    // Check if the current user is the recipe owner
-    if (recipe.author.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to update this recipe'
-      });
+
+    // Check if user is the author
+    if (recipe.author.toString() !== userId.toString()) {
+      return next(new AppError(errorMessages.recipe.unauthorized, 403));
     }
-    
+
     next();
   } catch (error) {
     next(error);

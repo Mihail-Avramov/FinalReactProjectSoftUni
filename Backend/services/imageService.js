@@ -1,6 +1,7 @@
 const cloudinary = require('../config/cloudinary');
 const { AppError } = require('../middleware/errorHandler');
 const config = require('../config/default');
+const errorMessages = require('../utils/errorMessages');
 
 const imageService = {
   /**
@@ -43,7 +44,7 @@ const imageService = {
       };
     } catch (error) {
       console.error('Image upload failed:', error);
-      throw new AppError('Failed to upload image', 500);
+      throw new AppError(errorMessages.image.uploadFailed, 500);
     }
   },
   
