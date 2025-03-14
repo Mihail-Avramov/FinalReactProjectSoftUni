@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const config = require('../config/default');
 
 const UserSchema = new mongoose.Schema({
   email: {
@@ -33,7 +34,7 @@ const UserSchema = new mongoose.Schema({
   },
   profilePicture: {
     type: String,
-    default: 'https://res.cloudinary.com/demo/image/upload/v1/avatars/default-avatar.png'
+    default: config.user.defaultProfilePicture
   },
   bio: {
     type: String,

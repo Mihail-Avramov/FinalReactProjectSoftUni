@@ -8,13 +8,6 @@ const connectDB = require('./config/db');
 const config = require('./config/default');
 const { errorHandler } = require('./middleware/errorHandler');
 
-// Import route files
-const authRoutes = require('./routes/auth');
-const recipeRoutes = require('./routes/recipes');
-const userRoutes = require('./routes/users');
-
-app.use(errorHandler);
-
 // Initialize Express app
 const app = express();
 
@@ -28,6 +21,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Request logging
 app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'combined'));
+
+// Import route files
+const authRoutes = require('./routes/auth');
+const recipeRoutes = require('./routes/recipes');
+const userRoutes = require('./routes/users');
 
 // Rate limiting
 const limiter = rateLimit({
@@ -56,19 +54,8 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Resource not found' });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Something went wrong';
-  
-  res.status(statusCode).json({
-    success: false,
-    message,
-    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
-  });
-});
+// Error handling middleware - MUST be after routes
+app.use(errorHandler);
 
 // Connect to MongoDB and start server
 const startServer = async () => {

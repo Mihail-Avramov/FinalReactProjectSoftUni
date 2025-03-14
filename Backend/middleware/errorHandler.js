@@ -25,7 +25,7 @@ const handleValidationError = (err) => {
  * Handle mongoose cast errors (invalid ID)
  */
 const handleCastError = (err) => {
-  const message = `Invalid ${err.path}: ${err.value}.`;
+  const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400);
 };
 
@@ -86,13 +86,39 @@ const errorHandler = (err, req, res, next) => {
     let error = { ...err };
     error.message = err.message;
 
-    if (err.name === 'CastError') error = handleCastError(err);
-    if (err.name === 'ValidationError') error = handleValidationError(err);
-    if (err.code === 11000) error = handleDuplicateFieldsError(err);
-    if (err.name === 'JsonWebTokenError') error = handleJWTError();
-    if (err.name === 'TokenExpiredError') error = handleJWTExpiredError();
-
-    sendErrorProd(error, res);
+    // Log error for debugging
+    console.error('ERROR 💥', err);
+    
+    // Mongoose bad ObjectId
+    if (err.name === 'CastError') {
+      error = handleCastError(err);
+    }
+    
+    // Mongoose duplicate key
+    if (err.code === 11000) {
+      error = handleDuplicateFieldsError(err);
+    }
+    
+    // Mongoose validation error
+    if (err.name === 'ValidationError') {
+      error = handleValidationError(err);
+    }
+    
+    // Send error response
+    if (error.isOperational) {
+      // Operational, trusted error: send message to client
+      res.status(error.statusCode).json({
+        success: false,
+        message: error.message
+      });
+    } else {
+      // Programming or other unknown error: don't leak error details
+      console.error('ERROR 💥', err);
+      res.status(500).json({
+        success: false,
+        message: 'Something went wrong'
+      });
+    }
   }
 };
 

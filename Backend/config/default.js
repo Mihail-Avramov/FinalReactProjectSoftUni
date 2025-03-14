@@ -40,5 +40,10 @@ module.exports = {
       maxSize: 5 * 1024 * 1024, // 5MB
       allowedFormats: ['jpg', 'jpeg', 'png', 'webp']
     }
+  },
+
+  // User settings
+  user: {
+    defaultProfilePicture: 'https://res.cloudinary.com/dt3txyehf/image/upload/v1741894912/culinary_corner/users/p4iv6firgpqxjzufgoeq.png'
   }
 };
