@@ -26,6 +26,7 @@ app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'combined'));
 const authRoutes = require('./routes/auth');
 const recipeRoutes = require('./routes/recipes');
 const userRoutes = require('./routes/users');
+const configRoutes = require('./routes/config');
 
 // Rate limiting
 const limiter = rateLimit({
@@ -39,6 +40,7 @@ app.use('/api/', limiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/config', configRoutes);
 
 // Default route
 app.get('/', (req, res) => {

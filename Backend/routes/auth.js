@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const { registerValidation, loginValidation } = require('../utils/validation');
-const { protect } = require('../middleware/auth');
 const { optionalImageUpload } = require('../middleware/upload');
 
 // Public routes - profile picture is optional during registration
