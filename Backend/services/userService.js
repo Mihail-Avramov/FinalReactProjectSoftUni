@@ -5,7 +5,6 @@ const config = require('../config/default');
 const mongoose = require('mongoose');
 const { AppError } = require('../middleware/errorHandler');
 const imageService = require('./imageService');
-const { extractPublicIdFromUrl } = require('../utils/cloudinary');
 const errorMessages = require('../utils/errorMessages');
 
 /**
@@ -126,14 +125,7 @@ const userService = {
     
     // Only delete the old picture if it's not the default
     if (currentUser.profilePicture !== config.user.defaultProfilePicture) {
-      const oldImagePublicId = extractPublicIdFromUrl(currentUser.profilePicture);
-      if (oldImagePublicId) {
-        try {
-          await imageService.deleteImage(oldImagePublicId);
-        } catch (error) {
-          console.error('Failed to delete old profile picture:', error);
-        }
-      }
+      await imageService.deleteImageByUrl(currentUser.profilePicture);
     }
     
     // Upload new image to Cloudinary
@@ -167,14 +159,7 @@ const userService = {
     
     // Only delete the current picture if it's not already the default
     if (currentUser.profilePicture !== config.user.defaultProfilePicture) {
-      const publicId = extractPublicIdFromUrl(currentUser.profilePicture);
-      if (publicId) {
-        try {
-          await imageService.deleteImage(publicId);
-        } catch (error) {
-          console.error('Failed to delete profile picture:', error);
-        }
-      }
+      await imageService.deleteImageByUrl(currentUser.profilePicture);
       
       // Update user to use default profile picture
       const user = await User.findByIdAndUpdate(
@@ -264,25 +249,15 @@ const userService = {
     try {
       // Check if profile picture is NOT the default before attempting to delete
       if (user.profilePicture && user.profilePicture !== config.user.defaultProfilePicture) {
-        const profilePicPublicId = extractPublicIdFromUrl(user.profilePicture);
-        if (profilePicPublicId) {
-          await imageService.deleteImage(profilePicPublicId);
-        }
+        await imageService.deleteImageByUrl(user.profilePicture);
       }
       
       // Find recipes to delete their images
       const recipes = await Recipe.find({ author: userId });
       
-      // Delete recipe images from Cloudinary
       for (const recipe of recipes) {
         if (recipe.images && recipe.images.length > 0) {
-          for (const image of recipe.images) {
-            // Use publicId if available, otherwise extract from URL
-            const imageId = image.publicId || extractPublicIdFromUrl(image.url);
-            if (imageId) {
-              await imageService.deleteImage(imageId);
-            }
-          }
+          await imageService.deleteMultipleImages(recipe.images);
         }
       }
       

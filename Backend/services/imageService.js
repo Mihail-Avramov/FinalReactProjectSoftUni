@@ -2,6 +2,7 @@ const cloudinary = require('../config/cloudinary');
 const { AppError } = require('../middleware/errorHandler');
 const config = require('../config/default');
 const errorMessages = require('../utils/errorMessages');
+const { extractPublicIdFromUrl } = require('../utils/cloudinary');
 
 const imageService = {
   /**
@@ -71,16 +72,75 @@ const imageService = {
   },
   
   /**
-   * Delete an image from Cloudinary
-   * @param {String} publicId - Public ID of the image to delete
+   * Delete an image from Cloudinary by URL
+   * @param {String} imageUrl - URL of the image to delete
    * @returns {Promise<Boolean>} Success indicator
    */
-  async deleteImage(publicId) {
+  async deleteImageByUrl(imageUrl) {
     try {
-      await cloudinary.uploader.destroy(publicId);
+      if (!imageUrl) return true;
+      
+      // Skip default images
+      if (imageUrl === config.user.defaultProfilePicture) {
+        return true;
+      }
+      
+      const publicId = extractPublicIdFromUrl(imageUrl);
+      if (!publicId) {
+        console.warn('Could not extract public ID from URL:', imageUrl);
+        return true; // Skip images without publicId
+      }
+      
+      return await this.deleteImage(publicId);
+    } catch (error) {
+      console.error('Image deletion by URL failed:', error);
+      return false;
+    }
+  },
+  
+  /**
+   * Delete multiple images using flexible input formats
+   * @param {Array<String|Object>} images - Array of URLs, publicIds, or objects with url/publicId
+   * @returns {Promise<Boolean>} Success indicator
+   */
+  async deleteMultipleImages(images) {
+    try {
+      if (!images || !images.length) return true;
+      
+      // Process various input formats
+      const publicIds = images
+        .map(img => {
+          // Case 1: Object with publicId property
+          if (img && typeof img === 'object' && img.publicId) {
+            return img.publicId;
+          }
+          
+          // Case 2: Object with url property
+          if (img && typeof img === 'object' && img.url) {
+            return extractPublicIdFromUrl(img.url);
+          }
+          
+          // Case 3: URL string
+          if (typeof img === 'string' && img.startsWith('http')) {
+            // Skip default images
+            if (img === config.user.defaultProfilePicture) {
+              return null;
+            }
+            return extractPublicIdFromUrl(img);
+          }
+          
+          // Case 4: Already a publicId string
+          return img;
+        })
+        .filter(Boolean); // Remove null/undefined/false values
+      
+      if (publicIds.length === 0) return true;
+      
+      // Call the Cloudinary API
+      await cloudinary.api.delete_resources(publicIds);
       return true;
     } catch (error) {
-      console.error('Image deletion failed:', error);
+      console.error('Multiple image deletion failed:', error);
       return false;
     }
   }
