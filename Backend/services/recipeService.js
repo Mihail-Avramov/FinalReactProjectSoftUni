@@ -125,30 +125,42 @@ const recipeService = {
       throw error;
     }
   },
-  
+    
   /**
    * Create a new recipe
    */
   async createRecipe(recipeData, authorId) {
+    let uploadedImages = [];
+    
     try {
-      // Create new recipe
+      if (recipeData.imageFiles && recipeData.imageFiles.length > 0) {
+        try {
+          // Директно подаваме файловете към подобрения метод
+          uploadedImages = await imageService.uploadMultipleImages(recipeData.imageFiles, 'recipes');
+        } catch (uploadError) {
+          console.error('Error uploading images:', uploadError);
+          throw new AppError(errorMessages.image.uploadFailed, 400);
+        }
+      }
+      
+      delete recipeData.imageFiles;
+      recipeData.images = uploadedImages;
+      
       const recipe = new Recipe({
         ...recipeData,
         author: authorId,
         likes: []
       });
       
-      // Save to database
       await recipe.save();
       
-      // Populate author data
       await recipe.populate('author', 'username firstName lastName profilePicture');
       
       return recipe;
     } catch (error) {
-      // Handle image cleanup if recipe creation fails
-      if (recipeData.images && recipeData.images.length > 0) {
-        await imageService.deleteMultipleImages(recipeData.images);
+      if (uploadedImages.length > 0) {
+        await imageService.deleteMultipleImages(uploadedImages);
+        console.log(`Cleaned up ${uploadedImages.length} images after failed recipe creation`);
       }
       throw error;
     }
@@ -156,58 +168,52 @@ const recipeService = {
   
   /**
    * Update an existing recipe
-   * @param {string} recipeId - ID на рецептата
-   * @param {object} updateData - Данни за обновяване
-   * @param {object} existingRecipe - Рецептата от req.recipe (опционална)
    */
   async updateRecipe(recipeId, updateData, existingRecipe = null) {
     if (!mongoose.Types.ObjectId.isValid(recipeId)) {
       throw new AppError(errorMessages.validation.invalidObjectId, 400);
     }
     
+    let uploadedImages = [];
+    
     try {
-      // Използваме existingRecipe, ако е подадена
       let recipe = existingRecipe;
-      
-      // Извличаме рецептата само ако не е предоставена от middleware
       if (!recipe) {
         recipe = await Recipe.findById(recipeId);
-        
         if (!recipe) {
           throw new AppError(errorMessages.recipe.notFound, 404);
         }
       }
+
+      if (updateData.imageFiles && updateData.imageFiles.length > 0) {
+        try {
+          uploadedImages = await imageService.uploadMultipleImages(updateData.imageFiles, 'recipes');
+        } catch (uploadError) {
+          console.error('Error uploading images:', uploadError);
+          throw new AppError(errorMessages.image.uploadFailed, 400);
+        }
+      }
       
-      // Handle image updates
       let imagesToDelete = [];
-      let updatedImages = [...recipe.images]; // Clone the current images array
+      let updatedImages = [...recipe.images];
       
-      // Remove images if specified
       if (updateData.removedImages && updateData.removedImages.length > 0) {
-        // Identify images to remove
         imagesToDelete = recipe.images.filter(img => 
           updateData.removedImages.includes(img.url)
         );
-        
-        // Update the images array
+
         updatedImages = recipe.images.filter(img => 
           !updateData.removedImages.includes(img.url)
         );
-        
-        // Delete the images from Cloudinary
-        await imageService.deleteMultipleImages(imagesToDelete);
       }
       
-      // Add new images if uploaded
-      if (updateData.newImages && updateData.newImages.length > 0) {
-        updatedImages = [...updatedImages, ...updateData.newImages];
+      if (uploadedImages.length > 0) {
+        updatedImages = [...updatedImages, ...uploadedImages];
       }
       
-      // Remove fields that shouldn't be directly updated
       delete updateData.removedImages;
-      delete updateData.newImages;
-      
-      // Update the recipe
+      delete updateData.imageFiles;
+
       const updatedRecipe = await Recipe.findByIdAndUpdate(
         recipeId,
         { 
@@ -218,8 +224,18 @@ const recipeService = {
         { new: true, runValidators: true }
       ).populate('author', 'username firstName lastName profilePicture');
       
+      if (imagesToDelete.length > 0) {
+        await imageService.deleteMultipleImages(imagesToDelete);
+        console.log(`Successfully deleted ${imagesToDelete.length} removed images`);
+      }
+      
       return updatedRecipe;
     } catch (error) {
+      if (uploadedImages.length > 0) {
+        await imageService.deleteMultipleImages(uploadedImages);
+        console.log(`Cleaned up ${uploadedImages.length} newly uploaded images after failed update`);
+      }
+      
       if (error instanceof AppError) throw error;
       throw error;
     }
@@ -227,8 +243,6 @@ const recipeService = {
   
   /**
    * Delete a recipe
-   * @param {string} recipeId - ID на рецептата
-   * @param {object} existingRecipe - Рецептата от req.recipe (опционална)
    */
   async deleteRecipe(recipeId, existingRecipe = null) {
     if (!mongoose.Types.ObjectId.isValid(recipeId)) {
@@ -236,28 +250,20 @@ const recipeService = {
     }
     
     try {
-      // Използваме existingRecipe, ако е подадена
       let recipe = existingRecipe;
-      
-      // Извличаме рецептата само ако не е предоставена от middleware
       if (!recipe) {
         recipe = await Recipe.findById(recipeId);
-        
         if (!recipe) {
           throw new AppError(errorMessages.recipe.notFound, 404);
         }
       }
       
-      // Delete associated images
-      if (recipe.images && recipe.images.length > 0) {
-        await imageService.deleteMultipleImages(recipe.images);
-      }
-      
-      // Delete the recipe
       await Recipe.findByIdAndDelete(recipeId);
       
-      // Delete associated comments (this would require Comment model)
-      // await Comment.deleteMany({ recipe: recipeId });
+      if (recipe.images && recipe.images.length > 0) {
+        await imageService.deleteMultipleImages(recipe.images);
+        console.log(`Successfully deleted ${recipe.images.length} images from deleted recipe`);
+      }
       
       return true;
     } catch (error) {

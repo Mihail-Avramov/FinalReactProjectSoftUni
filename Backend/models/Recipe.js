@@ -30,6 +30,12 @@ const RecipeSchema = new mongoose.Schema({
     },
     publicId: {
       type: String
+    },
+    card: {
+      type: String
+    },
+    thumbnail: {
+      type: String
     }
   }],
   category: {

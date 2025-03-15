@@ -1,7 +1,4 @@
 const recipeService = require('../services/recipeService');
-const imageService = require('../services/imageService');
-const { AppError } = require('../middleware/errorHandler');
-const errorMessages = require('../utils/errorMessages');
 
 /**
  * RecipeController - Handles HTTP requests for recipes
@@ -87,7 +84,6 @@ const recipeController = {
     try {
       const recipeData = req.body;
       
-      // Parse JSON strings if needed
       if (typeof recipeData.ingredients === 'string') {
         recipeData.ingredients = JSON.parse(recipeData.ingredients);
       }
@@ -96,23 +92,8 @@ const recipeController = {
         recipeData.instructions = JSON.parse(recipeData.instructions);
       }
       
-      // Handle images if included in request
-      if (req.files && req.files.length > 0) {
-        // Upload images to Cloudinary
-        const uploadedImages = await Promise.all(
-          req.files.map(file => {
-            // Convert buffer to base64 string for Cloudinary
-            const b64 = Buffer.from(file.buffer).toString('base64');
-            const dataURI = `data:${file.mimetype};base64,${b64}`;
-            return imageService.uploadImage(dataURI, 'recipes');
-          })
-        );
-        
-        // Add images to recipe data
-        recipeData.images = uploadedImages;
-      }
+      recipeData.imageFiles = req.files;
       
-      // Create recipe
       const recipe = await recipeService.createRecipe(recipeData, req.user._id);
       
       res.status(201).json({
@@ -123,7 +104,7 @@ const recipeController = {
       next(error);
     }
   },
-  
+    
   /**
    * Update a recipe
    */
@@ -132,7 +113,6 @@ const recipeController = {
       const { id } = req.params;
       const updateData = req.body;
       
-      // Parse JSON strings if needed
       if (typeof updateData.ingredients === 'string') {
         updateData.ingredients = JSON.parse(updateData.ingredients);
       }
@@ -141,27 +121,12 @@ const recipeController = {
         updateData.instructions = JSON.parse(updateData.instructions);
       }
       
-      // Parse removedImages if present
       if (typeof updateData.removedImages === 'string') {
         updateData.removedImages = JSON.parse(updateData.removedImages);
       }
       
-      // Handle new images if included
-      if (req.files && req.files.length > 0) {
-        // Upload new images
-        const uploadedImages = await Promise.all(
-          req.files.map(file => {
-            const b64 = Buffer.from(file.buffer).toString('base64');
-            const dataURI = `data:${file.mimetype};base64,${b64}`;
-            return imageService.uploadImage(dataURI, 'recipes');
-          })
-        );
-        
-        // Append new images to existing ones
-        updateData.newImages = uploadedImages;
-      }
+      updateData.imageFiles = req.files;
       
-      // Update recipe
       const recipe = await recipeService.updateRecipe(id, updateData, req.recipe);
       
       res.status(200).json({

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { AppError, AuthenticationError } = require('../middleware/errorHandler');
 const config = require('../config/default');
 const errorMessages = require('../utils/errorMessages');
+const imageService = require('../services/imageService');
 
 const authService = {
   /**
@@ -11,7 +12,7 @@ const authService = {
    * @returns {Object} User data and token
    */
   async registerUser(userData) {
-    const { email, username } = userData;
+    const { email, username, profileImage, ...otherData } = userData;
     
     // Check if email exists
     const existingEmail = await User.findOne({ email });
@@ -25,8 +26,29 @@ const authService = {
       throw new AppError(errorMessages.auth.usernameTaken, 409);
     }
     
-    // Create new user
-    const user = await User.create(userData);
+    // Process profile image if provided
+    let profilePicture;
+    if (profileImage) {
+      try {
+        // Convert buffer to base64 string for Cloudinary
+        const b64 = Buffer.from(profileImage.buffer).toString('base64');
+        const dataURI = `data:${profileImage.mimetype};base64,${b64}`;
+        
+        // Upload to Cloudinary
+        const uploadResult = await imageService.uploadProfilePicture(dataURI);
+        profilePicture = uploadResult.url;
+      } catch (error) {
+        throw new AppError(errorMessages.image.uploadFailed, 400);
+      }
+    }
+    
+    // Create new user with profile picture
+    const user = await User.create({
+      ...otherData,
+      email,
+      username,
+      profilePicture
+    });
     
     // Generate JWT token
     const token = this.generateToken(user._id);

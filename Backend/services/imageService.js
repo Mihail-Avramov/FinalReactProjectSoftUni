@@ -14,34 +14,55 @@ const imageService = {
    */
   async uploadImage(image, folder = 'recipes', isProfilePicture = false) {
     try {
-      let transformationOptions;
+      let uploadOptions = {
+        folder: `culinary_corner/${folder}`,
+        resource_type: 'auto',
+        allowed_formats: config.upload.images.allowedFormats
+      };
       
       if (isProfilePicture) {
-        // Transformations specific for profile pictures
-        transformationOptions = [
-          { width: 300, height: 300, crop: "fill", gravity: "face" }, // Reduced to 300x300
-          { quality: "auto:good" },                                   // Good quality (better compression)
-          { fetch_format: "auto" }                                    // Auto format (WebP when supported)
+        uploadOptions.transformation = [
+          { width: 300, height: 300, crop: "fill", gravity: "face" },
+          { quality: "auto:good" },
+          { fetch_format: "auto" }
         ];
       } else {
-        // Default transformations for recipe images
-        transformationOptions = [
-          { width: 1200, crop: "limit" },                             // Resize large images
-          { quality: "auto" },                                        // Automatic quality optimization
-          { fetch_format: "auto" }                                    // Automatic format selection
+        uploadOptions.transformation = [
+          { width: 1000, height: 1000, crop: "fill", gravity: "auto" },
+          { quality: "auto:good" },
+          { fetch_format: "auto" },
+          { flags: "progressive" },
+          { improve: "indoor" },
+          { effect: "saturation:10" }
+        ];
+        
+        // Eager трансформации за предварително генерирани версии
+        uploadOptions.eager = [
+          // Карта с рецепта (средна миниатюра)
+          { 
+            width: 500, height: 500, 
+            crop: "fill", gravity: "auto", 
+            quality: "auto" 
+          },
+          // Списъчна миниатюра (малка)
+          { 
+            width: 200, height: 200, 
+            crop: "fill", gravity: "auto", 
+            quality: "auto:eco" 
+          }
         ];
       }
       
-      const result = await cloudinary.uploader.upload(image, {
-        folder: `culinary_corner/${folder}`,
-        resource_type: 'auto',
-        allowed_formats: config.upload.images.allowedFormats,
-        transformation: transformationOptions
-      });
+      const result = await cloudinary.uploader.upload(image, uploadOptions);
       
+      // Връщане на разширен обект с всички URL адреси
       return {
         url: result.secure_url,
-        publicId: result.public_id
+        publicId: result.public_id,
+        ...(result.eager && result.eager.length >= 2 && {
+          card: result.eager[0].secure_url,
+          thumbnail: result.eager[1].secure_url,
+        })
       };
     } catch (error) {
       console.error('Image upload failed:', error);
@@ -60,14 +81,25 @@ const imageService = {
   
   /**
    * Upload multiple images to Cloudinary
-   * @param {Array<String|Buffer>} images - Array of base64 encoded images or file buffers
+   * @param {Array<String|Buffer|Object>} images - Array of base64 encoded images, file buffers, or multer file objects
    * @param {String} folder - Cloudinary folder to store images in
    * @returns {Promise<Array<Object>>} Uploaded images details
    */
   async uploadMultipleImages(images, folder = 'recipes') {
     if (!images || !images.length) return [];
     
-    const uploadPromises = images.map(image => this.uploadImage(image, folder));
+    const uploadPromises = images.map(image => {
+      // Case 1: Multer file object with buffer and mimetype
+      if (image && typeof image === 'object' && image.buffer && image.mimetype) {
+        const b64 = Buffer.from(image.buffer).toString('base64');
+        const dataURI = `data:${image.mimetype};base64,${b64}`;
+        return this.uploadImage(dataURI, folder);
+      }
+      
+      // Case 2: Already formatted image (base64/url/etc)
+      return this.uploadImage(image, folder);
+    });
+    
     return Promise.all(uploadPromises);
   },
   
@@ -88,10 +120,13 @@ const imageService = {
       const publicId = extractPublicIdFromUrl(imageUrl);
       if (!publicId) {
         console.warn('Could not extract public ID from URL:', imageUrl);
-        return true; // Skip images without publicId
+        return true;
       }
       
-      return await this.deleteImage(publicId);
+      console.log(`Deleting image with public ID: ${publicId} from URL: ${imageUrl}`);
+      
+      await cloudinary.uploader.destroy(publicId);
+      return true;
     } catch (error) {
       console.error('Image deletion by URL failed:', error);
       return false;
