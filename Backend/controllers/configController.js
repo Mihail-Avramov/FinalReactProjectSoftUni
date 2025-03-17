@@ -1,6 +1,4 @@
 const Recipe = require('../models/Recipe');
-const User = require('../models/User');
-const Comment = require('../models/Comment');
 const defaultConfig = require('../config/default');
 
 const configController = {
@@ -49,6 +47,10 @@ const configController = {
           
           // Предварително зададени филтри за рецепти
           filters: {
+            // Категории - изброени в categories по-горе
+            // Трудност - изброена в difficulties по-горе
+            
+            // Време за приготвяне
             preparationTime: [
               { value: '15', label: 'До 15 минути' },
               { value: '30', label: 'До 30 минути' },
@@ -62,7 +64,11 @@ const configController = {
               { value: '3-4', label: '3-4 порции' },
               { value: '5-8', label: '5-8 порции' },
               { value: '9+', label: 'Над 8 порции' }
-            ]
+            ],
+            
+            // Добавени реално поддържани филтри
+            search: "Текстово търсене по заглавие и описание",
+            author: "Филтриране по ID на автора"
           },
           
           // Опции за сортиране
@@ -101,19 +107,87 @@ const configController = {
         
         // Настройки за коментари
         comment: {
-          maxLength: 500
+          validation: {
+            content: {
+              minLength: 3,
+              maxLength: 500
+            }
+          }
         },
         
         // Настройки за отговор от API-то
         api: {
           pagination: {
             defaultLimit: defaultConfig.api.pagination.defaultLimit,
-            maxLimit: defaultConfig.api.pagination.maxLimit
+            maxLimit: defaultConfig.api.pagination.maxLimit,
+            pageParameter: "page", // Добавено за яснота
+            limitParameter: "limit" // Добавено за яснота
           },
           imageResolutions: {
             thumbnail: 200,
             card: 500,
             full: 1000
+          },
+          
+          // НОВА СЕКЦИЯ: Подробности за поддържаните API заявки
+          queries: {
+            recipes: {
+              filters: {
+                category: "Филтриране по категория рецепта",
+                difficulty: "Филтриране по ниво на трудност",
+                search: "Текстово търсене в заглавие и описание",
+                minTime: "Минимално време за приготвяне (в минути)",
+                maxTime: "Максимално време за приготвяне (в минути)",
+                author: "ID на автора на рецептата"
+              },
+              sorting: {
+                usage: "Добавете '-' преди полето за низходящо сортиране",
+                supportedFields: ["createdAt", "likes", "preparationTime", "title"],
+                examples: {
+                  "sort=-createdAt": "Най-нови първо",
+                  "sort=title": "По азбучен ред (възходящо)",
+                  "sort=-likes": "Най-харесвани първо"
+                }
+              }
+            },
+            comments: {
+              sorting: {
+                default: "-createdAt",
+                supportedFields: ["createdAt"]
+              },
+              pagination: true
+            },
+            userRecipes: {
+              endpoint: "/recipes/user/:id",
+              description: "Получаване на рецепти на конкретен потребител",
+              pagination: true,
+              sorting: true
+            },
+            favoriteRecipes: {
+              endpoint: "/recipes/favorites",
+              description: "Получаване на любими рецепти на текущия потребител",
+              pagination: true
+            },
+            trendingRecipes: {
+              endpoint: "/recipes/trending",
+              description: "Получаване на популярни рецепти",
+              parameters: {
+                limit: "Брой рецепти (по подразбиране: 5)"
+              }
+            }
+          },
+          
+          // НОВА СЕКЦИЯ: Примери за типични заявки
+          examples: {
+            "Филтриране по категория": "/recipes?category=dessert",
+            "Търсене + Филтри": "/recipes?search=пиле&minTime=10&maxTime=30",
+            "Филтриране по трудност": "/recipes?difficulty=easy",
+            "Сортиране": "/recipes?sort=-likes",
+            "Пагинация": "/recipes?page=2&limit=20",
+            "Комбинирана заявка": "/recipes?category=dinner&difficulty=medium&sort=-createdAt&page=1&limit=10",
+            "Рецепти на потребител": "/recipes/user/[userId]?sort=-createdAt",
+            "Популярни рецепти": "/recipes/trending?limit=3",
+            "Коментари на рецепта": "/comments/recipe/[recipeId]?page=1&limit=10"
           }
         },
         

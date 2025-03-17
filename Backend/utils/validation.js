@@ -116,6 +116,7 @@ const recipeValidation = [
 const commentValidation = [
   body('content')
     .notEmpty().withMessage(errorMessages.comment.contentEmpty)
+    .isLength({ min: 3 }).withMessage(errorMessages.comment.contentTooShort)
     .isLength({ max: 500 }).withMessage(errorMessages.comment.contentTooLong),
   validate
 ];

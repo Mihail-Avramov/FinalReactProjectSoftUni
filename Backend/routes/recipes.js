@@ -9,9 +9,14 @@ const { recipeValidation, idParamValidation } = require('../utils/validation');
 router.get('/', recipeController.getRecipes);
 router.get('/trending', recipeController.getTrendingRecipes);
 
-// Routes with optional authentication
-router.get('/:id', idParamValidation, optionalAuth, recipeController.getRecipeById);
-router.get('/user/:userId', idParamValidation, recipeController.getUserRecipes);
+// User-specific recipe routes
+router.get('/users/', protect, recipeController.getUserRecipes); // Current user's recipes
+router.get('/users/favorites', protect, recipeController.getFavoriteRecipes); // Current user's favorites
+router.get('/users/:id', idParamValidation, recipeController.getUserRecipes); // Specific user's recipes
+
+
+router.get('/:id', idParamValidation, optionalAuth, recipeController.getRecipeById); // Specific recipe
+
 
 router.use(protect);
 
@@ -37,9 +42,5 @@ router.delete('/:id', idParamValidation, isRecipeOwner, recipeController.deleteR
 // Social interaction routes
 router.post('/:id/like', idParamValidation, recipeController.toggleLike);
 router.post('/:id/favorite', idParamValidation, recipeController.toggleFavorite);
-
-// User-specific recipe routes
-router.get('/user/me', recipeController.getUserRecipes); // Current user's recipes
-router.get('/favorites', recipeController.getFavoriteRecipes); // Current user's favorites
 
 module.exports = router;

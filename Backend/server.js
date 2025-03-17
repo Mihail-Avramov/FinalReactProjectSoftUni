@@ -27,6 +27,7 @@ const authRoutes = require('./routes/auth');
 const recipeRoutes = require('./routes/recipes');
 const userRoutes = require('./routes/users');
 const configRoutes = require('./routes/config');
+const commentRoutes = require('./routes/comments');
 
 // Rate limiting
 const limiter = rateLimit({
@@ -41,6 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/comments', commentRoutes);
 
 // Default route
 app.get('/', (req, res) => {

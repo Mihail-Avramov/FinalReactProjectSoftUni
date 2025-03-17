@@ -198,7 +198,7 @@ const recipeController = {
    */
   async getUserRecipes(req, res, next) {
     try {
-      const userId = req.params.userId || req.user._id;
+      const userId = req.params.id || req.user._id;
       
       const pagination = {
         page: parseInt(req.query.page) || 1,

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Recipe = require('../models/Recipe');
 const User = require('../models/User');
+const Comment = require('../models/Comment');
 const { AppError } = require('../middleware/errorHandler');
 const errorMessages = require('../utils/errorMessages');
 const imageService = require('./imageService');
@@ -66,6 +67,22 @@ const recipeService = {
         .limit(limit)
         .populate('author', 'username firstName lastName profilePicture')
         .lean();
+
+      const recipeIds = recipes.map(recipe => recipe._id);
+
+      const commentCounts = await Comment.aggregate([
+        { $match: { recipe: { $in: recipeIds } } },
+        { $group: { _id: "$recipe", count: { $sum: 1 } } }
+      ]);
+
+      const commentCountMap = {};
+      commentCounts.forEach(item => {
+        commentCountMap[item._id.toString()] = item.count;
+      });
+
+      recipes.forEach(recipe => {
+        recipe.commentCount = commentCountMap[recipe._id.toString()] || 0;
+      });
       
       // Calculate pagination info
       const totalPages = Math.ceil(totalDocs / limit);
@@ -102,7 +119,7 @@ const recipeService = {
       if (includeComments) {
         query = query.populate({
           path: 'comments',
-          options: { sort: { createdAt: -1 } },
+          options: { sort: { createdAt: -1 }, limit: 5 },
           populate: {
             path: 'author',
             select: 'username firstName lastName profilePicture'
@@ -115,6 +132,9 @@ const recipeService = {
       if (!recipe) {
         throw new AppError(errorMessages.recipe.notFound, 404);
       }
+
+      const commentCount = await Comment.countDocuments({ recipe: id });
+      recipe.commentCount = commentCount;
       
       return recipe;
     } catch (error) {
@@ -199,11 +219,15 @@ const recipeService = {
       
       if (updateData.removedImages && updateData.removedImages.length > 0) {
         imagesToDelete = recipe.images.filter(img => 
-          updateData.removedImages.includes(img.url)
+          updateData.removedImages.some(removedImg => 
+            removedImg === img.url || removedImg === img.publicId
+          )
         );
-
+      
         updatedImages = recipe.images.filter(img => 
-          !updateData.removedImages.includes(img.url)
+          !updateData.removedImages.some(removedImg => 
+            removedImg === img.url || removedImg === img.publicId
+          )
         );
       }
       
@@ -257,6 +281,8 @@ const recipeService = {
           throw new AppError(errorMessages.recipe.notFound, 404);
         }
       }
+
+      await Comment.deleteMany({ recipe: recipeId });
       
       await Recipe.findByIdAndDelete(recipeId);
       

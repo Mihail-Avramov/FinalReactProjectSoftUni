@@ -64,6 +64,7 @@ const errorMessages = {
     unauthorized: 'You do not have permission to modify this comment',
     contentRequired: 'Comment text is required',
     contentEmpty: 'Comment cannot be empty',
+    contentTooShort: 'Comment must be at least 3 characters long',
     contentTooLong: 'Comment cannot exceed 500 characters'
   },
   server: {
