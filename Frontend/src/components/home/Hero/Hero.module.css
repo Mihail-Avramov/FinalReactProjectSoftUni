@@ -1,163 +1,500 @@
-.hero {
-  padding: 5rem 0;
-  color: white;
+/* Основни контейнери */
+.heroWrapper {
   position: relative;
+  width: 100%;
   overflow: hidden;
-  background-color: #333; /* Фалбек */
-  min-height: 550px;
-  display: flex;
-  align-items: center;
-  margin-bottom: 2rem;
-  background-size: cover;
-  background-position: center;
 }
 
-.heroImage {
-  position: absolute;
-  top: 0;
-  left: 0;
+.hero {
+  position: relative;
+  min-height: 600px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  opacity: 0; /* Започваме с невидим компонент */
+  transform: translateY(10px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.hero.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.overlay {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
+  padding: 80px 0;
+  position: relative;
 }
 
 .container {
-  width: 100%;
-  max-width: var(--container-width);
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
   position: relative;
-  z-index: 2;
 }
 
 .content {
-  max-width: 650px;
-  padding: 2.5rem;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
-  border-radius: var(--border-radius-lg);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  transform: translateY(0);
-  animation: fadeInUp 1s ease;
-  border-left: 5px solid var(--primary);
+  max-width: 800px;
+  position: relative;
 }
 
-.badge {
-  display: inline-block;
-  background-color: var(--primary);
-  color: white;
-  padding: 0.3rem 1rem;
-  border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 3px 10px rgba(var(--primary-rgb), 0.3);
-}
-
-.content h2 {
-  font-size: 2.8rem;
-  margin-bottom: 1rem;
-  color: white;
-  font-weight: 700;
+/* Заглавие и подзаглавие */
+.title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: #ffffff;
   line-height: 1.2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.content p {
-  font-size: 1.1rem;
-  margin-bottom: 1.8rem;
-  opacity: 0.95;
-  line-height: 1.7;
+.highlightText {
+  color: var(--primary, #1e88e5);
+  position: relative;
+  display: inline-block;
 }
 
-.meta {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  font-size: 1.05rem;
+.highlightText::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  z-index: 1;
 }
 
-.meta span {
+.subtitle {
+  font-size: 1.2rem;
+  color: #f0f0f0;
+  margin-bottom: 36px;
+  line-height: 1.6;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  max-width: 90%;
+}
+
+/* Търсене - добра видимост, без анимации */
+.searchWrapper {
+  width: 100%;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 100;
+}
+
+.searchForm {
+  width: 100%;
+}
+
+.searchContainer {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: 500;
-  background-color: rgba(255, 255, 255, 0.15);
-  padding: 0.5rem 1rem;
+  max-width: 700px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   border-radius: 50px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 5px 5px 5px 20px;
 }
 
-.meta span i {
+.searchIconLeft {
   font-size: 1.2rem;
+  color: #666;
+  margin-right: 10px;
 }
 
+.searchInput {
+  flex-grow: 1;
+  padding: 15px 5px;
+  border: none;
+  font-size: 1.1rem;
+  outline: none;
+  background-color: transparent;
+  color: #333;
+}
+
+.searchInput::placeholder {
+  color: #999;
+}
+
+.searchButton {
+  background-color: var(--primary, #1e88e5);
+  border: none;
+  color: white;
+  padding: 15px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.searchButton:hover {
+  background-color: var(--primary-dark, #1565c0);
+}
+
+/* Популярни тагове */
+.popularTags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 32px;
+  min-height: 40px; /* Осигуряваме пространство за скелетон анимацията */
+}
+
+.tagLabel {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+  text-decoration: none;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tag:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.tagSkeleton {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Бутони */
 .buttons {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 24px;
 }
 
-/* Анимация за плавно появяване */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+.primaryButton, .secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s;
+}
+
+.primaryButton {
+  background-color: var(--primary, #1e88e5);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+}
+
+.primaryButton:hover {
+  background-color: var(--primary-dark, #1565c0);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(30, 136, 229, 0.4);
+}
+
+.secondaryButton {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.secondaryButton:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+}
+
+/* Информация за акцент рецепта */
+.featuredRecipeInfo {
+  position: absolute;
+  bottom: 120px;
+  right: 5%;
+  max-width: 400px;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  padding: 24px;
+  border-radius: 16px;
+  border-left: 4px solid var(--primary, #1e88e5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.featuredTag {
+  display: inline-block;
+  background-color: var(--primary, #1e88e5);
+  color: white;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.featuredTitle {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: block;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.featuredTitle:hover {
+  color: var(--primary, #1e88e5);
+}
+
+.featuredTitleSkeleton {
+  margin-bottom: 16px;
+}
+
+.featuredMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: #e0e0e0;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.metaItemSkeleton {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.likeCount, .difficulty, .time, .commentCount, .author {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Допълнителни тагове за акцент рецепта */
+.featuredTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.categoryTag, .servingsTag {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  color: #f0f0f0;
+}
+
+.categoryTag {
+  border-left: 2px solid var(--primary, #1e88e5);
+}
+
+.servingsTag {
+  border-left: 2px solid #4caf50;
+}
+
+/* Вълна за декорация на дъното */
+.wave {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  line-height: 0;
+  z-index: 5;
+}
+
+/* Скелетон компоненти за зареждане */
+.skeleton {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.1) 0%, 
+    rgba(255,255,255,0.2) 50%, 
+    rgba(255,255,255,0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonLoading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeletonLoading {
+  0% {
+    background-position: 200% 0;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  100% {
+    background-position: -200% 0;
   }
 }
 
-/* Медия запитвания за адаптивност */
+/* Подобрена секция за автора */
+.authorSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 8px;
+  text-decoration: none;
+  transition: transform 0.2s, background-color 0.2s;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.authorSection:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.authorImageContainer {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--primary, #1e88e5);
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.authorAvatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.authorIcon {
+  font-size: 1.4rem;
+}
+
+.authorInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.authorName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.authorUsername {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Медиа запитвания */
 @media (max-width: 992px) {
-  .content h2 {
-    font-size: 2.3rem;
+  .title {
+    font-size: 3rem;
+  }
+  
+  .featuredRecipeInfo {
+    right: 50%;
+    transform: translateX(50%);
+    max-width: 90%;
+    bottom: 100px;
   }
 }
 
 @media (max-width: 768px) {
   .hero {
-    padding: 3.5rem 0;
-    min-height: 450px;
+    min-height: 550px;
   }
   
-  .content {
-    padding: 2rem;
+  .overlay {
+    padding: 60px 0;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+  }
+
+  .searchContainer {
+    padding: 3px;
+  }
+
+  .searchButton {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+  
+  .featuredRecipeInfo {
+    position: static;
+    margin: 40px auto 0;
     max-width: 100%;
+    transform: none;
   }
   
-  .content h2 {
-    font-size: 2rem;
-  }
-  
-  .content p {
-    font-size: 1rem;
-  }
-  
-  .meta {
+  .buttons {
     flex-direction: column;
-    gap: 0.75rem;
   }
 }
 
 @media (max-width: 576px) {
   .hero {
-    padding: 2rem 0;
-    min-height: 400px;
+    min-height: 500px;
   }
   
-  .content {
-    padding: 1.5rem;
+  .title {
+    font-size: 2rem;
   }
   
-  .content h2 {
-    font-size: 1.7rem;
+  .subtitle {
+    font-size: 1rem;
   }
   
-  .buttons {
+  .searchContainer {
     flex-direction: column;
+    border-radius: 16px;
+    padding: 10px;
+  }
+  
+  .searchIconLeft {
+    display: none;
+  }
+  
+  .searchInput {
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+  }
+  
+  .searchButton {
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+  
+  .popularTags {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

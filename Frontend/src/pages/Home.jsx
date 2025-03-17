@@ -14,7 +14,7 @@ function Home() {
   return (
     <div className={styles.homePage}>
       <Hero featuredRecipes={trendingRecipes} />
-        <FeaturedRecipes onRecipesLoaded={handleRecipesLoaded} limit={8} />
+      <FeaturedRecipes onRecipesLoaded={handleRecipesLoaded} limit={8} />
       <Categories />
     </div>
   );
