@@ -1,0 +1,229 @@
+.section {
+  padding: 4rem 0;
+  background-color: var(--bg-secondary);
+}
+
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.sectionHeader h2 {
+  font-size: 2.4rem;
+  margin-bottom: 0.8rem;
+  position: relative;
+  display: inline-block;
+}
+
+.sectionHeader h2:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  width: 60px;
+  height: 4px;
+  background-color: var(--primary);
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.sectionHeader p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 1rem auto 0;
+}
+
+.hexagonGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1rem 0;
+  position: relative;
+}
+
+.hexagonItem {
+  position: relative;
+  width: 180px;
+  height: 200px;
+  margin: 20px;
+  text-decoration: none;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.hexagon {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-card);
+  clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+
+.hexagon:after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  background-color: var(--bg-card);
+  z-index: -1;
+  clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+}
+
+.hexagonItem:hover {
+  transform: translateY(-10px);
+}
+
+.hexagonItem:hover .hexagon {
+  background-color: var(--primary);
+  transform: scale(1.05);
+  box-shadow: var(--box-shadow-hover);
+  z-index: 2;
+}
+
+.hexagonContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  color: var(--text-primary);
+  z-index: 2;
+  transition: all var(--transition-normal);
+}
+
+.hexagonItem:hover .hexagonContent {
+  color: white;
+}
+
+.categoryIcon {
+  font-size: 3rem;
+  margin-bottom: 0.8rem;
+  transition: transform var(--transition-fast);
+}
+
+.hexagonItem:hover .categoryIcon {
+  transform: scale(1.2);
+}
+
+.hexagonContent h3 {
+  font-size: 1rem;
+  margin: 0;
+  transition: all var(--transition-normal);
+  font-weight: 600;
+}
+
+/* Эффект волны для категорий */
+.hexagonGrid:before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 20px;
+  background: linear-gradient(135deg, transparent 66%, var(--primary) 67%),
+              linear-gradient(45deg, var(--primary) 33%, transparent 34%);
+  background-size: 20px 40px;
+  bottom: -20px;
+  left: 0;
+  z-index: 1;
+}
+
+/* Разное расположение для симметрии - сдвиг для нечетных элементов */
+@media (min-width: 768px) {
+  .hexagonItem:nth-child(3n+2) {
+    margin-top: -30px;
+  }
+  
+  /* Центральный элемент отличается */
+  .hexagonItem:nth-child(4) .hexagon {
+    background-color: var(--primary);
+    transform: scale(1.05);
+  }
+  
+  .hexagonItem:nth-child(4) .hexagonContent {
+    color: white;
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 992px) {
+  .hexagonItem {
+    width: 150px;
+    height: 170px;
+    margin: 15px;
+  }
+  
+  .categoryIcon {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 3rem 0;
+  }
+  
+  .sectionHeader h2 {
+    font-size: 2rem;
+  }
+  
+  .hexagonItem {
+    width: 140px;
+    height: 155px;
+    margin: 10px;
+  }
+  
+  .categoryIcon {
+    font-size: 2.2rem;
+  }
+  
+  .hexagonContent h3 {
+    font-size: 0.9rem;
+  }
+  
+  .hexagonGrid:before {
+    height: 10px;
+    background-size: 10px 20px;
+    bottom: -10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hexagonGrid {
+    max-width: 330px;
+  }
+  
+  .hexagonItem {
+    width: 120px;
+    height: 135px;
+    margin: 8px;
+  }
+  
+  .categoryIcon {
+    font-size: 1.8rem;
+  }
+  
+  .hexagonContent h3 {
+    font-size: 0.8rem;
+  }
+  
+  .hexagonContent {
+    padding: 10px;
+  }
+}

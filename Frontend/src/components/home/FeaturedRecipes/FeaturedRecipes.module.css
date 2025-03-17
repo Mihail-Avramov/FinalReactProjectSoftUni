@@ -1,0 +1,236 @@
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section {
+  padding: 4.5rem 0;
+  background-color: var(--bg-secondary);
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.sectionHeader h2 {
+  font-size: 2.6rem;
+  margin-bottom: 0.8rem;
+  position: relative;
+  display: inline-block;
+  font-weight: 700;
+}
+
+.sectionHeader h2:after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  width: 80px;
+  height: 4px;
+  background-color: var(--primary);
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.sectionHeader p {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  max-width: 700px;
+  margin: 1.5rem auto 0;
+}
+
+.categorySection {
+  margin-bottom: 3rem;
+}
+
+.categoryTitle {
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+}
+
+.categoryCount {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-left: 0.75rem;
+  font-weight: normal;
+  background-color: var(--bg-secondary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+/* Улучшенная сетка для более заполненного вида */
+.recipesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+/* Добавляем анимацию появления для карточек */
+.recipeCardWrapper {
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+/* Разное время анимации для каждой карточки */
+.recipeCardWrapper:nth-child(1) { animation-delay: 0.1s; }
+.recipeCardWrapper:nth-child(2) { animation-delay: 0.2s; }
+.recipeCardWrapper:nth-child(3) { animation-delay: 0.3s; }
+.recipeCardWrapper:nth-child(4) { animation-delay: 0.4s; }
+.recipeCardWrapper:nth-child(5) { animation-delay: 0.5s; }
+.recipeCardWrapper:nth-child(6) { animation-delay: 0.6s; }
+.recipeCardWrapper:nth-child(7) { animation-delay: 0.7s; }
+.recipeCardWrapper:nth-child(8) { animation-delay: 0.8s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.emptyRecipes {
+  text-align: center;
+  padding: 4rem;
+  background-color: var(--bg-primary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+.viewAll {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.viewAllButton {
+  display: inline-block;
+  padding: 0.85rem 3rem;
+  background-color: var(--primary);
+  color: white;
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+  letter-spacing: 0.5px;
+}
+
+.viewAllButton:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-5px);
+  box-shadow: 0 7px 15px rgba(var(--primary-rgb), 0.4);
+}
+
+.errorMessage {
+  padding: 3rem;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-radius: var(--border-radius);
+  color: #e53935;
+  text-align: center;
+  margin-bottom: 2rem;
+  border-left: 4px solid #e53935;
+  font-size: 1.1rem;
+}
+
+/* Анимация для карточек рецептов при появлении */
+.fadeIn {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Медия запитвания для адаптивности */
+@media (max-width: 1200px) {
+  .recipesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .section {
+    padding: 3.5rem 0;
+  }
+  
+  .sectionHeader h2 {
+    font-size: 2.2rem;
+  }
+  
+  .recipesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 3rem 0;
+  }
+  
+  .sectionHeader {
+    margin-bottom: 2.5rem;
+  }
+  
+  .sectionHeader h2 {
+    font-size: 2rem;
+  }
+  
+  .sectionHeader p {
+    font-size: 1rem;
+  }
+  
+  .categoryTitle {
+    font-size: 1.4rem;
+  }
+  
+  .recipesGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .section {
+    padding: 2.5rem 0;
+  }
+  
+  .sectionHeader h2 {
+    font-size: 1.8rem;
+  }
+  
+  .recipesGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .sectionHeader {
+    margin-bottom: 2rem;
+  }
+  
+  .viewAllButton {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+  }
+}

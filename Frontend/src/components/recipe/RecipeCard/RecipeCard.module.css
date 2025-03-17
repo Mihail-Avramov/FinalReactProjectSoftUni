@@ -1,0 +1,378 @@
+/* Основен контейнер за рецептата */
+.recipeCard {
+  background-color: var(--bg-card, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Нов по-дискретен hover ефект - само сянка */
+.recipeCard:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Секция за изображението - увеличавам височината */
+.recipeImage {
+  position: relative;
+  height: 200px; /* Увеличена височина от 180px на 200px */
+  overflow: hidden;
+  background-color: #f0f0f0;
+  z-index: 0;
+}
+
+.recipeImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+/* Фиксиране на проблема със скалирането на снимката */
+.recipeCard:hover .recipeImage img {
+  transform: scale(1.05);
+}
+
+/* Overlay върху изображението */
+.cardOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1;
+}
+
+/* Стил за категорията */
+.recipeCategory {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Индикатор за брой харесвания */
+.likesIndicator {
+  color: #fff;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.likesIndicator i {
+  color: #ff5555;
+}
+
+/* Общи стилове за бутоните за действие */
+.actionButton {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  font-size: 0.9rem;
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #666;
+  z-index: 3; /* Увеличен z-index да е по-напред от стрелките */
+  top: 10px; /* Позициониране спрямо горната част */
+}
+
+/* Бутон Like - горе вляво */
+.likeButton {
+  left: 10px;
+  color: #ff5555;
+}
+
+/* Бутон Favorite - горе вдясно */
+.favoriteButton {
+  right: 10px;
+  color: #1e88e5;
+}
+
+/* Стилове за активни състояния */
+.liked {
+  background-color: #ff5555;
+  color: white !important;
+}
+
+.favorited {
+  background-color: #1e88e5;
+  color: white !important;
+}
+
+/* Стилове при hover */
+.actionButton:hover {
+  transform: scale(1.1);
+  background-color: white;
+}
+
+/* Стил за иконки в бутоните */
+.buttonIcon {
+  font-size: 1.2rem;  /* Увеличен шрифт */
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heartIcon {
+  font-size: 0.9rem;
+  line-height: 1;
+  display: inline-block;
+  margin-right: 1px;
+}
+
+/* Съдържание на рецептата */
+.recipeContent {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+}
+
+/* Заглавие на рецептата - центрирано */
+.titleLink {
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.recipeTitle {
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--text-primary, #333);
+  transition: color 0.2s ease;
+}
+
+.titleLink:hover .recipeTitle {
+  color: var(--primary, #1e88e5);
+}
+
+/* Компактна лента с метаданни - равномерно разпределена */
+.compactMeta {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* Емотикони за метаданни */
+.metaIcon {
+  display: inline-block;
+  font-size: 0.95rem;
+  text-align: center;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+/* Дискретни и еднакви значки с иконки */
+.metaBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background-color: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  flex: 1;
+  justify-content: center;
+}
+
+/* Цветове за различните видове значки - по-дискретни */
+.timeBadge {
+  color: #2196f3;
+}
+
+.servingsBadge {
+  color: #4caf50;
+}
+
+.difficultyBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.difficultyEasy {
+  color: #4caf50;
+}
+
+.difficultyMedium {
+  color: #ff9800;
+}
+
+.difficultyHard {
+  color: #f44336;
+}
+
+/* Описание на рецептата - не е центрирано */
+.recipeDescription {
+  color: var(--text-secondary, #666);
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Превю на съставките - не е центрирано */
+.ingredientsPreview {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  font-size: 0.75rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.ingredientsLabel {
+  font-weight: 600;
+  margin-right: 4px;
+  color: #333;
+}
+
+/* Футър на рецептата */
+.recipeFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+/* Данни за автора */
+.recipeAuthor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.authorAvatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f0f0f0;
+}
+
+.authorName {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary, #333);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+/* Бутон за преглед на рецептата */
+.viewButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 14px;
+  background-color: var(--primary, #1e88e5);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.viewButton:hover {
+  background-color: var(--primary-dark, #1565c0);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+}
+
+/* Медиа запитвания за адаптивност */
+@media (max-width: 992px) {
+  .recipeCard {
+    border-radius: 10px;
+  }
+  
+  .recipeImage {
+    height: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .recipeTitle {
+    font-size: 1rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  
+  .recipeDescription {
+    font-size: 0.8rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  
+  .recipeImage {
+    height: 180px; /* На по-малки екрани връщаме на по-малка височина */
+  }
+}
+
+@media (max-width: 576px) {
+  .recipeImage {
+    height: 160px; /* Още по-малка на мобилни устройства */
+  }
+  
+  .compactMeta {
+    gap: 4px;
+  }
+  
+  .metaBadge {
+    padding: 2px 6px;
+    font-size: 0.65rem;
+  }
+  
+  .recipeContent {
+    padding: 12px;
+  }
+  
+  .authorName {
+    max-width: 100px;
+  }
+}

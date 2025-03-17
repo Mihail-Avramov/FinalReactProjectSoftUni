@@ -1,49 +1,51 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import styles from './Footer.module.css';
 
 function Footer() {
   return (
-    <footer className="footer">
+    <footer className={styles.footer}>
       <div className="container">
-        <div className="footer-content">
-          <div className="footer-logo">
+        <div className={styles.footerContent}>
+          <div className={styles.footerLogo}>
             <h2>Culinary<span>Corner</span></h2>
             <p>Вашият кулинарен пътеводител</p>
           </div>
           
-          <div className="footer-links">
-            <div className="footer-section">
+          <div className={styles.footerLinks}>
+            <div className={styles.footerSection}>
               <h3>Навигация</h3>
               <ul>
-                <li><a href="#">Начало</a></li>
-                <li><a href="#">Рецепти</a></li>
-                <li><a href="#">Категории</a></li>
-                <li><a href="#">За нас</a></li>
+                <li><Link to="/">Начало</Link></li>
+                <li><Link to="/recipes">Рецепти</Link></li>
+                <li><Link to="/categories">Категории</Link></li>
+                <li><Link to="/about">За нас</Link></li>
               </ul>
             </div>
             
-            <div className="footer-section">
+            <div className={styles.footerSection}>
               <h3>Полезни връзки</h3>
               <ul>
-                <li><a href="#">Условия за ползване</a></li>
-                <li><a href="#">Политика за поверителност</a></li>
-                <li><a href="#">Контакти</a></li>
-                <li><a href="#">Често задавани въпроси</a></li>
+                <li><Link to="/terms">Условия за ползване</Link></li>
+                <li><Link to="/privacy">Политика за поверителност</Link></li>
+                <li><Link to="/contact">Контакти</Link></li>
+                <li><Link to="/faq">Често задавани въпроси</Link></li>
               </ul>
             </div>
             
-            <div className="footer-section">
+            <div className={styles.footerSection}>
               <h3>Последвайте ни</h3>
-              <div className="social-links">
-                <a href="#" className="social-icon">Facebook</a>
-                <a href="#" className="social-icon">Instagram</a>
-                <a href="#" className="social-icon">Pinterest</a>
-                <a href="#" className="social-icon">YouTube</a>
+              <div className={styles.socialLinks}>
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>Facebook</a>
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>Instagram</a>
+                <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>Pinterest</a>
+                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>YouTube</a>
               </div>
             </div>
           </div>
         </div>
         
-        <div className="footer-bottom">
+        <div className={styles.footerBottom}>
           <p>&copy; {new Date().getFullYear()} CulinaryCorner. Всички права запазени.</p>
         </div>
       </div>

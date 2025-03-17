@@ -199,7 +199,7 @@ const configController = {
             lunch: 'Обяд',
             dinner: 'Вечеря',
             dessert: 'Десерт',
-            snack: 'Закуска',
+            snack: 'Снакс',
             beverage: 'Напитка',
             other: 'Друго'
           },

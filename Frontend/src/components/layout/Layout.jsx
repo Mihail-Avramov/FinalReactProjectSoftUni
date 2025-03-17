@@ -1,12 +1,13 @@
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import styles from './Layout.module.css';
 
 function Layout({ children }) {
   return (
-    <div className="app">
+    <div className={styles.app}>
       <Header />
-      <main>
+      <main className={styles.main}>
         {children}
       </main>
       <Footer />

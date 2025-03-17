@@ -1,25 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import styles from './Header.module.css';
 
 function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
-    <header className="header">
-      <div className="container header-container">
-        <div className="logo">
-          <h1>Culinary<span>Corner</span></h1>
+    <header className={styles.header}>
+      <div className={`container ${styles.headerContainer}`}>
+        <div className={styles.logo}>
+          <Link to="/">
+            <h1>Culinary<span>Corner</span></h1>
+          </Link>
         </div>
         
-        <nav className="main-nav">
+        <button 
+          className={styles.mobileMenuToggle} 
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          ☰
+        </button>
+        
+        <nav className={`${styles.mainNav} ${mobileMenuOpen ? styles.open : ''}`}>
           <ul>
-            <li><a href="#" className="active">Начало</a></li>
-            <li><a href="#">Рецепти</a></li>
-            <li><a href="#">Категории</a></li>
-            <li><a href="#">За нас</a></li>
+            <li><Link to="/" className={styles.active}>Начало</Link></li>
+            <li><Link to="/recipes">Рецепти</Link></li>
+            <li><Link to="/categories">Категории</Link></li>
+            <li><Link to="/about">За нас</Link></li>
           </ul>
         </nav>
         
-        <div className="auth-nav">
-          <a href="#" className="btn btn-outline">Вход</a>
-          <a href="#" className="btn btn-primary">Регистрация</a>
+        <div className={styles.authNav}>
+          <Link to="/login" className="btn btn-outline btn-sm">Вход</Link>
+          <Link to="/register" className="btn btn-primary btn-sm">Регистрация</Link>
         </div>
       </div>
     </header>
