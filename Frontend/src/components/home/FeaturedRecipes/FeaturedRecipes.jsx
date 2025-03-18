@@ -1,41 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import RecipeCard from '../../recipe/RecipeCard';
-import recipeService from '../../../services/recipeService';
 import LoadingSpinner from '../../common/LoadingSpinner';
-import { CATEGORIES } from '../../../utils/theme';
 import styles from './FeaturedRecipes.module.css';
 
-function FeaturedRecipes({ onRecipesLoaded, limit = 8 }) {
-  const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    async function fetchTrendingRecipes() {
-      try {
-        setLoading(true);
-        // Загрузить больше рецептов для более заполненного вида
-        const data = await recipeService.getTrendingRecipes(limit);
-        setRecipes(data);
-        
-        // Изпращане на рецептите към родителя за Hero секцията
-        if (onRecipesLoaded && typeof onRecipesLoaded === 'function') {
-          onRecipesLoaded(data);
-        }
-        
-        setError(null);
-      } catch (err) {
-        setError('Не успяхме да заредим популярните рецепти. Моля, опитайте по-късно.');
-        console.error('Error fetching trending recipes:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchTrendingRecipes();
-  }, [onRecipesLoaded, limit]);
-
+function FeaturedRecipes({ recipes = [], loading = false, error = null }) {
   if (loading) {
     return (
       <section className={styles.section}>
