@@ -63,6 +63,10 @@ const RecipeSchema = new mongoose.Schema({
     ref: 'User',
     required: [true, 'Recipe must have an author']
   },
+  likesCount: {
+    type: Number,
+    default: 0
+  },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -93,5 +97,12 @@ RecipeSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
+
+RecipeSchema.index({ category: 1 });
+RecipeSchema.index({ difficulty: 1 });
+RecipeSchema.index({ preparationTime: 1 });
+RecipeSchema.index({ createdAt: -1 });
+RecipeSchema.index({ likesCount: -1 });
+RecipeSchema.index({ title: 'text', description: 'text' });
 
 module.exports = mongoose.model('Recipe', RecipeSchema);
