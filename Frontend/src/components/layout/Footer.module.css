@@ -32,7 +32,7 @@
 .footerLinks {
   display: flex;
   flex-wrap: wrap;
-  gap: 3rem;
+  gap: 6rem;
 }
 
 .footerSection h3 {
@@ -70,26 +70,40 @@
   transform: translateX(5px);
 }
 
-.socialLinks {
+/* Стилове за социални линкове */
+.socialLink {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.25rem;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  padding: 4px 0;
+}
+
+.socialLink:hover {
+  color: var(--primary);
+  transform: translateX(5px);
 }
 
 .socialIcon {
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  margin-right: 10px;
 }
 
-.socialIcon:before {
-  content: '';
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-size: contain;
-  background-repeat: no-repeat;
+/* Специфични цветове за различните социални мрежи при hover */
+.socialLink:hover .facebookIcon {
+  color: #1877f2;
+}
+
+.socialLink:hover .instagramIcon {
+  color: #e1306c;
+}
+
+.socialLink:hover .pinterestIcon {
+  color: #e60023;
+}
+
+.socialLink:hover .youtubeIcon {
+  color: #ff0000;
 }
 
 .footerBottom {
@@ -100,7 +114,6 @@
   font-size: 0.85rem;
 }
 
-/* Медиа запросы для адаптивности */
 @media (max-width: 992px) {
   .footerContent {
     flex-direction: column;
