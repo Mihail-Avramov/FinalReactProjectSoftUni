@@ -118,7 +118,7 @@
   display: inline-block;
   padding: 0.85rem 3rem;
   background-color: var(--primary);
-  color: white;
+  color: var(--bg-primary);
   border-radius: var(--border-radius);
   font-size: 1.1rem;
   font-weight: 600;
@@ -130,8 +130,10 @@
 
 .viewAllButton:hover {
   background-color: var(--primary-dark);
+  color: var(--bg-primary);
+  border-color: var(--primary);
   transform: translateY(-5px);
-  box-shadow: 0 7px 15px rgba(var(--primary-rgb), 0.4);
+  box-shadow: 0 7px 15px rgba(var(--primary-rgb), 0.25);
 }
 
 .errorMessage {

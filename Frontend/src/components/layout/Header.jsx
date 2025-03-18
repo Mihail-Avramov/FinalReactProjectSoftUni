@@ -36,8 +36,8 @@ function Header() {
         </nav>
         
         <div className={styles.authNav}>
-          <Link to="/login" className="btn btn-outline btn-sm">Вход</Link>
-          <Link to="/register" className="btn btn-primary btn-sm">Регистрация</Link>
+          <Link to="/login" className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm}`}>Вход</Link>
+          <Link to="/register" className={`${styles.btn} ${styles.btnPrimary} ${styles.btnSm}`}>Регистрация</Link>
         </div>
       </div>
     </header>
