@@ -1,53 +1,41 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { getCategoryIcon, getCategoryLabel } from '../../../utils/recipeHelpers';
 import ImageCarousel from '../ImageCarousel';
 import styles from './RecipeCard.module.css';
 
-function RecipeCard({ recipe, currentUser, onLike, onFavorite }) {
-  const [isLiked, setIsLiked] = useState(
-    currentUser && recipe.likes?.includes(currentUser._id)
-  );
-  
-  const [isFavorite, setIsFavorite] = useState(
-    currentUser && currentUser.favorites?.includes(recipe._id)
-  );
-  
-  // Категория и изображения
+function RecipeCard({ recipe }) {
   const categoryLabel = getCategoryLabel(recipe.category);
   
-  // Определяме стила за сложност
   const difficultyClass = {
     easy: styles.difficultyEasy,
     medium: styles.difficultyMedium,
     hard: styles.difficultyHard
   }[recipe.difficulty] || styles.difficultyMedium;
 
-  // Текстове за нивата на трудност
   const difficultyText = {
     easy: 'Лесно',
     medium: 'Средно', 
-    hard: 'Сложно'
+    hard: 'Трудно'
   }[recipe.difficulty] || 'Средно';
 
-  const handleLike = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const getDifficultyDots = () => {
+    const difficultyLevel = {
+      easy: 1,
+      medium: 2,
+      hard: 3
+    }[recipe.difficulty] || 2;
     
-    if (onLike) {
-      onLike(recipe._id);
-      setIsLiked(prev => !prev);
-    }
-  };
-  
-  const handleFavorite = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (onFavorite) {
-      onFavorite(recipe._id);
-      setIsFavorite(prev => !prev);
-    }
+    return (
+      <div className={styles.difficultyDots}>
+        {[1, 2, 3].map(level => (
+          <span 
+            key={level} 
+            className={`${styles.difficultyDot} ${level <= difficultyLevel ? styles.activeDot : ''}`}
+          ></span>
+        ))}
+      </div>
+    );
   };
   
   return (
@@ -67,27 +55,6 @@ function RecipeCard({ recipe, currentUser, onLike, onFavorite }) {
             <span className={styles.heartIcon}>❤️</span> {recipe.likesCount || recipe.likes?.length || 0}
           </span>
         </div>
-        
-        {/* Бутони за действия (само за логнати потребители) */}
-        {currentUser && (
-          <div className={styles.actionButtons}>
-            <button 
-              className={`${styles.actionButton} ${styles.likeButton} ${isLiked ? styles.liked : ''}`} 
-              onClick={handleLike}
-              title={isLiked ? "Премахни харесване" : "Харесай рецептата"}
-            >
-              <span className={styles.buttonIcon}>{isLiked ? '❤️' : '♡'}</span>
-            </button>
-            
-            <button 
-              className={`${styles.actionButton} ${styles.favoriteButton} ${isFavorite ? styles.favorited : ''}`} 
-              onClick={handleFavorite}
-              title={isFavorite ? "Премахни от любими" : "Добави в любими"}
-            >
-              <span className={styles.buttonIcon}>{isFavorite ? '★' : '☆'}</span>
-            </button>
-          </div>
-        )}
       </div>
       
       <div className={styles.recipeContent}>
@@ -95,7 +62,6 @@ function RecipeCard({ recipe, currentUser, onLike, onFavorite }) {
           <h3 className={styles.recipeTitle}>{recipe.title}</h3>
         </Link>
         
-        {/* Компактна лента с метаданните - с еднакви иконки и размери */}
         <div className={styles.compactMeta}>
           <span className={`${styles.metaBadge} ${styles.timeBadge}`} title="Време за приготвяне">
             <span className={styles.metaIcon}>⏱️</span> {recipe.preparationTime} мин
@@ -104,19 +70,11 @@ function RecipeCard({ recipe, currentUser, onLike, onFavorite }) {
             <span className={styles.metaIcon}>🍽️</span> {recipe.servings}
           </span>
           <span className={`${styles.metaBadge} ${styles.difficultyBadge} ${difficultyClass}`} title="Ниво на трудност">
-            <span className={styles.metaIcon}>📊</span> {difficultyText}
+            {getDifficultyDots()} {difficultyText}
           </span>
         </div>
         
         <p className={styles.recipeDescription}>{recipe.description}</p>
-        
-        {recipe.ingredients && recipe.ingredients.length > 0 && (
-          <div className={styles.ingredientsPreview}>
-            <span className={styles.ingredientsLabel}>Съставки:</span> 
-            {recipe.ingredients.slice(0, 3).join(', ')}
-            {recipe.ingredients.length > 3 && '...'}
-          </div>
-        )}
         
         <div className={styles.recipeFooter}>
           <div className={styles.recipeAuthor}>

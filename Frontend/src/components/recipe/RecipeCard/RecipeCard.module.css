@@ -75,64 +75,6 @@
   color: #ff5555;
 }
 
-/* Общи стилове за бутоните за действие */
-.actionButton {
-  position: absolute;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  font-size: 0.9rem;
-  background-color: rgba(255, 255, 255, 0.85);
-  color: #666;
-  z-index: 3; /* Увеличен z-index да е по-напред от стрелките */
-  top: 10px; /* Позициониране спрямо горната част */
-}
-
-/* Бутон Like - горе вляво */
-.likeButton {
-  left: 10px;
-  color: #ff5555;
-}
-
-/* Бутон Favorite - горе вдясно */
-.favoriteButton {
-  right: 10px;
-  color: #1e88e5;
-}
-
-/* Стилове за активни състояния */
-.liked {
-  background-color: #ff5555;
-  color: white !important;
-}
-
-.favorited {
-  background-color: #1e88e5;
-  color: white !important;
-}
-
-/* Стилове при hover */
-.actionButton:hover {
-  transform: scale(1.1);
-  background-color: white;
-}
-
-/* Стил за иконки в бутоните */
-.buttonIcon {
-  font-size: 1.2rem;  /* Увеличен шрифт */
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .heartIcon {
   font-size: 0.9rem;
   line-height: 1;
@@ -237,33 +179,34 @@
   color: #f44336;
 }
 
+/* Стилове за точките на трудност */
+.difficultyDots {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.difficultyDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+}
+
+.activeDot.difficultyDot {
+  background-color: currentColor; /* Използва цвета от родителя (difficultyClass) */
+}
+
 /* Описание на рецептата - не е центрирано */
 .recipeDescription {
   color: var(--text-secondary, #666);
-  margin: 0 0 12px;
+  margin: 20px 0;
   font-size: 0.85rem;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-/* Превю на съставките - не е центрирано */
-.ingredientsPreview {
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  padding: 8px 10px;
-  margin-bottom: 12px;
-  font-size: 0.75rem;
-  color: #666;
-  line-height: 1.4;
-}
-
-.ingredientsLabel {
-  font-weight: 600;
-  margin-right: 4px;
-  color: #333;
 }
 
 /* Футър на рецептата */

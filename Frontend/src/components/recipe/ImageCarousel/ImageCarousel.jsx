@@ -7,20 +7,17 @@ function ImageCarousel({ images, alt }) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const timerRef = useRef(null);
 
-  // Мемоизираме функцията за смяна на слайд
   const changeSlide = useCallback((newIndex) => {
     if (isTransitioning) return;
     
     setIsTransitioning(true);
     setCurrentIndex(newIndex);
-    
-    // Изчистваме флага за анимация след завършване на прехода
+
     setTimeout(() => {
       setIsTransitioning(false);
-    }, 600); // Малко повече от времето на анимацията
+    }, 600);
   }, [isTransitioning]);
 
-  // Автоматично сменя снимките при повече от една
   useEffect(() => {
     if (!isHovering && images.length > 1) {
       timerRef.current = setInterval(() => {
@@ -65,14 +62,12 @@ function ImageCarousel({ images, alt }) {
     changeSlide(index);
   };
 
-  // Избира случайна снимка при началото на компонента
   useEffect(() => {
     if (images.length > 1) {
       setCurrentIndex(Math.floor(Math.random() * images.length));
     }
   }, [images.length]);
 
-  // Placeholder изображение ако няма снимки
   const placeholderImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2YwZjBmMCIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5Ij7QndGP0LzQsCDQuNC30L7QsdGA0LDQttC10L3QuNC1PC90ZXh0Pjwvc3ZnPg==';
 
   if (!images || images.length === 0) {
