@@ -22,6 +22,14 @@ module.exports = {
     rateLimiting: {
       windowMs: 15 * 60 * 1000, // 15 minutes
       maxRequests: 100 // Maximum requests per windowMs
+    },
+    // Добавяме секция за кеширане
+    caching: {
+      trendingRecipes: {
+        ttl: 15 * 60 * 1000, // 15 минути в милисекунди
+        defaultLimit: 6,    // Количество рецепти по подразбиране
+        enabled: true       // Лесно включване/изключване на кеша
+      }
     }
   },
   
