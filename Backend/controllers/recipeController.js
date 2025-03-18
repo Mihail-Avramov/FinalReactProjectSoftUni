@@ -183,15 +183,16 @@ const recipeController = {
    */
   async getUserRecipes(req, res, next) {
     try {
-      const userId = req.params.id || req.user._id;
-      
+      const userId = String(req.params.id || req.user._id);
+      const currentUserId = req.user ? String(req.user._id) : null;
+
       const pagination = {
         page: parseInt(req.query.page) || 1,
         limit: parseInt(req.query.limit) || 10,
         sort: req.query.sort || '-createdAt'
       };
       
-      const result = await recipeService.getUserRecipes(userId, pagination);
+      const result = await recipeService.getUserRecipes(userId, pagination, currentUserId);
       
       res.status(200).json({
         success: true,

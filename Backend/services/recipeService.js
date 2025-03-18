@@ -323,29 +323,52 @@ const recipeService = {
     }
     
     try {
-      const recipe = await Recipe.findById(recipeId);
+      // Проверка дали рецептата съществува, но без да извличаме целия документ
+      const recipeExists = await Recipe.exists({ _id: recipeId });
       
-      if (!recipe) {
+      if (!recipeExists) {
         throw new AppError(errorMessages.recipe.notFound, 404);
       }
       
-      // Check if user already liked the recipe
-      const userLikedIndex = recipe.likes.findIndex(
-        like => like.toString() === userId.toString()
-      );
+      // Проверка дали потребителят вече е харесал рецептата
+      const isLiked = await Recipe.exists({ _id: recipeId, likes: userId });
       
-      if (userLikedIndex === -1) {
-        // Add like
-        recipe.likes.push(userId);
-        recipe.likesCount = (recipe.likesCount || 0) + 1;
-        await recipe.save();
-        return { isLiked: true, likeCount: recipe.likes.length };
+      let result;
+      
+      if (!isLiked) {
+        // Добавяне на харесване с атомарна операция
+        result = await Recipe.findByIdAndUpdate(
+          recipeId,
+          { 
+            $addToSet: { likes: userId },
+            $inc: { likesCount: 1 }
+          },
+          { new: true, select: 'likesCount' }
+        );
+        
+        // Инвалидиране на кеша с трендиращи рецепти
+        if (TRENDING_CACHE_ENABLED) {
+          cache.invalidate('trending:');
+        }
+        
+        return { isLiked: true, likeCount: result.likesCount };
       } else {
-        // Remove like
-        recipe.likes.splice(userLikedIndex, 1);
-        recipe.likesCount = Math.max((recipe.likesCount || 0) - 1, 0);
-        await recipe.save();
-        return { isLiked: false, likeCount: recipe.likes.length };
+        // Премахване на харесване с атомарна операция
+        result = await Recipe.findByIdAndUpdate(
+          recipeId,
+          { 
+            $pull: { likes: userId },
+            $inc: { likesCount: -1 }
+          },
+          { new: true, select: 'likesCount' }
+        );
+        
+        // Инвалидиране на кеша с трендиращи рецепти
+        if (TRENDING_CACHE_ENABLED) {
+          cache.invalidate('trending:');
+        }
+        
+        return { isLiked: false, likeCount: result.likesCount };
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -354,42 +377,45 @@ const recipeService = {
   },
   
   /**
-   * Toggle favorite status for a recipe
-   */
+  * Toggle favorite status for a recipe
+  */
   async toggleFavorite(recipeId, userId) {
     if (!mongoose.Types.ObjectId.isValid(recipeId)) {
       throw new AppError(errorMessages.validation.invalidObjectId, 400);
     }
     
     try {
-      const recipe = await Recipe.findById(recipeId);
+      const recipeExists = await Recipe.exists({ _id: recipeId });
       
-      if (!recipe) {
+      if (!recipeExists) {
         throw new AppError(errorMessages.recipe.notFound, 404);
       }
       
-      // Find user
-      const user = await User.findById(userId);
+      const userWithFavorite = await User.exists({ 
+        _id: userId, 
+        favoriteRecipes: recipeId 
+      });
       
-      if (!user) {
-        throw new AppError(errorMessages.user.notFound, 404);
-      }
-      
-      // Check if recipe is in favorites
-      const favoriteIndex = user.favoriteRecipes.findIndex(
-        id => id.toString() === recipeId.toString()
-      );
-      
-      if (favoriteIndex === -1) {
-        // Add to favorites
-        user.favoriteRecipes.push(recipeId);
-        await user.save();
-        return true; // is now favorite
+      if (!userWithFavorite) {
+        await User.findByIdAndUpdate(
+          userId,
+          { $addToSet: { favoriteRecipes: recipeId } }
+        );
+        
+        return { 
+          isFavorite: true,
+          message: 'Recipe added to favorites'
+        };
       } else {
-        // Remove from favorites
-        user.favoriteRecipes.splice(favoriteIndex, 1);
-        await user.save();
-        return false; // is no longer favorite
+        await User.findByIdAndUpdate(
+          userId,
+          { $pull: { favoriteRecipes: recipeId } }
+        );
+        
+        return { 
+          isFavorite: false, 
+          message: 'Recipe removed from favorites'
+        };
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -398,9 +424,9 @@ const recipeService = {
   },
   
   /**
-   * Get user's recipes
+   * Get user's recipes with optimized response format
    */
-  async getUserRecipes(userId, pagination = {}) {
+  async getUserRecipes(userId, pagination = {}, currentUserId = null) {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       throw new AppError(errorMessages.validation.invalidObjectId, 400);
     }
@@ -411,19 +437,72 @@ const recipeService = {
       const skip = (page - 1) * limit;
       const sort = pagination.sort || '-createdAt';
       
-      // Find recipes by author
-      const query = Recipe.find({ author: userId });
       const totalDocs = await Recipe.countDocuments({ author: userId });
       
-      // Apply pagination and populate author
-      const recipes = await query
+      const recipes = await Recipe.find({ author: userId })
+        .select('title description category preparationTime difficulty servings createdAt updatedAt images author likesCount')
         .sort(sort)
         .skip(skip)
         .limit(limit)
         .populate('author', 'username firstName lastName profilePicture')
         .lean();
       
-      // Calculate pagination info
+      if (recipes.length > 0) {
+        const recipeIds = recipes.map(recipe => recipe._id);
+        
+        // Calculate followers count (users who favorited these recipes)
+        const followerCounts = await User.aggregate([
+          { $match: { favoriteRecipes: { $in: recipeIds } } },
+          { $unwind: '$favoriteRecipes' },
+          { $match: { favoriteRecipes: { $in: recipeIds } } },
+          { $group: { _id: '$favoriteRecipes', count: { $sum: 1 } } }
+        ]);
+        
+        const followersMap = {};
+        followerCounts.forEach(item => {
+          followersMap[item._id.toString()] = item.count;
+        });
+        
+        // Get like and favorite status if currentUserId is provided
+        let isLikedMap = {};
+        let isFavoriteMap = {};
+        
+        if (currentUserId) {
+          // Check which recipes are liked by the current user
+          const likedRecipes = await Recipe.find({
+            _id: { $in: recipeIds },
+            likes: currentUserId
+          }).select('_id').lean();
+          
+          likedRecipes.forEach(recipe => {
+            isLikedMap[recipe._id.toString()] = true;
+          });
+          
+          // Check which recipes are favorited by the current user
+          const user = await User.findById(currentUserId)
+            .select('favoriteRecipes')
+            .lean();
+            
+          if (user && user.favoriteRecipes) {
+            user.favoriteRecipes.forEach(recipeId => {
+              isFavoriteMap[recipeId.toString()] = true;
+            });
+          }
+        }
+
+        const isOwner = currentUserId ? userId === currentUserId : false;
+        
+        // Add extra fields to each recipe
+        recipes.forEach(recipe => {
+          recipe.followersCount = followersMap[recipe._id.toString()] || 0;
+          recipe.isOwner = isOwner;
+            
+          // Set isLiked and isFavorite based on current user
+          recipe.isLiked = isLikedMap[recipe._id.toString()] || false;
+          recipe.isFavorite = isFavoriteMap[recipe._id.toString()] || false;
+        });
+      }
+      
       const totalPages = Math.ceil(totalDocs / limit);
       
       return {
@@ -438,64 +517,117 @@ const recipeService = {
         }
       };
     } catch (error) {
+      console.error('Error fetching user recipes:', error);
       if (error instanceof AppError) throw error;
       throw error;
     }
   },
   
-  /**
-   * Get user's favorite recipes
-   */
-  async getFavoriteRecipes(userId, pagination = {}) {
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      throw new AppError(errorMessages.validation.invalidObjectId, 400);
+/**
+ * Get user's favorite recipes - optimized implementation
+ */
+async getFavoriteRecipes(userId, pagination = {}) {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new AppError(errorMessages.validation.invalidObjectId, 400);
+  }
+  
+  try {
+    const user = await User.findById(userId).select('favoriteRecipes');
+    
+    if (!user) {
+      throw new AppError(errorMessages.user.notFound, 404);
     }
     
-    try {
-      // Get user with favorites
-      const user = await User.findById(userId).select('favoriteRecipes');
-      
-      if (!user) {
-        throw new AppError(errorMessages.user.notFound, 404);
-      }
-      
-      const favoriteIds = user.favoriteRecipes;
-      
-      // Apply pagination
-      const page = parseInt(pagination.page) || 1;
-      const limit = parseInt(pagination.limit) || 10;
-      const skip = (page - 1) * limit;
-      
-      // Count total favorites
-      const totalDocs = favoriteIds.length;
-      
-      // Get recipes with pagination
-      const recipes = await Recipe.find({ _id: { $in: favoriteIds } })
-        .sort('-createdAt')
-        .skip(skip)
-        .limit(limit)
-        .populate('author', 'username firstName lastName profilePicture')
-        .lean();
-      
-      // Calculate pagination info
-      const totalPages = Math.ceil(totalDocs / limit);
-      
+    const favoriteIds = user.favoriteRecipes;
+    
+    // Handle empty favorites case
+    if (favoriteIds.length === 0) {
       return {
-        recipes,
+        recipes: [],
         pagination: {
-          page,
-          limit,
-          total: totalDocs,
-          pages: totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1
+          page: 1,
+          limit: pagination.limit || 10,
+          total: 0,
+          pages: 0,
+          hasNext: false,
+          hasPrev: false
         }
       };
-    } catch (error) {
-      if (error instanceof AppError) throw error;
-      throw error;
     }
-  },
+    
+    // Apply pagination
+    const page = parseInt(pagination.page) || 1;
+    const limit = parseInt(pagination.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Count total favorites
+    const totalDocs = favoriteIds.length;
+    
+    // Get recipes with pagination - ONLY required fields
+    const recipes = await Recipe.find({ _id: { $in: favoriteIds } })
+      .select('title description category preparationTime difficulty servings createdAt updatedAt images author likesCount')
+      .sort('-createdAt')
+      .skip(skip)
+      .limit(limit)
+      .populate('author', 'username firstName lastName profilePicture')
+      .lean();
+    
+    if (recipes.length > 0) {
+      const recipeIds = recipes.map(recipe => recipe._id);
+      
+      // Calculate followers count
+      const followerCounts = await User.aggregate([
+        { $match: { favoriteRecipes: { $in: recipeIds } } },
+        { $unwind: '$favoriteRecipes' },
+        { $match: { favoriteRecipes: { $in: recipeIds } } },
+        { $group: { _id: '$favoriteRecipes', count: { $sum: 1 } } }
+      ]);
+      
+      const followersMap = {};
+      followerCounts.forEach(item => {
+        followersMap[item._id.toString()] = item.count;
+      });
+      
+      // Check which recipes are liked by this user
+      const likedRecipes = await Recipe.find({
+        _id: { $in: recipeIds },
+        likes: userId
+      }).select('_id').lean();
+      
+      const isLikedMap = {};
+      likedRecipes.forEach(recipe => {
+        isLikedMap[recipe._id.toString()] = true;
+      });
+      
+      // Add extra fields to each recipe
+      recipes.forEach(recipe => {
+        recipe.followersCount = followersMap[recipe._id.toString()] || 0;
+        recipe.isOwner = String(recipe.author._id) === String(userId);
+        recipe.isLiked = isLikedMap[recipe._id.toString()] || false;
+        recipe.isFavorite = true;
+      });
+    }
+    
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalDocs / limit);
+    
+    return {
+      recipes,
+      pagination: {
+        page,
+        limit,
+        total: totalDocs,
+        pages: totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching favorite recipes:', error);
+    if (error instanceof AppError) throw error;
+    throw error;
+  }
+},
   
   /**
   * Get trending recipes with clear labeling of trending vs popular

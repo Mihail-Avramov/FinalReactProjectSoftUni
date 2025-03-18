@@ -12,7 +12,7 @@ router.get('/trending', recipeController.getTrendingRecipes);
 // User-specific recipe routes
 router.get('/users/', protect, recipeController.getUserRecipes); // Current user's recipes
 router.get('/users/favorites', protect, recipeController.getFavoriteRecipes); // Current user's favorites
-router.get('/users/:id', idParamValidation, recipeController.getUserRecipes); // Specific user's recipes
+router.get('/users/:id', idParamValidation, optionalAuth, recipeController.getUserRecipes); // Specific user's recipes
 
 
 router.get('/:id', idParamValidation, optionalAuth, recipeController.getRecipeById); // Specific recipe
