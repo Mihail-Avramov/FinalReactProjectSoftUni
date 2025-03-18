@@ -54,6 +54,8 @@ const UserSchema = new mongoose.Schema({
   timestamps: true
 });
 
+UserSchema.index({ favoriteRecipes: 1 });
+
 // Hash password before saving
 UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
