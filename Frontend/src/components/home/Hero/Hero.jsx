@@ -1,99 +1,57 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './Hero.module.css';
-import recipeService from '../../../services/recipeService';
 import configService from '../../../services/configService';
+import useApiData from '../../../hooks/useApiData';
 import { Skeleton } from '../../ui/Skeleton/Skeleton';
 
-function Hero() {
-  const [heroRecipe, setHeroRecipe] = useState(null);
+function Hero({ trendingRecipe }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [localizedCategories, setLocalizedCategories] = useState({});
-  const [difficulties, setDifficulties] = useState({});
+  const [heroImage, setHeroImage] = useState('/images/default-hero.jpg');
   const navigate = useNavigate();
   
-  useEffect(() => {
-    // Заявки към бекенд API за извличане на необходимите данни
-    const fetchData = async () => {
-      try {
-        // Зареждаме конфигурацията за категориите и превода им
-        const config = await configService.getConfig();
-        
-        if (config) {
-          // Извличаме категориите и превода им
-          const categoriesData = config.recipe.categories.map(key => ({
-            key,
-            label: config.localization.categories[key] || key
-          }));
-          
-          setCategories(categoriesData);
-          setLocalizedCategories(config.localization.categories);
-          setDifficulties(config.localization.difficulties);
-        }
-        
-        // Използваме recipeService вместо директна fetch заявка
-        const trendingRecipes = await recipeService.getTrendingRecipes(1);
-        
-        if (trendingRecipes && trendingRecipes.length > 0) {
-          setHeroRecipe(trendingRecipes[0]);
-        }
-        
-        setIsLoaded(true);
-      } catch (error) {
-        console.error('Error loading Hero section data:', error);
-        // Гарантираме, че компонентът все пак ще бъде зареден
-        setIsLoaded(true);
-      }
-    };
-    
-    fetchData();
+  // Мемоизираме функцията за извличане на конфигурация
+  const fetchConfig = useCallback((signal) => {
+    return configService.getConfig(signal);
   }, []);
+  
+  // Използваме хука useApiData за конфигурацията
+  const { data: config, loading } = useApiData(
+    fetchConfig, 
+    [],
+    'Не успяхме да заредим конфигурацията.'
+  );
+  
+  // Изчисляваме производна стойност isLoaded от loading
+  const isLoaded = !loading;
+  
+  // Изчисляваме категориите от конфигурацията
+  const categories = React.useMemo(() => {
+    if (!config || !config.recipe || !config.recipe.categories) return [];
+    
+    return config.recipe.categories.map(key => ({
+      key,
+      label: config.localization.categories[key] || key
+    }));
+  }, [config]);
+  
+  // Актуализираме фоновото изображение при промяна на trending рецептата
+  React.useEffect(() => {
+    if (trendingRecipe && trendingRecipe.images && trendingRecipe.images.length > 0) {
+      setHeroImage(trendingRecipe.images[0].url);
+    }
+  }, [trendingRecipe]);
+  
+  const handleImageError = () => {
+    console.warn('Hero image failed to load, using default');
+    setHeroImage('/images/default-hero.jpg');
+  };
   
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    // Използване на query параметър search от getRecipes API
     if (searchQuery.trim()) {
       navigate(`/recipes?search=${encodeURIComponent(searchQuery.trim())}`);
     }
-  };
-  
-  // Избор на подходящо изображение с fallback
-  const heroImage = heroRecipe?.images?.length > 0 
-    ? heroRecipe.images[0].url
-    : `https://images.unsplash.com/photo-1611326387235-8879d5276a2d?auto=format&fit=crop&w=2000&q=80`;
-  
-  // Локализирана трудност според данните от configAPI
-  const getLocalizedDifficulty = (key) => {
-    return difficulties[key] || key;
-  };
-
-  // Проверка за снимката на автора с fallback към стандартна иконка
-  // Обърнете внимание, че използваме profilePicture вместо avatar според JSON отговора
-  const getAuthorAvatar = () => {
-    if (heroRecipe?.author?.profilePicture) {
-      return (
-        <img 
-          src={heroRecipe.author.profilePicture} 
-          alt={`${heroRecipe.author.username || 'Автор'}`}
-          className={styles.authorAvatar}
-        />
-      );
-    }
-    return <span className={styles.authorIcon}>👨‍🍳</span>;
-  };
-  
-  // Връщане на пълно име на автора, ако го има
-  const getAuthorName = () => {
-    const author = heroRecipe?.author;
-    if (!author) return 'Анонимен';
-    
-    if (author.firstName && author.lastName) {
-      return `${author.firstName} ${author.lastName}`;
-    }
-    
-    return author.username || 'Анонимен';
   };
   
   return (
@@ -104,6 +62,13 @@ function Hero() {
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${heroImage})`,
         }}
       >
+        <img 
+          src={heroImage}
+          alt=""
+          style={{ display: 'none' }}
+          onError={handleImageError}
+        />
+        
         <div className={styles.overlay}>
           <div className={styles.container}>
             <div className={styles.content}>
@@ -164,87 +129,6 @@ function Hero() {
               )}
             </div>
           </div>
-          
-          {heroRecipe ? (
-            <div className={styles.featuredRecipeInfo}>
-              <div className={styles.featuredTag}>Акцент на деня</div>
-              <Link to={`/recipes/${heroRecipe._id}`} className={styles.featuredTitle}>
-                {heroRecipe.title}
-              </Link>
-              
-              {/* Използване на профилна снимка от author.profilePicture */}
-              {heroRecipe.author && (
-                <Link to={`/users/${heroRecipe.author._id}`} className={styles.authorSection}>
-                  <div className={styles.authorImageContainer}>
-                    {getAuthorAvatar()}
-                  </div>
-                  <div className={styles.authorInfo}>
-                    <span className={styles.authorName}>
-                      {getAuthorName()}
-                    </span>
-                    {heroRecipe.author.username && heroRecipe.author.firstName && (
-                      <span className={styles.authorUsername}>@{heroRecipe.author.username}</span>
-                    )}
-                  </div>
-                </Link>
-              )}
-              
-              <div className={styles.featuredMeta}>
-                <span className={styles.likeCount}>
-                  ❤️ {heroRecipe.likesCount || heroRecipe.likes?.length || 0}
-                </span>
-                <span className={styles.difficulty}>
-                  {heroRecipe.difficulty === 'easy' && '● '}
-                  {heroRecipe.difficulty === 'medium' && '●● '}
-                  {heroRecipe.difficulty === 'hard' && '●●● '}
-                  {getLocalizedDifficulty(heroRecipe.difficulty)}
-                </span>
-                <span className={styles.time}>⏱️ {heroRecipe.preparationTime} мин</span>
-                {heroRecipe.commentCount !== undefined && (
-                  <span className={styles.commentCount}>💬 {heroRecipe.commentCount}</span>
-                )}
-              </div>
-              <div className={styles.featuredTags}>
-                <span className={styles.categoryTag}>
-                  {localizedCategories[heroRecipe.category] || heroRecipe.category}
-                </span>
-                {heroRecipe.servings && (
-                  <span className={styles.servingsTag}>
-                    {heroRecipe.servings} {heroRecipe.servings === 1 ? 'порция' : 'порции'}
-                  </span>
-                )}
-              </div>
-            </div>
-          ) : isLoaded ? (
-            <div className={styles.featuredRecipeInfo}>
-              <div className={styles.featuredTag}>Акцент на деня</div>
-              <span className={styles.featuredTitle}>Зареждане на избрани рецепти...</span>
-            </div>
-          ) : (
-            <div className={styles.featuredRecipeInfo}>
-              <div className={styles.featuredTag}><Skeleton width="100px" height="18px" /></div>
-              <div className={styles.featuredTitleSkeleton}>
-                <Skeleton width="250px" height="28px" />
-              </div>
-              {/* Скелетон за автор информация */}
-              <div className={styles.authorSection}>
-                <div className={styles.authorImageContainer}>
-                  <Skeleton width="40px" height="40px" borderRadius="50%" />
-                </div>
-                <div className={styles.authorInfo}>
-                  <Skeleton width="120px" height="16px" />
-                  <Skeleton width="80px" height="12px" />
-                </div>
-              </div>
-              <div className={styles.featuredMeta}>
-                {[1, 2, 3, 4].map(i => (
-                  <span key={i} className={styles.metaItemSkeleton}>
-                    <Skeleton width="80px" height="18px" />
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
       

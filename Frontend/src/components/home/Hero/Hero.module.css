@@ -7,7 +7,7 @@
 
 .hero {
   position: relative;
-  min-height: 600px;
+  min-height: 650px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -35,11 +35,25 @@
   margin: 0 auto;
   padding: 0 20px;
   position: relative;
+  display: flex;
+  justify-content: center;
 }
 
 .content {
   max-width: 800px;
   position: relative;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Заглавие и подзаглавие */
@@ -181,139 +195,6 @@
 
 .tagSkeleton {
   background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Бутони */
-.buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.primaryButton, .secondaryButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 28px;
-  border-radius: 50px;
-  font-size: 1rem;
-  font-weight: 600;
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: all 0.3s;
-}
-
-.primaryButton {
-  background-color: var(--primary, #1e88e5);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
-}
-
-.primaryButton:hover {
-  background-color: var(--primary-dark, #1565c0);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(30, 136, 229, 0.4);
-}
-
-.secondaryButton {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(8px);
-}
-
-.secondaryButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-3px);
-}
-
-/* Информация за акцент рецепта */
-.featuredRecipeInfo {
-  position: absolute;
-  bottom: 120px;
-  right: 5%;
-  max-width: 400px;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
-  padding: 24px;
-  border-radius: 16px;
-  border-left: 4px solid var(--primary, #1e88e5);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  z-index: 10;
-}
-
-.featuredTag {
-  display: inline-block;
-  background-color: var(--primary, #1e88e5);
-  color: white;
-  font-size: 0.75rem;
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin-bottom: 12px;
-  font-weight: 500;
-}
-
-.featuredTitle {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-  display: block;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.featuredTitle:hover {
-  color: var(--primary, #1e88e5);
-}
-
-.featuredTitleSkeleton {
-  margin-bottom: 16px;
-}
-
-.featuredMeta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  color: #e0e0e0;
-  font-size: 0.85rem;
-  margin-bottom: 16px;
-}
-
-.metaItemSkeleton {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-}
-
-.likeCount, .difficulty, .time, .commentCount, .author {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* Допълнителни тагове за акцент рецепта */
-.featuredTags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.categoryTag, .servingsTag {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 0.8rem;
-  color: #f0f0f0;
-}
-
-.categoryTag {
-  border-left: 2px solid var(--primary, #1e88e5);
-}
-
-.servingsTag {
-  border-left: 2px solid #4caf50;
 }
 
 /* Вълна за декорация на дъното */
