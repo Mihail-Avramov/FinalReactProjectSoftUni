@@ -21,4 +21,6 @@ const CommentSchema = new mongoose.Schema({
   timestamps: true 
 });
 
+CommentSchema.index({ recipe: 1 });
+
 module.exports = mongoose.model('Comment', CommentSchema);
