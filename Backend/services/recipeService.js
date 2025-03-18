@@ -5,49 +5,57 @@ const Comment = require('../models/Comment');
 const { AppError } = require('../middleware/errorHandler');
 const errorMessages = require('../utils/errorMessages');
 const imageService = require('./imageService');
+const config = require('../config/default');
+const cache = require('../utils/cache');
+
+const TRENDING_CACHE_TTL = config.api.caching.trendingRecipes.ttl;
+const TRENDING_CACHE_ENABLED = config.api.caching.trendingRecipes.enabled;
+const DEFAULT_TRENDING_LIMIT = config.api.caching.trendingRecipes.defaultLimit;
 
 /**
  * Recipe Service - Contains business logic for recipe operations
  */
 const recipeService = {
   /**
-   * Get recipes with filtering and pagination
-   */
+  * Get recipes with filtering and pagination - optimized version
+  */
   async getRecipes(filters = {}, pagination = {}) {
     try {
-      let query = Recipe.find();
+      // Build query object based on filters
+      const queryObj = {};
       
-      // Apply filters
       if (filters.category) {
-        query = query.where('category').equals(filters.category);
+        queryObj.category = filters.category;
       }
       
       if (filters.difficulty) {
-        query = query.where('difficulty').equals(filters.difficulty);
+        queryObj.difficulty = filters.difficulty;
       }
       
       if (filters.search) {
         const searchRegex = new RegExp(filters.search, 'i');
-        query = query.or([
+        queryObj.$or = [
           { title: { $regex: searchRegex } },
           { description: { $regex: searchRegex } }
-        ]);
+        ];
       }
       
       if (filters.minPreparationTime) {
-        query = query.where('preparationTime').gte(parseInt(filters.minPreparationTime));
+        queryObj.preparationTime = queryObj.preparationTime || {};
+        queryObj.preparationTime.$gte = parseInt(filters.minPreparationTime);
       }
       
       if (filters.maxPreparationTime) {
-        query = query.where('preparationTime').lte(parseInt(filters.maxPreparationTime));
+        queryObj.preparationTime = queryObj.preparationTime || {};
+        queryObj.preparationTime.$lte = parseInt(filters.maxPreparationTime);
       }
       
       if (filters.author) {
-        query = query.where('author').equals(filters.author);
+        queryObj.author = filters.author;
       }
       
-      // Count total results before pagination
-      const totalDocs = await Recipe.countDocuments(query);
+      // Count total results before pagination (only count once)
+      const totalDocs = await Recipe.countDocuments(queryObj);
       
       // Apply pagination
       const page = parseInt(pagination.page) || 1;
@@ -55,34 +63,16 @@ const recipeService = {
       const skip = (page - 1) * limit;
       
       // Apply sorting
-      if (pagination.sort) {
-        query = query.sort(pagination.sort);
-      } else {
-        query = query.sort('-createdAt');
-      }
+      const sortField = pagination.sort || '-createdAt';
       
-      // Execute query with pagination
-      const recipes = await query
+      // Execute query with pagination - selective fields for optimization
+      const recipes = await Recipe.find(queryObj)
+        .select('title description category preparationTime difficulty servings createdAt updatedAt images author likesCount')
         .skip(skip)
         .limit(limit)
+        .sort(sortField)
         .populate('author', 'username firstName lastName profilePicture')
         .lean();
-
-      const recipeIds = recipes.map(recipe => recipe._id);
-
-      const commentCounts = await Comment.aggregate([
-        { $match: { recipe: { $in: recipeIds } } },
-        { $group: { _id: "$recipe", count: { $sum: 1 } } }
-      ]);
-
-      const commentCountMap = {};
-      commentCounts.forEach(item => {
-        commentCountMap[item._id.toString()] = item.count;
-      });
-
-      recipes.forEach(recipe => {
-        recipe.commentCount = commentCountMap[recipe._id.toString()] || 0;
-      });
       
       // Calculate pagination info
       const totalPages = Math.ceil(totalDocs / limit);
@@ -103,17 +93,18 @@ const recipeService = {
       throw error;
     }
   },
-  
+    
   /**
-   * Get recipe by ID
+   * Get recipe by ID with enhanced user context
    */
-  async getRecipeById(id, includeComments = true) {
+  async getRecipeById(id, userId = null, includeComments = true) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new AppError(errorMessages.validation.invalidObjectId, 400);
     }
     
     try {
       let query = Recipe.findById(id)
+        .select('-likes')
         .populate('author', 'username firstName lastName profilePicture bio');
       
       if (includeComments) {
@@ -133,10 +124,35 @@ const recipeService = {
         throw new AppError(errorMessages.recipe.notFound, 404);
       }
 
-      const commentCount = await Comment.countDocuments({ recipe: id });
-      recipe.commentCount = commentCount;
+      const promises = [
+        Comment.countDocuments({ recipe: id }),
+        User.countDocuments({ favoriteRecipes: id })
+      ];
+
+      let isLikedDoc = null;
+      let isFavoriteDoc = null;
+    
+      if (userId) {
+        const [isLikedResult, isFavoriteResult] = await Promise.all([
+          Recipe.exists({ _id: id, likes: userId }),
+          User.exists({ _id: userId, favoriteRecipes: id })
+        ]);
+        
+        isLikedDoc = isLikedResult;
+        isFavoriteDoc = isFavoriteResult;
+      }
       
-      return recipe;
+      const [commentCount, followersCount] = await Promise.all(promises);
+      
+      const recipeObj = recipe.toObject();
+      recipeObj.commentCount = commentCount;
+      recipeObj.followersCount = followersCount;
+      
+      recipeObj.isOwner = userId ? (recipe.author._id.toString() === userId.toString()) : false;
+      recipeObj.isLiked = !!isLikedDoc;
+      recipeObj.isFavorite = !!isFavoriteDoc;
+      
+      return recipeObj;
     } catch (error) {
       if (error instanceof AppError) throw error;
       if (error.name === 'CastError') {
@@ -321,11 +337,13 @@ const recipeService = {
       if (userLikedIndex === -1) {
         // Add like
         recipe.likes.push(userId);
+        recipe.likesCount = (recipe.likesCount || 0) + 1;
         await recipe.save();
         return { isLiked: true, likeCount: recipe.likes.length };
       } else {
         // Remove like
         recipe.likes.splice(userLikedIndex, 1);
+        recipe.likesCount = Math.max((recipe.likesCount || 0) - 1, 0);
         await recipe.save();
         return { isLiked: false, likeCount: recipe.likes.length };
       }
@@ -480,50 +498,107 @@ const recipeService = {
   },
   
   /**
-   * Get trending recipes based on likes and recency
-   */
-  async getTrendingRecipes(limit = 5) {
+  * Get trending recipes with clear labeling of trending vs popular
+  */
+  async getTrendingRecipes(limit = DEFAULT_TRENDING_LIMIT) {
     try {
-      // Get recipes with most likes within the last month
+
+      if (TRENDING_CACHE_ENABLED) {
+        const cacheKey = `trending:${limit}`;
+        const cachedData = cache.get(cacheKey, TRENDING_CACHE_TTL);
+        
+        if (cachedData) {
+          return cachedData;
+        }
+      }
+
       const lastMonth = new Date();
       lastMonth.setMonth(lastMonth.getMonth() - 1);
       
-      const recipes = await Recipe.aggregate([
-        // Filter by date
-        { $match: { createdAt: { $gte: lastMonth } } },
-        // Add fields for sorting
+      let trendingRecipes = await Recipe.aggregate([
+        { $match: { 
+          createdAt: { $gte: lastMonth },
+          likesCount: { $gt: 0 }
+        }},
+        
         { $addFields: { 
-          likesCount: { $size: "$likes" },
-          daysSinceCreation: {
+          _score: { 
             $divide: [
-              { $subtract: [new Date(), "$createdAt"] },
-              1000 * 60 * 60 * 24 // Convert ms to days
-            ]
+              "$likesCount", 
+              { 
+                $add: [
+                  { 
+                    $divide: [
+                      { $subtract: [new Date(), "$createdAt"] },
+                      1000 * 60 * 60 * 24
+                    ]
+                  }, 
+                  1
+                ] 
+              }
+            ] 
           }
         }},
-        // Calculate score: likes count / days (recent recipes score higher)
-        { $addFields: { 
-          score: { 
-            $cond: {
-              if: { $eq: ["$daysSinceCreation", 0] },
-              then: "$likesCount",
-              else: { $divide: ["$likesCount", "$daysSinceCreation"] }
-            }
-          }
+        
+        { $sort: { _score: -1 } },
+        
+        { $project: {
+          title: 1,
+          description: 1,
+          category: 1,
+          preparationTime: 1,
+          difficulty: 1,
+          servings: 1,
+          images: 1,
+          author: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          likesCount: 1,
+          type: { $literal: "trending" }
         }},
-        // Sort by score (trending)
-        { $sort: { score: -1 } },
-        // Limit results
+        
         { $limit: limit }
       ]);
 
-      // Populate author information
-      await Recipe.populate(recipes, {
+      if (trendingRecipes.length < limit) {
+        const existingIds = trendingRecipes.map(r => r._id);
+        
+        const popularRecipes = await Recipe.aggregate([
+          { $match: { 
+            _id: { $nin: existingIds }
+          }},
+          { $sort: { likesCount: -1, createdAt: -1} }, 
+          { $project: {
+            title: 1,
+            description: 1,
+            category: 1,
+            preparationTime: 1,
+            difficulty: 1,
+            servings: 1,
+            images: 1,
+            author: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            likesCount: 1,
+            type: { $literal: "popular" }
+          }},
+          { $limit: limit - trendingRecipes.length }
+        ]);
+        
+        trendingRecipes = [...trendingRecipes, ...popularRecipes];
+      }
+
+      await Recipe.populate(trendingRecipes, {
         path: 'author',
         select: 'username firstName lastName profilePicture'
       });
-      
-      return recipes;
+
+      if (TRENDING_CACHE_ENABLED) {
+        const cacheKey = `trending:${limit}`;
+        cache.set(cacheKey, trendingRecipes);
+      }
+           
+      return trendingRecipes;
     } catch (error) {
       console.error('Error getting trending recipes:', error);
       throw error;

@@ -47,30 +47,15 @@ const recipeController = {
       const { id } = req.params;
       const includeComments = req.query.comments !== 'false';
       
-      const recipe = await recipeService.getRecipeById(id, includeComments);
+      // Extract user ID if authenticated
+      const userId = req.user ? req.user._id : null;
       
-      // Check if user has favorited this recipe
-      let isFavorite = false;
-      if (req.user) {
-        isFavorite = req.user.favoriteRecipes?.includes(id);
-      }
-      
-      // Check if user has liked this recipe
-      let isLiked = false;
-      if (req.user) {
-        isLiked = recipe.likes.some(like => like.toString() === req.user._id.toString());
-      }
-      
-      // Format response
-      const response = {
-        ...recipe.toObject(), // Convert mongoose document to plain object
-        isLiked,
-        isFavorite
-      };
+      // Get recipe with all enhanced data from service
+      const recipe = await recipeService.getRecipeById(id, userId, includeComments);
       
       res.status(200).json({
         success: true,
-        data: response
+        data: recipe
       });
     } catch (error) {
       next(error);
@@ -247,7 +232,7 @@ const recipeController = {
    */
   async getTrendingRecipes(req, res, next) {
     try {
-      const limit = parseInt(req.query.limit) || 5;
+      const limit = parseInt(req.query.limit) || 6;
       const recipes = await recipeService.getTrendingRecipes(limit);
       
       res.status(200).json({
