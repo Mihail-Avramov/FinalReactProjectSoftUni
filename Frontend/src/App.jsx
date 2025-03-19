@@ -7,6 +7,7 @@ import Terms from './pages/static/Terms';
 import Privacy from './pages/static/Privacy';
 import Contact from './pages/static/Contact';
 import FAQ from './pages/static/FAQ';
+import NotFound from './pages/static/NotFound';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
   );

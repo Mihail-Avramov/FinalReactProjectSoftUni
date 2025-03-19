@@ -1,0 +1,167 @@
+.notFoundContainer {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.notFoundContent {
+  max-width: 600px;
+  text-align: center;
+  padding: 3rem 2rem;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
+}
+
+.errorCode {
+  font-size: 8rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  text-shadow: 4px 4px 0px rgba(var(--primary-rgb), 0.2);
+  font-family: var(--font-heading);
+}
+
+.errorTitle {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.errorMessage {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.illustration {
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.errorImage {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.errorImage:hover {
+  transform: scale(1.02);
+}
+
+.suggestion {
+  margin-top: 2rem;
+}
+
+.suggestion p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.homeButton {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  background-color: var(--primary);
+  color: white;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(var(--primary-rgb), 0.3);
+}
+
+.homeButton:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(var(--primary-rgb), 0.4);
+}
+
+.linkButton {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  background-color: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.linkButton:hover {
+  background-color: var(--primary);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(var(--primary-rgb), 0.2);
+}
+
+/* Отзивчив дизайн */
+@media (max-width: 768px) {
+  .errorCode {
+    font-size: 6rem;
+  }
+
+  .errorImage {
+    max-width: 80%;
+  }
+  
+  .errorTitle {
+    font-size: 1.8rem;
+  }
+  
+  .errorMessage {
+    font-size: 1rem;
+  }
+  
+  .illustration svg {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+@media (max-width: 576px) {
+  .notFoundContent {
+    padding: 2rem 1.5rem;
+  }
+  
+  .errorCode {
+    font-size: 5rem;
+  }
+  
+  .errorTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .links {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .homeButton, .linkButton {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+}
