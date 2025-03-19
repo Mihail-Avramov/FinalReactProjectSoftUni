@@ -44,6 +44,7 @@ cd culinary-corner
 
 2. Install dependencies for both frontend and backend
 ```bash
+# Install both simultaneously. Run command from root directory.
 npm run install:all
 ```
 
@@ -65,11 +66,12 @@ In the Frontend folder:
 VITE_API_URL=http://localhost:5000/api
 VITE_CLOUDINARY_UPLOAD_PRESET=culinary_corner
 VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+VITE_APP_NAME=CulinaryCorner
 ```
 
 4. Start the application
 ```bash
-# Start both simultaneously
+# Start both simultaneously. Run command from root directory.
 npm start
 
 # The backend will run on http://localhost:5000
@@ -104,7 +106,7 @@ CulinaryCorner/
 
 ## 👨‍💻 Developers
 
-- Martin Avramov (@mavramov)
+- Mihail Avramov (@mavramov)
 
 ## 📄 License
 

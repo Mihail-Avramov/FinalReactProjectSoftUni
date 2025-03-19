@@ -121,6 +121,10 @@
   margin-right: 10px;
 }
 
+.searchContainer:hover .searchIconLeft {
+  color: var(--primary);
+}
+
 .searchInput {
   flex-grow: 1;
   padding: 15px 5px;

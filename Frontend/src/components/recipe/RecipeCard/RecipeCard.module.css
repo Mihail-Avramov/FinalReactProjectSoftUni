@@ -200,6 +200,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  transition: all 0.25s ease;
 }
 
 .difficultyEasy {
@@ -226,10 +227,106 @@
   height: 6px;
   border-radius: 50%;
   background-color: #e0e0e0;
+  transition: all 0.25s ease;
+}
+
+.difficultyBadge:hover .difficultyDot {
+  transform: scale(1.2);
+  margin: 0 1px;
+}
+
+.difficultyBadge:hover .activeDot.difficultyDot {
+  box-shadow: 0 0 4px 0 currentColor;
+  transform: scale(1.3);
 }
 
 .activeDot.difficultyDot {
-  background-color: currentColor; /* Използва цвета от родителя (difficultyClass) */
+  background-color: currentColor;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1.2); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1.2); }
+}
+
+.difficultyBadge:hover .activeDot.difficultyDot:last-of-type {
+  animation: pulse 1.5s infinite;
+}
+
+.difficultyBadge:hover {
+  font-weight: 600;
+  transform: translateY(-1px);
+}
+
+/* Стилизиране на SVG иконите */
+.metaIcon svg {
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  color: inherit; 
+}
+
+.heartIcon svg {
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  color: #ff5555;
+  fill: #ff5555;
+}
+
+/* Промяна на hover ефект за иконите */
+.timeBadge:hover .metaIcon svg {
+  transform: scale(1.2);
+}
+
+.servingsBadge:hover .metaIcon svg {
+  transform: scale(1.2);
+}
+
+.likesIndicator:hover .heartIcon svg {
+  transform: scale(1.2);
+  color: #ff3333;
+}
+
+.metaIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  transition: transform 0.2s ease;
+}
+
+/* За звездата или корона */
+.trendingIcon {
+  display: inline-flex;
+  color: #ffb400;
+  margin-right: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* За тренд-стрелка */
+.trendingIcon {
+  display: inline-flex;
+  color: #00cc44;
+  margin-right: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* За светкавица */
+.trendingIcon {
+  display: inline-flex;
+  color: #ff7700;
+  margin-right: 4px;
+  position: relative;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.2); opacity: 1; }
 }
 
 /* Описание на рецептата - не е центрирано */
