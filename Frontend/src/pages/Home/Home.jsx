@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
-import Hero from '../components/home/Hero';
-import FeaturedRecipes from '../components/home/FeaturedRecipes';
-import recipeService from '../services/recipeService';
-import useApiData from '../hooks/useApiData';
+import Hero from '../../components/home/Hero';
+import FeaturedRecipes from '../../components/home/FeaturedRecipes';
+import recipeService from '../../services/recipeService';
+import useApiData from '../../hooks/useApiData';
 import styles from './Home.module.css';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 function Home() {
   // Създаваме мемоизирана функция за извличане на данни

@@ -1,0 +1,187 @@
+.staticPage {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 2rem 20px 4rem;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pageHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.pageHeader h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.headerDivider {
+  height: 3px;
+  width: 80px;
+  background: linear-gradient(to right, var(--primary-light), var(--primary), var(--primary-dark));
+  margin: 0 auto;
+  border-radius: 3px;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.section {
+  background-color: var(--bg-card);
+  padding: 2rem;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.section:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+.section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.25rem;
+  color: var(--primary);
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.section h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 3px;
+  background-color: var(--primary);
+  border-radius: 2px;
+}
+
+.section p {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.section p:last-child {
+  margin-bottom: 0;
+}
+
+.teamImage {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.teamImage img {
+  max-width: 100%;
+  border-radius: var(--border-radius);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform var(--transition-normal);
+}
+
+.teamImage:hover img {
+  transform: scale(1.02);
+}
+
+.caption {
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.missionList {
+  margin: 1rem 0 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.missionList li {
+  margin-bottom: 0.8rem;
+  position: relative;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+}
+
+.missionList li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.emailLink,
+.inlineLink {
+  color: var(--primary);
+  font-weight: 500;
+  transition: color var(--transition-fast), border-bottom var(--transition-fast);
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+}
+
+.emailLink:hover,
+.inlineLink:hover {
+  color: var(--primary-dark);
+  border-bottom: 1px solid var(--primary-dark);
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .pageHeader h1 {
+    font-size: 2.2rem;
+  }
+  
+  .section h2 {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageHeader {
+    margin-bottom: 2rem;
+  }
+  
+  .contentContainer {
+    gap: 2rem;
+  }
+  
+  .section {
+    padding: 1.5rem;
+  }
+  
+  .section p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .staticPage {
+    padding: 1.5rem 15px 3rem;
+  }
+  
+  .pageHeader h1 {
+    font-size: 1.8rem;
+  }
+  
+  .section h2 {
+    font-size: 1.4rem;
+  }
+  
+  .teamImage {
+    margin: 1.5rem 0;
+  }
+}
