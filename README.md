@@ -42,6 +42,17 @@ git clone https://github.com/yourusername/culinary-corner.git
 cd culinary-corner
 ```
 
+## 📁 Project Structure
+
+```
+CulinaryCorner/
+├── Backend/            # Express.js server
+├── Frontend/           # Vite + React application
+├── .gitignore          # Git ignore file
+├── package.json        # Root package.json
+└── README.md           # Project documentation
+```
+
 2. Install dependencies for both frontend and backend
 ```bash
 # Install both simultaneously. Run command from root directory.
@@ -76,17 +87,6 @@ npm start
 
 # The backend will run on http://localhost:5000
 # The frontend will run on http://localhost:5173
-```
-
-## 📁 Project Structure
-
-```
-CulinaryCorner/
-├── Backend/            # Express.js server
-├── Frontend/           # Vite + React application
-├── .gitignore          # Git ignore file
-├── package.json        # Root package.json
-└── README.md           # Project documentation
 ```
 
 ## 🌟 Features
