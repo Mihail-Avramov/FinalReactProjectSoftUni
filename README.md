@@ -38,7 +38,7 @@ CulinaryCorner allows users to:
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/culinary-corner.git
+git clone https://github.com/Mihail-Avramov/FinalReactProjectSoftUni.git
 cd culinary-corner
 ```
 
