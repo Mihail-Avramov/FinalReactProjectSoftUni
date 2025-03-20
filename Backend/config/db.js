@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 // Database connection options for better reliability and performance
-// Updated to remove deprecated options
 const options = {
   serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of default 30s
   socketTimeoutMS: 45000,         // Close sockets after 45s of inactivity
@@ -25,6 +24,26 @@ const connectDB = async () => {
     mongoose.connection.on('disconnected', () => {
       console.log('MongoDB disconnected');
     });
+
+    // Почистване на изтекли blacklisted токени
+    const cleanupExpiredTokens = async () => {
+      try {
+        const BlacklistedToken = mongoose.model('BlacklistedToken');
+        const now = new Date();
+        const result = await BlacklistedToken.deleteMany({ expiresAt: { $lt: now } });
+        console.log(`Expired tokens cleaned up: ${result.deletedCount} removed`);
+      } catch (error) {
+        if (error.name !== 'MissingSchemaError') {
+          console.error(`Failed to clean up expired tokens: ${error.message}`);
+        }
+      }
+    };
+
+    // Изпълняваме почистването веднъж при стартиране
+    await cleanupExpiredTokens();
+    
+    // Настройваме периодично почистване (на всеки 24 часа)
+    setInterval(cleanupExpiredTokens, 24 * 60 * 60 * 1000);
 
     // Graceful shutdown handling
     process.on('SIGINT', async () => {

@@ -4,6 +4,7 @@ const { AppError, AuthenticationError } = require('../middleware/errorHandler');
 const config = require('../config/default');
 const errorMessages = require('../utils/errorMessages');
 const imageService = require('../services/imageService');
+const BlacklistedToken = require('../models/BlacklistedToken'); // Добавете този import
 
 const authService = {
   /**
@@ -105,6 +106,82 @@ const authService = {
     };
   },
   
+  /**
+   * Logout user by blacklisting the token
+   * @param {String} token - JWT token to blacklist
+   * @returns {Promise<Object>} Success message
+   */
+  async logoutUser(token) {
+    try {
+      // Decode token to get expiration date without verification
+      const decoded = jwt.decode(token);
+      
+      if (!decoded || !decoded.exp) {
+        throw new AppError('Invalid token format', 400);
+      }
+      
+      // Calculate expiry date
+      const expiresAt = new Date(decoded.exp * 1000);
+      
+      // Add token to blacklist
+      await BlacklistedToken.create({
+        token,
+        expiresAt
+      });
+      
+      return { message: 'Successfully logged out' };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      
+      throw new AppError('Logout failed, please try again', 500);
+    }
+  },
+  
+  /**
+   * Verify if token is valid and not blacklisted
+   * @param {String} token - JWT token to verify
+   * @returns {Promise<Object>} User data if token is valid
+   */
+  async verifyToken(token) {
+    try {
+      // Check if token is blacklisted
+      const blacklisted = await BlacklistedToken.findOne({ token });
+      if (blacklisted) {
+        throw new AuthenticationError('Token is no longer valid');
+      }
+      
+      // Verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      
+      // Get user data
+      const user = await User.findById(decoded.id);
+      
+      if (!user) {
+        throw new AuthenticationError('User not found');
+      }
+      
+      return {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        profilePicture: user.profilePicture,
+        bio: user.bio
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      
+      if (error.name === 'TokenExpiredError') {
+        throw new AuthenticationError('Token has expired');
+      }
+      
+      throw new AuthenticationError('Invalid token');
+    }
+  },
+
   /**
    * Generate JWT token
    * @param {String} userId - User ID

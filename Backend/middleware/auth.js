@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Recipe = require('../models/Recipe');
+const BlacklistedToken = require('../models/BlacklistedToken'); // Добавете този import
 const { AppError } = require('./errorHandler');
 const errorMessages = require('../utils/errorMessages');
 
@@ -18,6 +19,12 @@ exports.protect = async (req, res, next) => {
   }
 
   try {
+    // Check if token is blacklisted
+    const isBlacklisted = await BlacklistedToken.findOne({ token });
+    if (isBlacklisted) {
+      return next(new AppError(errorMessages.auth.invalidToken, 401));
+    }
+    
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
