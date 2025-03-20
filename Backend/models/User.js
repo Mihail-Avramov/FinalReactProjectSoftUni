@@ -47,6 +47,12 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Recipe'
   }],
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  verificationToken: String,
+  verificationTokenExpire: Date,
   resetPasswordToken: String,
   resetPasswordExpire: Date,
   createdAt: {
@@ -93,6 +99,23 @@ UserSchema.methods.generatePasswordResetToken = function() {
   
   // Връщаме оригиналния токен (не хешираната версия)
   return resetToken;
+};
+
+// Добавяне на метод за генериране на верификационен токен
+UserSchema.methods.generateVerificationToken = function() {
+  // Генериране на случаен токен
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  
+  // Хеширане на токена за съхранение в базата данни
+  this.verificationToken = crypto
+    .createHash('sha256')
+    .update(verificationToken)
+    .digest('hex');
+    
+  // Токенът ще изтече след 24 часа
+  this.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000;
+  
+  return verificationToken;
 };
 
 module.exports = mongoose.model('User', UserSchema);

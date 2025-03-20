@@ -1,25 +1,61 @@
 const authService = require('../services/authService');
 
 /**
- * Register a new user
+ * Register a new user with email verification
  */
 exports.register = async (req, res, next) => {
   try {
     const { email, password, username, firstName, lastName } = req.body;
     
-    // Изпращаме целия req.file, без да качваме снимката тук
     const result = await authService.registerUser({
       email, 
       password, 
       username, 
       firstName, 
       lastName,
-      profileImage: req.file // Изпращаме raw файла, а не URL
+      profileImage: req.file
     });
     
     res.status(201).json({
       success: true,
-      data: result
+      message: result.message,
+      warning: result.warning
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Verify email address
+ */
+exports.verifyEmail = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    
+    const result = await authService.verifyEmail(token);
+    
+    res.status(200).json({
+      success: true,
+      message: result.message
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Resend verification email
+ */
+exports.resendVerification = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    
+    const result = await authService.resendVerificationEmail(email);
+    
+    res.status(200).json({
+      success: true,
+      message: result.message
     });
   } catch (error) {
     next(error);

@@ -216,6 +216,18 @@ exports.resetPasswordValidation = [
   validate
 ];
 
+/**
+ * Email validation rules
+ */
+exports.emailValidation = [
+  body('email')
+    .exists().withMessage(errorMessages.validation.requiredField('Email'))
+    .if(body('email').exists())
+    .isEmail().withMessage(errorMessages.validation.invalidEmail),
+  
+  validate
+];
+
 module.exports = {
   registerValidation: exports.registerValidation,
   loginValidation: exports.loginValidation,
@@ -225,5 +237,6 @@ module.exports = {
   profileUpdateValidation: exports.profileUpdateValidation,
   passwordChangeValidation: exports.passwordChangeValidation,
   forgotPasswordValidation: exports.forgotPasswordValidation,
-  resetPasswordValidation: exports.resetPasswordValidation
+  resetPasswordValidation: exports.resetPasswordValidation,
+  emailValidation: exports.emailValidation
 };

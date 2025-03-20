@@ -10,9 +10,9 @@ const crypto = require('crypto');
 
 const authService = {
   /**
-   * Register a new user
+   * Register a new user with email verification
    * @param {Object} userData - User registration data
-   * @returns {Object} User data and token
+   * @returns {Object} Success message
    */
   async registerUser(userData) {
     const { email, username, profileImage, ...otherData } = userData;
@@ -45,34 +45,47 @@ const authService = {
       }
     }
     
-    // Create new user with profile picture
+    // Create user with verification token
     const user = await User.create({
       ...otherData,
       email,
       username,
-      profilePicture
+      profilePicture,
+      isVerified: false
     });
     
-    // Generate JWT token
-    const token = this.generateToken(user._id);
+    // Generate verification token
+    const verificationToken = user.generateVerificationToken();
+    await user.save({ validateBeforeSave: false });
     
-    // Return user data and token
-    return {
-      user: {
-        _id: user._id,
+    // Create verification URL
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const verificationUrl = `${frontendUrl}/verify-email/${verificationToken}`;
+    
+    try {
+      // Send verification email
+      await emailService.sendVerificationEmail({
         email: user.email,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        profilePicture: user.profilePicture,
-        bio: user.bio
-      },
-      token
-    };
+        name: `${user.firstName} ${user.lastName}`,
+        verificationUrl
+      });
+      
+      return { 
+        message: 'Registration successful! Please check your email to verify your account.' 
+      };
+    } catch (error) {
+      // If email fails, still create the user but log the error
+      console.error('Failed to send verification email:', error);
+      
+      return {
+        message: 'Registration successful! Please check your email to verify your account.',
+        warning: 'Verification email could not be sent. Please contact support.'
+      };
+    }
   },
   
   /**
-   * Login user
+   * Login user with verification check
    * @param {String} email - User email
    * @param {String} password - User password
    * @returns {Promise<Object>} User data and token
@@ -91,6 +104,11 @@ const authService = {
       throw new AuthenticationError(errorMessages.auth.invalidCredentials);
     }
     
+    // Check if user is verified
+    if (!user.isVerified) {
+      throw new AuthenticationError('Please verify your email address before logging in.');
+    }
+    
     // Generate JWT token
     const token = this.generateToken(user._id);
     
@@ -106,6 +124,84 @@ const authService = {
       },
       token
     };
+  },
+  
+  /**
+   * Verify user email with token
+   * @param {String} token - Verification token
+   * @returns {Promise<Object>} Success message
+   */
+  async verifyEmail(token) {
+    // Hash the token to compare with stored hash
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+    
+    // Find user with valid token
+    const user = await User.findOne({
+      verificationToken: hashedToken,
+      verificationTokenExpire: { $gt: Date.now() }
+    });
+    
+    if (!user) {
+      throw new AppError('Invalid or expired verification token', 400);
+    }
+    
+    // Update user verification status
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpire = undefined;
+    
+    await user.save({ validateBeforeSave: false });
+    
+    return { message: 'Email verified successfully! You can now log in.' };
+  },
+  
+  /**
+   * Resend verification email
+   * @param {String} email - User email
+   * @returns {Promise<Object>} Success message
+   */
+  async resendVerificationEmail(email) {
+    // Find user by email
+    const user = await User.findOne({ email });
+    
+    // We return the same response even if user doesn't exist, for security
+    if (!user) {
+      return { message: 'If that email exists, we have sent a verification link' };
+    }
+
+    if (user.isVerified === undefined) {
+      user.isVerified = false;
+    }
+    
+    // Don't resend if already verified
+    if (user.isVerified) {
+      return { message: 'This email is already verified' };
+    }
+    
+    // Generate new verification token
+    const verificationToken = user.generateVerificationToken();
+    await user.save({ validateBeforeSave: false });
+    
+    // Create verification URL
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const verificationUrl = `${frontendUrl}/verify-email/${verificationToken}`;
+    
+    try {
+      // Send verification email
+      await emailService.sendVerificationEmail({
+        email: user.email,
+        name: `${user.firstName} ${user.lastName}`,
+        verificationUrl
+      });
+      
+      return { message: 'If that email exists, we have sent a verification link' };
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+      throw new AppError('Failed to send verification email', 500);
+    }
   },
   
   /**

@@ -5,7 +5,8 @@ const {
   registerValidation, 
   loginValidation, 
   forgotPasswordValidation, 
-  resetPasswordValidation 
+  resetPasswordValidation,
+  emailValidation
 } = require('../utils/validation');
 const { optionalImageUpload } = require('../middleware/upload');
 const { protect } = require('../middleware/auth');
@@ -13,6 +14,8 @@ const { protect } = require('../middleware/auth');
 // Public routes
 router.post('/register', optionalImageUpload, registerValidation, authController.register);
 router.post('/login', loginValidation, authController.login);
+router.get('/verify-email/:token', authController.verifyEmail);
+router.post('/resend-verification', emailValidation, authController.resendVerification);
 router.post('/forgot-password', forgotPasswordValidation, authController.forgotPassword);
 router.post('/reset-password/:token', resetPasswordValidation, authController.resetPassword);
 
