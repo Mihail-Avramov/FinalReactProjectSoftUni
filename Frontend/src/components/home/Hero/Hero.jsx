@@ -1,8 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './Hero.module.css';
-import configService from '../../../services/configService';
-import useApiData from '../../../hooks/useApiData';
+import { useConfig } from '../../../hooks/api/useConfig';
 import { Skeleton } from '../../ui/Skeleton/Skeleton';
 
 function Hero({ trendingRecipe }) {
@@ -10,17 +9,8 @@ function Hero({ trendingRecipe }) {
   const [heroImage, setHeroImage] = useState('/images/default-hero.jpg');
   const navigate = useNavigate();
   
-  // Мемоизираме функцията за извличане на конфигурация
-  const fetchConfig = useCallback((signal) => {
-    return configService.getConfig(signal);
-  }, []);
-  
-  // Използваме хука useApiData за конфигурацията
-  const { data: config, loading } = useApiData(
-    fetchConfig, 
-    [],
-    'Не успяхме да заредим конфигурацията.'
-  );
+  // Директно използваме специализирания hook за конфигурация
+  const { data: config, loading } = useConfig();
   
   // Изчисляваме производна стойност isLoaded от loading
   const isLoaded = !loading;

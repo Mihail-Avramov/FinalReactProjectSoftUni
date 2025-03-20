@@ -1,27 +1,13 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import Hero from '../../components/home/Hero';
 import FeaturedRecipes from '../../components/home/FeaturedRecipes';
-import recipeService from '../../services/recipeService';
-import useApiData from '../../hooks/useApiData';
+import { useRecipes } from '../../hooks/api/useRecipes';
 import styles from './Home.module.css';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 function Home() {
-  // Създаваме мемоизирана функция за извличане на данни
-  const fetchTrendingRecipes = useCallback((signal) => {
-    return recipeService.getTrendingRecipes(6, signal);
-  }, []);
-  
-  // Използваме хука useApiData
-  const { 
-    data: trendingRecipes, 
-    loading, 
-    error 
-  } = useApiData(
-    fetchTrendingRecipes,
-    [],
-    'Не успяхме да заредим рецептите. Моля, опитайте по-късно.'
-  );
+  const { useTrending } = useRecipes();
+  const { data: trendingRecipes, loading, error } = useTrending(6);
 
   if (loading && (!trendingRecipes || trendingRecipes.length === 0)) {
     return <LoadingSpinner />;

@@ -47,8 +47,8 @@ function useApiData(fetchFunction, dependencies = [], errorMessage) {
       isMounted = false;
       abortController.abort();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...dependencies]);
+
+  }, [...dependencies, errorMessage]);
   
   return { data, loading, error };
 }
