@@ -13,8 +13,36 @@ const app = express();
 
 // Security middleware
 app.set('trust proxy', 1);
-app.use(helmet()); // Add secure headers
-app.use(cors());
+
+// Използваме helmet с настройки, които не блокират CORS
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: false,
+  })
+);
+
+// Подробна CORS конфигурация
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',
+    process.env.FRONTEND_URL,
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With', 
+    'Accept', 
+    'Origin'
+  ],
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  maxAge: 3600 // Кеширане на preflight заявките за 1 час
+};
+
+app.use(cors(corsOptions));
 
 // Request body parsing
 app.use(express.json({ limit: '10mb' })); // Limit JSON body size
