@@ -12,7 +12,7 @@ const { errorHandler } = require('./middleware/errorHandler');
 const app = express();
 
 // Security middleware
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 app.use(helmet()); // Add secure headers
 app.use(cors());
 

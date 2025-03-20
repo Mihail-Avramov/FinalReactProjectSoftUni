@@ -192,6 +192,30 @@ exports.passwordChangeValidation = [
   validate
 ];
 
+/**
+ * Forgot password validation rules
+ */
+exports.forgotPasswordValidation = [
+  body('email')
+    .exists().withMessage(errorMessages.validation.requiredField('Email'))
+    .if(body('email').exists())
+    .isEmail().withMessage(errorMessages.validation.invalidEmail),
+  
+  validate
+];
+
+/**
+ * Reset password validation rules
+ */
+exports.resetPasswordValidation = [
+  body('password')
+    .exists().withMessage(errorMessages.validation.requiredField('Password'))
+    .if(body('password').exists())
+    .isLength({ min: 6 }).withMessage(errorMessages.validation.weakPassword),
+  
+  validate
+];
+
 module.exports = {
   registerValidation: exports.registerValidation,
   loginValidation: exports.loginValidation,
@@ -199,5 +223,7 @@ module.exports = {
   commentValidation,
   idParamValidation,
   profileUpdateValidation: exports.profileUpdateValidation,
-  passwordChangeValidation: exports.passwordChangeValidation
+  passwordChangeValidation: exports.passwordChangeValidation,
+  forgotPasswordValidation: exports.forgotPasswordValidation,
+  resetPasswordValidation: exports.resetPasswordValidation
 };

@@ -4,7 +4,9 @@ const { AppError, AuthenticationError } = require('../middleware/errorHandler');
 const config = require('../config/default');
 const errorMessages = require('../utils/errorMessages');
 const imageService = require('../services/imageService');
-const BlacklistedToken = require('../models/BlacklistedToken'); // Добавете този import
+const emailService = require('./emailService');
+const BlacklistedToken = require('../models/BlacklistedToken');
+const crypto = require('crypto');
 
 const authService = {
   /**
@@ -193,6 +195,92 @@ const authService = {
       process.env.JWT_SECRET,
       { expiresIn: config.auth.jwtExpiry }
     );
+  },
+
+  /**
+   * Handle forgot password process
+   * @param {String} email - User email
+   * @returns {Promise<Object>} Success message
+   */
+  async forgotPassword(email) {
+    try {
+      const user = await User.findOne({ email });
+      
+      // Дори ако потребителят не съществува, връщаме същия отговор
+      // за избягване на разкриване на информация за валидни имейли
+      if (!user) {
+        return { message: 'If that email exists, we have sent a password reset link' };
+      }
+      
+      // Генерираме токен за ресет
+      const resetToken = user.generatePasswordResetToken();
+      await user.save({ validateBeforeSave: false });
+      
+      // Създаваме URL за ресет
+      // За продукция, сменете URL с адрес на вашия frontend
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
+      
+      // Изпращаме имейл
+      await emailService.sendPasswordResetEmail({
+        email: user.email,
+        subject: 'Заявка за възстановяване на парола',
+        resetUrl
+      });
+      
+      return { message: 'If that email exists, we have sent a password reset link' };
+    } catch (error) {
+      // Ако възникне грешка, изчистваме токена за да предотвратим проблеми
+      if (email) {
+        const user = await User.findOne({ email });
+        if (user) {
+          user.resetPasswordToken = undefined;
+          user.resetPasswordExpire = undefined;
+          await user.save({ validateBeforeSave: false });
+        }
+      }
+      
+      console.error('Password reset error:', error);
+      throw new AppError('Could not send password reset email. Please try again later.', 500);
+    }
+  },
+  
+  /**
+   * Reset password with token
+   * @param {String} token - Reset token
+   * @param {String} password - New password
+   * @returns {Promise<Object>} Success message
+   */
+  async resetPassword(token, password) {
+    try {
+      // Хешираме токена за сравнение със съхранения хеш
+      const resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(token)
+        .digest('hex');
+      
+      // Намираме потребител с валиден токен, който не е изтекъл
+      const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() }
+      });
+      
+      if (!user) {
+        throw new AppError('Invalid or expired password reset token', 400);
+      }
+      
+      // Задаваме новата парола и изчистваме токен полетата
+      user.password = password;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+      
+      await user.save();
+      
+      return { message: 'Password has been reset successfully' };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError('Could not reset password. Please try again.', 500);
+    }
   }
 };
 

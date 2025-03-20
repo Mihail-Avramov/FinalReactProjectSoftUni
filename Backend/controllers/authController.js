@@ -88,3 +88,42 @@ exports.verifyToken = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Handle forgot password request
+ */
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    
+    // Извикваме сървиса за забравена парола
+    const result = await authService.forgotPassword(email);
+    
+    res.status(200).json({
+      success: true,
+      message: result.message
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Reset password with token
+ */
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+    
+    // Извикваме сървиса за ресет на парола
+    const result = await authService.resetPassword(token, password);
+    
+    res.status(200).json({
+      success: true,
+      message: result.message
+    });
+  } catch (error) {
+    next(error);
+  }
+};

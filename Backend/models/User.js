@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const config = require('../config/default');
+const crypto = require('crypto'); // Добавете този import
 
 const UserSchema = new mongoose.Schema({
   email: {
@@ -46,6 +47,8 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Recipe'
   }],
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
   createdAt: {
     type: Date,
     default: Date.now
@@ -72,6 +75,24 @@ UserSchema.pre('save', async function(next) {
 // Method to compare passwords
 UserSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
+};
+
+// Добавете метод за генериране на токен за ресет на паролата
+UserSchema.methods.generatePasswordResetToken = function() {
+  // Генерираме случаен token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  
+  // Хешираме токена преди съхранение в базата данни (за сигурност)
+  this.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+    
+  // Токенът ще изтече след 30 минути
+  this.resetPasswordExpire = Date.now() + 30 * 60 * 1000;
+  
+  // Връщаме оригиналния токен (не хешираната версия)
+  return resetToken;
 };
 
 module.exports = mongoose.model('User', UserSchema);
