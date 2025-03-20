@@ -80,17 +80,30 @@ const recipeValidation = [
     .notEmpty().withMessage(errorMessages.recipe.descriptionRequired)
     .isLength({ max: config.recipe.maxDescriptionLength })
     .withMessage(errorMessages.recipe.descriptionTooLong(config.recipe.maxDescriptionLength)),
-  body('ingredients')
-    .isArray({ min: 1 }).withMessage(errorMessages.recipe.ingredientsRequired)
-    .custom(ingredients => {
+    body('ingredients')
+    .exists().withMessage(errorMessages.recipe.ingredientsRequired)
+    .custom((ingredients) => {
+      if (!Array.isArray(ingredients)) {
+        throw new Error(errorMessages.recipe.ingredientsRequired);
+      }
+      if (ingredients.length < 1) {
+        throw new Error(errorMessages.recipe.ingredientsRequired);
+      }
       if (ingredients.length > config.recipe.maxIngredientsCount) {
         throw new Error(errorMessages.recipe.tooManyIngredients(config.recipe.maxIngredientsCount));
       }
       return true;
     }),
+  
   body('instructions')
-    .isArray({ min: 1 }).withMessage(errorMessages.recipe.instructionsRequired)
-    .custom(instructions => {
+    .exists().withMessage(errorMessages.recipe.instructionsRequired)
+    .custom((instructions) => {
+      if (!Array.isArray(instructions)) {
+        throw new Error(errorMessages.recipe.instructionsRequired);
+      }
+      if (instructions.length < 1) {
+        throw new Error(errorMessages.recipe.instructionsRequired);
+      }
       if (instructions.length > config.recipe.maxInstructionsCount) {
         throw new Error(errorMessages.recipe.tooManyInstructions(config.recipe.maxInstructionsCount));
       }
