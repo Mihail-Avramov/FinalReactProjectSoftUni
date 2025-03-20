@@ -1,14 +1,27 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/api/useAuth';
+import Button from '../common/Button';
 import styles from './Header.module.css';
+import defaultAvatar from '/images/default-avatar.webp'; // Импортиране на изображението по подразбиране
 
 function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
-
+  
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
+  
+  // Съкратено име на потребителя за показване
+  const displayName = user ? (user.firstName || user.username || user.email.split('@')[0]) : '';
+  
   return (
     <header className={styles.header}>
       <div className={`container ${styles.headerContainer}`}>
@@ -32,12 +45,42 @@ function Header() {
             <li><Link to="/recipes">Рецепти</Link></li>
             <li><Link to="/categories">Категории</Link></li>
             <li><Link to="/about">За нас</Link></li>
+            {isAuthenticated && (
+              <li><Link to="/my-recipes">Моите рецепти</Link></li>
+            )}
           </ul>
         </nav>
         
         <div className={styles.authNav}>
-          <Link to="/login" className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm}`}>Вход</Link>
-          <Link to="/register" className={`${styles.btn} ${styles.btnPrimary} ${styles.btnSm}`}>Регистрация</Link>
+          {isAuthenticated ? (
+            <div className={styles.userSection}>
+              <div className={styles.userProfile}>
+                <img 
+                  src={user?.profilePicture || defaultAvatar}
+                  alt={`${displayName}'s avatar`}
+                  className={styles.userAvatar}
+                  onError={(e) => {
+                    // Ако възникне грешка при зареждане на снимката (например невалиден URL),
+                    // използваме изображението по подразбиране
+                    e.target.onerror = null; // Предотвратяваме безкрайни рекурсии
+                    e.target.src = defaultAvatar;
+                  }} 
+                />
+                <span className={styles.userName}>{displayName}</span>
+              </div>
+              <Button 
+                onClick={handleLogout} 
+                className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm}`}
+              >
+                Изход
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Link to="/login" className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm}`}>Вход</Link>
+              <Link to="/register" className={`${styles.btn} ${styles.btnPrimary} ${styles.btnSm}`}>Регистрация</Link>
+            </>
+          )}
         </div>
       </div>
     </header>

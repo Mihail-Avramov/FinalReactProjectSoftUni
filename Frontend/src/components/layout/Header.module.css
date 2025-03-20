@@ -205,3 +205,56 @@
     gap: 0.5rem;
   }
 }
+
+/* Добавете към съществуващия Header.module.css файл */
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userAvatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary);
+}
+
+.userAvatarPlaceholder {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border: 2px solid var(--primary);
+}
+
+.userName {
+  font-weight: 500;
+  color: var(--text-color);
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Медиа заявки за отзивчивост */
+@media (max-width: 768px) {
+  .userSection {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
