@@ -1,0 +1,387 @@
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.auth-form .form-group:last-of-type {
+  margin-bottom: 0;
+}
+
+.auth-button {
+  margin-top: 0.5rem;
+  height: 48px;
+  width: 100%;
+  font-weight: 600;
+  font-family: var(--font-heading);
+}
+
+.profile-image-upload {
+  margin: 0.5rem 0;
+}
+
+/* Разделител с текст "или" */
+.auth-divider {
+  position: relative;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-color);
+}
+
+.auth-divider::before {
+  margin-right: 0.75rem;
+}
+
+.auth-divider::after {
+  margin-left: 0.75rem;
+}
+
+/* Социални бутони */
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.btn-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.btn-social:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow);
+}
+
+.btn-social i {
+  font-size: 1.25rem;
+}
+
+.btn-facebook i {
+  color: #1877f2;
+}
+
+.btn-google i {
+  color: #ea4335;
+}
+
+.password-requirements {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.password-requirements ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+
+.password-requirements li {
+  margin-bottom: 0.25rem;
+}
+
+.form-description {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 576px) {
+  .auth-form {
+    gap: 1rem;
+  }
+  
+  .auth-button {
+    height: 44px;
+  }
+}
+
+/* Добавете това към AuthForms.css */
+
+.password-strength-indicator {
+  margin: -0.5rem 0 1rem;
+  font-size: 0.85rem;
+}
+
+.strength-bars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 0.25rem;
+}
+
+.strength-bar {
+  height: 4px;
+  flex: 1;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  transition: background-color 0.3s ease;
+}
+
+.strength-bar.very-weak, .very-weak {
+  background-color: #ff4d4d;
+  color: #ff4d4d;
+}
+
+.strength-bar.weak, .weak {
+  background-color: #ffa64d;
+  color: #ffa64d;
+}
+
+.strength-bar.medium, .medium {
+  background-color: #ffcc00;
+  color: #ffcc00;
+}
+
+.strength-bar.strong, .strong {
+  background-color: #6cd924;
+  color: #6cd924;
+}
+
+.strength-bar.very-strong, .very-strong {
+  background-color: #2cd25e;
+  color: #2cd25e;
+}
+
+.strength-text {
+  display: flex;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.strength-text span {
+  font-weight: 600;
+}
+
+.strength-feedback {
+  margin-left: 0.5rem;
+  color: var(--text-muted);
+  font-weight: normal;
+}
+
+/* Добавете тези стилове към FormInput.css */
+.form-control.is-valid {
+  border-color: #28a745;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.6rem) center;
+  background-size: calc(0.75em + 0.4rem) calc(0.75em + 0.4rem);
+}
+
+.form-control.is-invalid {
+  border-color: var(--primary);
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='0 0 12 12'%3e%3cpath d='M6.5 11.5a.5.5 0 0 1-1 0V6.707L1.354 4.854a.5.5 0 1 1 .708-.708L6 8.207l4.146-4.147a.5.5 0 0 1 .708.708L6.707 6.707v4.793z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.6rem) center;
+  background-size: calc(0.75em + 0.4rem) calc(0.75em + 0.4rem);
+}
+
+.validation-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0.75rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.valid-icon {
+  color: #28a745;
+}
+
+.error-icon {
+  color: var(--primary);
+}
+
+.input-with-icon .form-control {
+  padding-right: 2.5rem;
+}
+
+.input-with-icon .validation-icon {
+  right: 2.25rem;
+}
+
+/* Добавете тези стилове към съществуващия CSS файл */
+
+/* Форма в процес на изпращане */
+.form-submitting {
+  position: relative;
+  pointer-events: none;
+}
+
+/* Overlay за блокиране на формата по време на изпращане */
+.form-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(2px);
+}
+
+/* Стилове за прогрес индикатора */
+.registration-progress {
+  position: relative;
+  z-index: 20;
+  background-color: var(--bg-card);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.progress-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--primary);
+}
+
+.progress-icon .fa-check-circle {
+  color: var(--secondary);
+}
+
+.progress-message {
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.progress-bar-container {
+  height: 4px;
+  background-color: var(--bg-secondary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, var(--primary), var(--primary-dark));
+  border-radius: 2px;
+  transition: width 0.4s ease-in-out;
+}
+
+/* Анимация за спин икони */
+.fa-spin {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Стилове за тъмен режим */
+@media (prefers-color-scheme: dark) {
+  .form-overlay {
+    background-color: rgba(25, 25, 25, 0.7);
+  }
+}
+
+/* Добавете тези опростени стилове */
+
+.registration-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.simple-modal-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  width: 90%;
+}
+
+.spinner-container {
+  margin-bottom: 1rem;
+}
+
+.spinner {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--primary);
+  animation: spin 1s linear infinite;
+}
+
+.spinner-message {
+  font-size: 1rem;
+  color: #333;
+  margin: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Стил за тъмен режим */
+@media (prefers-color-scheme: dark) {
+  .simple-modal-content {
+    background-color: #2a2a2a;
+  }
+  
+  .spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--primary);
+  }
+  
+  .spinner-message {
+    color: #e0e0e0;
+  }
+}

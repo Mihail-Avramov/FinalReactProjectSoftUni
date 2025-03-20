@@ -4,17 +4,26 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
-// Интерцептор за добавяне на токен
+// Интерцептор за добавяне на токен и правилен Content-Type
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
+  // Проверяваме дали данните са FormData и премахваме Content-Type,
+  // за да позволим на axios да го зададе автоматично със съответния boundary
+  if (config.data instanceof FormData) {
+    // Премахваме изрично зададен Content-Type,
+    // за да може axios да зададе автоматично правилния multipart/form-data с boundary
+    delete config.headers['Content-Type'];
+  } else {
+    // За всички останали заявки използваме JSON
+    config.headers['Content-Type'] = 'application/json';
+  }
+  
   return config;
 });
 
