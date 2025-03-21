@@ -40,6 +40,22 @@ const verifyTokenCallback = useCallback(
     },
     []
   );
+
+  const updateUserInfo = useCallback((updatedUserData) => {
+    // Не презаписваме целия обект, а обновяваме само подадените полета
+    setUser(prevUser => {
+      if (!prevUser) return updatedUserData;
+      
+      const updatedUser = { ...prevUser, ...updatedUserData };
+      
+      // Обновяваме и в localStorage
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      return updatedUser;
+    });
+    
+    return true;
+  }, []);
   
   // Използваме useApiData за проверка на токена
   const { 
@@ -227,7 +243,8 @@ const verifyTokenCallback = useCallback(
     forgotPassword,
     resetPassword,
     verifyEmail,
-    resendVerification
+    resendVerification,
+    updateUserInfo
   };
 }
 

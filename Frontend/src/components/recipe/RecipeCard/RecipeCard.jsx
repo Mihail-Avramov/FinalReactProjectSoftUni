@@ -105,15 +105,17 @@ function RecipeCard({ recipe }) {
         
         <div className={styles.recipeFooter}>
           <div className={styles.recipeAuthor}>
-            <img 
-              src={recipe.author?.profilePicture || '/images/default-avatar.png'} 
-              alt={recipe.author?.username} 
-              className={styles.authorAvatar}
-              onError={(e) => {
-                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjEwMCIgZmlsbD0iI2UwZTBlMCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjgwIiByPSI0MCIgZmlsbD0iI2JkYmRiZCIvPjxwYXRoIGQ9Ik0zMCwxODAgQzMwLDEyMCA2NSw0MCAxMDAsNDAgQzEzNSw0MCAxNzAsMTIwIDE3MCwxODAiIGZpbGw9IiNiZGJkYmQiLz48L3N2Zz4=';
-              }}
-            />
-            <span className={styles.authorName}>{recipe.author?.username || 'Анонимен'}</span>
+            <Link to={`/profile/${recipe.author?._id}`} className={styles.authorLink} title="Вижте профила на автора">
+              <img 
+                src={recipe.author?.profilePicture || '/images/default-avatar.webp'} 
+                alt={recipe.author?.username} 
+                className={styles.authorAvatar}
+                onError={(e) => {
+                  e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjEwMCIgZmlsbD0iI2UwZTBlMCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjgwIiByPSI0MCIgZmlsbD0iI2JkYmRiZCIvPjxwYXRoIGQ9Ik0zMCwxODAgQzMwLDEyMCA2NSw0MCAxMDAsNDAgQzEzNSw0MCAxNzAsMTIwIDE3MCwxODAiIGZpbGw9IiNiZGJkYmQiLz48L3N2Zz4=';
+                }}
+              />
+              <span className={styles.authorName}>{recipe.author?.username || 'Анонимен'}</span>
+            </Link>
           </div>
           
           <div className={styles.recipeActions}>

@@ -397,7 +397,7 @@
 
 .viewButton:hover {
   background-color: var(--primary-dark);
-  color: var(--bg-primary);
+  color: var(--text-primary);
   border-color: var(--primary);
   box-shadow: 0 5px 12px rgba(var(--primary-rgb, 30, 136, 229), 0.4);
   transform: translateY(-1px);
@@ -453,4 +453,18 @@
   .authorName {
     max-width: 100px;
   }
+}
+
+/* Добавете в RecipeCard.module.css */
+.authorLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s;
+  gap: 4px;
+}
+
+.authorLink:hover {
+  opacity: 0.8;
 }

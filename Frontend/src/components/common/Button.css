@@ -46,6 +46,7 @@
 .btn-primary:hover, .btn-primary:focus {
   background-color: var(--primary-dark);
   border-color: var(--primary-dark);
+  color: var(--text-primary);
   box-shadow: 0 5px 15px rgba(var(--primary-rgb), 0.3);
 }
 

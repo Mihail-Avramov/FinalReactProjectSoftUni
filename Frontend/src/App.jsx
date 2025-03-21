@@ -21,8 +21,13 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 
 // Потребителски страници
-//import ProfilePage from './pages/user/ProfilePage';
+import ProfilePage from './pages/user/ProfilePage';
+import ProfileEditPage from './pages/user/ProfileEditPage';
+//import AccountSettingsPage from './pages/user/AccountSettingsPage';
+import PasswordChangePage from './pages/user/PasswordChangePage';
+import DeleteAccountPage from './pages/user/DeleteAccountPage';
 //import MyRecipesPage from './pages/user/MyRecipesPage';
+//import FavoritesPage from './pages/user/FavoritesPage';
 
 function App() {
   return (
@@ -53,15 +58,43 @@ function App() {
               <ForgotPasswordPage />
             </RequireGuest>
           } />
-          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+          <Route path="/reset-password/:token" element={
+            <RequireGuest>
+              <ResetPasswordPage />
+            </RequireGuest>
+            } />
+          <Route path="/verify-email/:token" element={
+            <RequireGuest>
+              <VerifyEmailPage />
+            </RequireGuest>
+            } />
           
-          {/* Път за верификация на имейл достъпен за всички */}
-          <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
-          
-          {/* Защитени маршрути само за влезли потребители 
+          {/* Защитени маршрути само за влезли потребители */}
           <Route path="/profile" element={
             <RequireAuth>
               <ProfilePage />
+            </RequireAuth>
+          } />
+          <Route path="/profile/edit" element={
+            <RequireAuth>
+              <ProfileEditPage />
+            </RequireAuth>
+          } />
+          <Route path="/account/change-password" element={
+            <RequireAuth>
+              <PasswordChangePage />
+            </RequireAuth>
+          } />
+          <Route path="/account/delete" element={
+            <RequireAuth>
+              <DeleteAccountPage />
+            </RequireAuth>
+          } />
+
+          {/* Защитени маршрути само за влезли потребители 
+          <Route path="/account/settings" element={
+            <RequireAuth>
+              <AccountSettingsPage />
             </RequireAuth>
           } />
           <Route path="/my-recipes" element={
@@ -69,7 +102,15 @@ function App() {
               <MyRecipesPage />
             </RequireAuth>
           } />
-          */}
+          <Route path="/favorites" element={
+            <RequireAuth>
+              <FavoritesPage />
+            </RequireAuth>
+          } />*/}
+          
+          {/* Маршрути за профил - публично достъпен профил с id параметър */}
+          <Route path="/profile/:userId" element={<ProfilePage />} />
+          
           {/* Страница за грешка */}
           <Route path="*" element={<NotFound />} />
         </Routes>

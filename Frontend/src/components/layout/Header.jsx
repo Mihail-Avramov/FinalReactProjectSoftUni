@@ -52,35 +52,35 @@ function Header() {
         </nav>
         
         <div className={styles.authNav}>
-          {isAuthenticated ? (
-            <div className={styles.userSection}>
+        {isAuthenticated ? (
+          <div className={styles.userSection}>
+            <Link to="/profile" className={styles.userProfileLink} title="Вижте профила си">
               <div className={styles.userProfile}>
                 <img 
                   src={user?.profilePicture || defaultAvatar}
                   alt={`${displayName}'s avatar`}
                   className={styles.userAvatar}
                   onError={(e) => {
-                    // Ако възникне грешка при зареждане на снимката (например невалиден URL),
-                    // използваме изображението по подразбиране
-                    e.target.onerror = null; // Предотвратяваме безкрайни рекурсии
+                    e.target.onerror = null;
                     e.target.src = defaultAvatar;
                   }} 
                 />
                 <span className={styles.userName}>{displayName}</span>
               </div>
-              <Button 
-                onClick={handleLogout} 
-                className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm}`}
-              >
-                Изход
-              </Button>
-            </div>
-          ) : (
-            <>
-              <Link to="/login" className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm}`}>Вход</Link>
-              <Link to="/register" className={`${styles.btn} ${styles.btnPrimary} ${styles.btnSm}`}>Регистрация</Link>
-            </>
-          )}
+            </Link>
+            <Button 
+              onClick={handleLogout} 
+              className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm}`}
+            >
+              Изход
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Link to="/login" className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm}`}>Вход</Link>
+            <Link to="/register" className={`${styles.btn} ${styles.btnPrimary} ${styles.btnSm}`}>Регистрация</Link>
+          </>
+        )}
         </div>
       </div>
     </header>

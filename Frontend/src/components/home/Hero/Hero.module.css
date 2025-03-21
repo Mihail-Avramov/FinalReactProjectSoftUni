@@ -140,7 +140,8 @@
 }
 
 .searchButton {
-  background-color: var(--primary, #1e88e5);
+  background-color: var(--primary);
+  border-color: var(--primary);
   border: none;
   color: white;
   padding: 15px 30px;
@@ -154,7 +155,10 @@
 }
 
 .searchButton:hover {
-  background-color: var(--primary-dark, #1565c0);
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: var(--text-primary);
+  box-shadow: 0 5px 15px rgba(var(--primary-rgb), 0.3);
 }
 
 /* Популярни тагове */

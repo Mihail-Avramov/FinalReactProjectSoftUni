@@ -43,7 +43,7 @@ const FormInput = ({
         </label>
       )}
       
-      <div className={type === 'password' ? 'input-with-icon' : ''}>
+      <div className={`${type === 'password' || status === 'valid' || error ? 'input-with-icon' : ''}`}>
         <input
           id={id}
           type={actualType}

@@ -86,9 +86,46 @@
   color: var(--primary);
 }
 
+/* Добавете тези стилове за иконите за валидация */
+.validation-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 1rem;
+  transition: all var(--transition-fast);
+  z-index: 2;
+}
+
+.validation-icon i {
+  font-size: 1rem; /* Фиксиран размер за всички икони */
+  line-height: 1;
+  vertical-align: middle;
+  display: inline-block; /* По-добро позициониране */
+}
+
+.input-with-icon .validation-icon {
+  right: 2.5rem;
+}
+
+.valid-icon {
+  color: var(--success, #28a745);
+}
+
+.error-icon {
+  color: var(--primary);
+}
+
+.error-icon i {
+  opacity: 0.85;
+}
+
+/* Добавете hover ефекти, ако желаете */
+.validation-icon:hover {
+  opacity: 0.8;
+}
+
 @media (max-width: 576px) {
-  .form-control {
-    padding: 0.65rem 0.85rem;
-    font-size: 0.95rem;
+  .validation-icon i {
+    font-size: 0.9rem;
   }
 }

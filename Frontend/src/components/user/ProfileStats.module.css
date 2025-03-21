@@ -1,0 +1,70 @@
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--box-shadow);
+  text-align: center;
+  animation: fadeIn 0.6s ease-in-out, slideUp 0.6s ease-in-out;
+}
+
+.item {
+  padding: 0.75rem;
+  border-radius: var(--border-radius-sm);
+  transition: transform var(--transition-normal), background-color var(--transition-normal);
+  cursor: default;
+}
+
+.item:hover {
+  background-color: rgba(var(--primary-rgb), 0.05);
+  transform: translateY(-5px);
+}
+
+.value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+  font-family: var(--font-heading);
+}
+
+.label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); }
+  to { transform: translateY(0); }
+}
+
+/* Медиа запити за отзивчив дизайн */
+@media (max-width: 768px) {
+  .stats {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 1rem;
+  }
+  
+  .value {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .item {
+    padding: 0.5rem;
+  }
+}
