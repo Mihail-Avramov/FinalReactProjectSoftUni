@@ -1,10 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../../components/common/SEO';
 import styles from './NotFound.module.css';
 
 function NotFound() {
   return (
     <div className={styles.notFoundContainer}>
+      <SEO
+        title="Страницата не е намерена"
+        description="Страницата, която търсите, не е намерена. Върнете се към началната страница или разгледайте нашите рецепти."
+        keywords="404, страница не е намерена, грешка, липсваща страница"
+      />
+      
       <div className={styles.notFoundContent}>
         <div className={styles.errorCode}>404</div>
         

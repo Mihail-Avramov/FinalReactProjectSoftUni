@@ -1,9 +1,16 @@
 import React from 'react';
+import SEO from '../../components/common/SEO';
 import styles from './StaticPage.module.css';
 
 function About() {
   return (
     <div className={styles.staticPage}>
+      <SEO
+        title="За нас"
+        description="Научете повече за CulinaryCorner - приложение създадено от страстни кулинари и технологични ентусиасти с мисия да направим кулинарното изкуство достъпно за всички."
+        keywords="за нас, culinary corner, кулинарно изкуство, кулинарна общност, готварска платформа, готвене"
+      />
+      
       <div className={styles.pageHeader}>
         <h1>За нас</h1>
         <div className={styles.headerDivider}></div>

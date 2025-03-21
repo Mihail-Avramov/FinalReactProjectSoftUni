@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import SEO from '../../components/common/SEO';
 import { useAuth } from '../../hooks/api/useAuth';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import Alert from '../../components/common/Alert';
@@ -55,6 +56,11 @@ const VerifyEmailPage = () => {
   if (loading) {
     return (
       <div className="auth-page verify-email-page">
+        <SEO
+          title="Потвърждаване на имейл"
+          description="Потвърждаване на вашия имейл адрес в CulinaryCorner за активиране на пълната функционалност на вашия акаунт."
+          keywords="потвърждаване на имейл, верифициране, имейл верификация, активиране на акаунт"
+        />
         <div className="auth-container">
           <LoadingSpinner />
           <p className="text-center">Потвърждаване на имейл адрес...</p>
@@ -65,6 +71,12 @@ const VerifyEmailPage = () => {
   
   return (
     <div className="auth-page verify-email-page">
+      <SEO
+        title="Потвърждаване на имейл"
+        description="Потвърждаване на вашия имейл адрес в CulinaryCorner за активиране на пълната функционалност на вашия акаунт."
+        keywords="потвърждаване на имейл, верифициране, имейл верификация, активиране на акаунт"
+      />
+      
       <div className="auth-container">
         {success ? (
           <>

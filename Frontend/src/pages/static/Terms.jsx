@@ -1,9 +1,16 @@
 import React from 'react';
+import SEO from '../../components/common/SEO';
 import styles from './StaticPage.module.css';
 
 function Terms() {
   return (
     <div className={styles.staticPage}>
+      <SEO
+        title="Условия за ползване"
+        description="Запознайте се с условията за ползване на CulinaryCorner - правила, права върху съдържанието и отговорности при използване на платформата."
+        keywords="условия за ползване, правила, интелектуална собственост, отговорности, правни условия, потребителско споразумение"
+      />
+      
       <div className={styles.pageHeader}>
         <h1>Условия за ползване</h1>
         <div className={styles.headerDivider}></div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SEO from '../../components/common/SEO';
 import styles from './FAQ.module.css';
 
 function FAQ() {
@@ -93,6 +94,12 @@ function FAQ() {
 
   return (
     <div className={styles.faqPage}>
+      <SEO
+        title="Често задавани въпроси"
+        description="Намерете отговори на често задавани въпроси за CulinaryCorner - използване на платформата, публикуване на рецепти и управление на профил."
+        keywords="често задавани въпроси, FAQ, помощ, рецепти, профил, публикуване, кулинарни съвети"
+      />
+      
       <div className={styles.pageHeader}>
         <h1>Често задавани въпроси</h1>
         <div className={styles.headerDivider}></div>

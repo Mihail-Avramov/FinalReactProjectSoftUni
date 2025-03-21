@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../../components/common/SEO';
 import RegisterForm from '../../components/auth/RegisterForm';
 import EmailVerificationNotice from '../../components/auth/EmailVerificationNotice';
 import './AuthPages.css';
@@ -16,6 +17,12 @@ const RegisterPage = () => {
   
   return (
     <div className="auth-page register-page">
+      <SEO
+        title="Регистрация"
+        description="Създайте нов профил в CulinaryCorner и започнете да споделяте рецепти, да запазвате любимите си ястия и да се свързвате с други кулинарни ентусиасти."
+        keywords="регистрация, създаване на профил, signup, нов потребител, регистриране"
+      />
+      
       <div className="auth-container">
         <h1 className="auth-title">Създаване на профил</h1>
         

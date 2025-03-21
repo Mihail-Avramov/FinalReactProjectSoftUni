@@ -1,9 +1,16 @@
 import React from 'react';
+import SEO from '../../components/common/SEO';
 import styles from './StaticPage.module.css';
 
 function Privacy() {
   return (
     <div className={styles.staticPage}>
+      <SEO
+        title="Политика за поверителност"
+        description="Научете как CulinaryCorner събира, използва и защитава вашите лични данни и информация в съответствие с най-новите стандарти за поверителност."
+        keywords="политика за поверителност, лични данни, защита на данните, бисквитки, GDPR, поверителност"
+      />
+      
       <div className={styles.pageHeader}>
         <h1>Политика за поверителност</h1>
         <div className={styles.headerDivider}></div>

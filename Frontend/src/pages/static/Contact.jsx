@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SEO from '../../components/common/SEO';
 import styles from './Contact.module.css';
 
 function Contact() {
@@ -42,6 +43,12 @@ function Contact() {
 
   return (
     <div className={styles.contactPage}>
+      <SEO
+        title="Свържете се с нас"
+        description="Имате въпроси или предложения? Свържете се с екипа на CulinaryCorner чрез нашата контактна форма."
+        keywords="контакти, свържете се, контактна форма, въпроси, поддръжка, обратна връзка"
+      />
+      
       <div className={styles.pageHeader}>
         <h1>Свържете се с нас</h1>
         <div className={styles.headerDivider}></div>

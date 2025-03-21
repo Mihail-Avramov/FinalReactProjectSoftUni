@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import SEO from '../../components/common/SEO';
 import { useAuth } from '../../hooks/api/useAuth';
 import FormInput from '../../components/common/FormInput';
 import Button from '../../components/common/Button';
@@ -51,6 +52,12 @@ const ResetPasswordPage = () => {
   
   return (
     <div className="auth-page reset-password-page">
+      <SEO
+        title="Промяна на парола"
+        description="Задайте нова парола за вашия профил в CulinaryCorner и защитете акаунта си с надеждна парола."
+        keywords="промяна на парола, нова парола, задаване на парола, парола, сигурност"
+      />
+      
       <div className="auth-container">
         <h1 className="auth-title">Промяна на парола</h1>
         

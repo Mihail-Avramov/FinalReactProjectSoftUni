@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../../components/common/SEO';
 import { useAuth } from '../../hooks/api/useAuth';
 import FormInput from '../../components/common/FormInput';
 import Button from '../../components/common/Button';
@@ -34,6 +35,12 @@ const ForgotPasswordPage = () => {
   
   return (
     <div className="auth-page forgot-password-page">
+      <SEO
+        title="Забравена парола"
+        description="Възстановете достъпа до профила си в CulinaryCorner чрез изпращане на инструкции за нова парола на вашия имейл."
+        keywords="забравена парола, възстановяване на парола, reset password, изгубена парола"
+      />
+      
       <div className="auth-container">
         <h1 className="auth-title">Забравена парола</h1>
         

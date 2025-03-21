@@ -94,6 +94,7 @@
 
 .homeButton:hover {
   background-color: var(--primary-dark);
+  color: var(--text-primary);
   transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(var(--primary-rgb), 0.4);
 }
