@@ -1,0 +1,82 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+  gap: 0.5rem;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pagination-page-btn,
+.pagination-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-page-btn:hover:not(:disabled),
+.pagination-nav-btn:hover:not(:disabled) {
+  background-color: var(--background-light);
+  border-color: var(--border-color-dark);
+}
+
+.pagination-page-btn.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--white);
+  cursor: default;
+}
+
+.pagination-page-btn:disabled,
+.pagination-nav-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.pagination-nav-btn {
+  color: var(--text-secondary);
+}
+
+.pagination-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* Responsive styles */
+@media (max-width: 576px) {
+  .pagination {
+    flex-wrap: wrap;
+  }
+  
+  .pagination-page-btn,
+  .pagination-nav-btn {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .pagination-ellipsis {
+    width: 2rem;
+  }
+}

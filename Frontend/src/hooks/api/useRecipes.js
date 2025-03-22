@@ -1,9 +1,12 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import useApiData from '../useApiData';
+import usePagination from './usePagination';
 import RecipeApi from '../../api/recipeApi';
 
 export function useRecipes() {
-  // Hook за трендващи рецепти (без пагинация)
+  /**
+   * Hook за трендващи рецепти
+   */
   const useTrending = (limit = 6) => {
     const fetchTrending = useCallback(
       (signal) => RecipeApi.getTrending(limit, signal),
@@ -17,116 +20,272 @@ export function useRecipes() {
     );
   };
   
-  // Hook за списък с пагинация
-  const usePaginatedRecipes = (page = 1, limit = 10) => {
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalItems, setTotalItems] = useState(0);
+  // Корекция на usePaginatedRecipes функцията
+
+  /**
+   * Hook за списък с рецепти с пагинация
+   */
+  const usePaginatedRecipes = (initialOptions = {}) => {
+    const {
+      pagination,
+      fetchOptions,
+      setPage,
+      setLimit,
+      setSort: originalSetSort,
+      setOrder: originalSetOrder,
+      setOption,
+      refresh,
+      processApiResponse
+    } = usePagination(initialOptions);
+    
+    // Нова функция за масово актуализиране на опции
+    const updateOptions = useCallback((options) => {
+      Object.entries(options).forEach(([key, value]) => {
+        if (value !== undefined) {
+          setOption(key, value);
+        }
+      });
+    }, [setOption]);
     
     const fetchRecipes = useCallback(
       async (signal) => {
-        const response = await RecipeApi.getRecipes(page, limit, signal);
+        console.log("Извикване на fetchRecipes с опции:", fetchOptions);
+        const response = await RecipeApi.getRecipes({
+          ...fetchOptions,
+          signal
+        });
         
-        // Проверяваме дали отговорът съдържа данни и пагинация
-        if (response && response.pagination) {
-          setTotalPages(response.pagination.pages);
-          setTotalItems(response.pagination.total);
-          return response.data; // Връщаме само данните за рецептите
-        }
-        
-        return response; // Ако няма пагинация, връщаме отговора директно
+        return processApiResponse(response);
       },
-      [page, limit]
+      [fetchOptions, processApiResponse]
     );
+    
+    // Подобрени версии на функциите за сортиране
+    const enhancedSetSort = useCallback((newSort) => {
+      console.log("enhancedSetSort извикан с:", newSort);
+      originalSetSort(newSort);
+      // Директно обновяване на данните
+      refresh();
+    }, [originalSetSort, refresh]);
+  
+    const enhancedSetOrder = useCallback((newOrder) => {
+      console.log("enhancedSetOrder извикан с:", newOrder);
+      originalSetOrder(newOrder);
+      // Директно обновяване на данните
+      refresh();
+    }, [originalSetOrder, refresh]);
     
     const result = useApiData(
       fetchRecipes,
-      [page, limit],
+      [fetchOptions],
       'Не успяхме да заредим рецептите'
     );
     
+    // Важно! Връщаме резултата
     return {
       ...result,
-      pagination: {
-        page,
-        limit,
-        totalPages,
-        totalItems,
-        hasNext: page < totalPages,
-        hasPrev: page > 1
-      }
+      pagination,
+      setPage,
+      setLimit,
+      setSort: enhancedSetSort,
+      setOrder: enhancedSetOrder,
+      updateOptions,
+      refresh
     };
   };
   
-  // Hook за рецепта по ID
-  const useRecipe = (id) => {
+  /**
+   * Hook за рецепта по ID
+   */
+  const useRecipe = (id, withComments = true) => {
     const fetchRecipe = useCallback(
-      (signal) => id ? RecipeApi.getById(id, signal) : null,
-      [id]
+      (signal) => id ? RecipeApi.getById(id, withComments, signal) : null,
+      [id, withComments]
     );
     
     return useApiData(
       fetchRecipe, 
-      [id], 
+      [id, withComments], 
       'Не успяхме да заредим детайли за рецептата'
     );
   };
   
-  // Hook за търсене с пагинация
-  const useSearch = (searchParams, page = 1, limit = 10) => {
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalItems, setTotalItems] = useState(0);
+  /**
+   * Hook за собствени рецепти на потребителя
+   */
+  const useUserRecipes = (initialOptions = {}) => {
+    const {
+      pagination,
+      fetchOptions,
+      setPage,
+      setLimit,
+      setSort,
+      setOrder,
+      refresh,
+      processApiResponse
+    } = usePagination(initialOptions);
     
-    const fetchSearchResults = useCallback(
+    const fetchUserRecipes = useCallback(
       async (signal) => {
-        const response = await RecipeApi.search(
-          { ...searchParams, page, limit },
+        const response = await RecipeApi.getUserRecipes({
+          page: fetchOptions.page,
+          limit: fetchOptions.limit,
+          sort: fetchOptions.sort,
+          order: fetchOptions.order,
           signal
-        );
+        });
         
-        if (response && response.pagination) {
-          setTotalPages(response.pagination.pages);
-          setTotalItems(response.pagination.total);
-          return response.data;
-        }
-        
-        return response;
+        return processApiResponse(response);
       },
-      [searchParams, page, limit]
+      [fetchOptions, processApiResponse]
     );
     
     const result = useApiData(
-      fetchSearchResults,
-      [searchParams, page, limit],
-      'Не успяхме да заредим резултатите от търсенето'
+      fetchUserRecipes,
+      [fetchOptions],
+      'Не успяхме да заредим вашите рецепти'
     );
     
     return {
       ...result,
-      pagination: {
-        page,
-        limit,
-        totalPages,
-        totalItems,
-        hasNext: page < totalPages,
-        hasPrev: page > 1
-      }
+      pagination,
+      setPage,
+      setLimit,
+      setSort,
+      setOrder,
+      refresh
     };
   };
   
-  // Hook за CRUD операции
+  /**
+   * Hook за любими рецепти на потребителя
+   */
+  const useFavoriteRecipes = (initialOptions = {}) => {
+    const {
+      pagination,
+      fetchOptions,
+      setPage,
+      setLimit,
+      setSort,
+      setOrder,
+      refresh,
+      processApiResponse
+    } = usePagination(initialOptions);
+    
+    const fetchFavoriteRecipes = useCallback(
+      async (signal) => {
+        const response = await RecipeApi.getFavoriteRecipes({
+          page: fetchOptions.page,
+          limit: fetchOptions.limit,
+          sort: fetchOptions.sort,
+          order: fetchOptions.order,
+          signal
+        });
+        
+        return processApiResponse(response);
+      },
+      [fetchOptions, processApiResponse]
+    );
+    
+    const result = useApiData(
+      fetchFavoriteRecipes,
+      [fetchOptions],
+      'Не успяхме да заредим любимите ви рецепти'
+    );
+    
+    return {
+      ...result,
+      pagination,
+      setPage,
+      setLimit,
+      setSort,
+      setOrder,
+      refresh
+    };
+  };
+  
+  /**
+   * Hook за рецептите на конкретен потребител
+   */
+  const useUserRecipesByUserId = (userId, initialOptions = {}) => {
+    // Добавяме userId към началните опции
+    const mergedOptions = { ...initialOptions, userId };
+    
+    const {
+      pagination,
+      fetchOptions,
+      setPage,
+      setLimit,
+      setSort,
+      setOrder,
+      setOption,
+      refresh,
+      processApiResponse
+    } = usePagination(mergedOptions);
+    
+    // Актуализираме userId, когато се промени външната стойност
+    useEffect(() => {
+      setOption('userId', userId);
+    }, [userId, setOption]);
+    
+    const fetchUserRecipesByUserId = useCallback(
+      async (signal) => {
+        if (!fetchOptions.userId) return null;
+        
+        const response = await RecipeApi.getUserRecipesByUserId(
+          fetchOptions.userId,
+          {
+            page: fetchOptions.page,
+            limit: fetchOptions.limit,
+            sort: fetchOptions.sort,
+            order: fetchOptions.order,
+            signal
+          }
+        );
+        
+        return processApiResponse(response);
+      },
+      [fetchOptions, processApiResponse]
+    );
+    
+    const result = useApiData(
+      fetchUserRecipesByUserId,
+      [fetchOptions],
+      'Не успяхме да заредим рецептите на този потребител'
+    );
+    
+    return {
+      ...result,
+      pagination,
+      setPage,
+      setLimit,
+      setSort,
+      setOrder,
+      refresh
+    };
+  };
+  
+  /**
+   * Hook за CRUD операции
+   */
   const useRecipeActions = () => {
     const createRecipe = useCallback((data) => RecipeApi.create(data), []);
     const updateRecipe = useCallback((id, data) => RecipeApi.update(id, data), []);
     const deleteRecipe = useCallback((id) => RecipeApi.delete(id), []);
-    const likeRecipe = useCallback((id) => RecipeApi.like(id), []);
-    const unlikeRecipe = useCallback((id) => RecipeApi.unlike(id), []);
+    const toggleLike = useCallback((id) => RecipeApi.toggleLike(id), []);
+    const toggleFavorite = useCallback((id) => RecipeApi.toggleFavorite(id), []);
+    const bulkToggleFavorites = useCallback(
+      (recipeIds, action) => RecipeApi.bulkToggleFavorites(recipeIds, action),
+      []
+    );
     
     return {
       createRecipe,
       updateRecipe,
       deleteRecipe,
-      likeRecipe,
-      unlikeRecipe
+      toggleLike,
+      toggleFavorite,
+      bulkToggleFavorites
     };
   };
   
@@ -134,7 +293,11 @@ export function useRecipes() {
     useTrending,
     usePaginatedRecipes,
     useRecipe,
-    useSearch,
+    useUserRecipes,
+    useFavoriteRecipes,
+    useUserRecipesByUserId,
     useRecipeActions
   };
 }
+
+export default useRecipes;

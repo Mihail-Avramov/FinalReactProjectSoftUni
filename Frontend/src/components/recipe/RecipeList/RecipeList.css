@@ -1,0 +1,23 @@
+.recipe-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.recipe-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+  transition: transform 0.2s ease;
+}
+
+.recipe-card-link:hover {
+  transform: translateY(-3px);
+}
+
+@media (max-width: 576px) {
+  .recipe-list {
+    grid-template-columns: 1fr;
+  }
+}

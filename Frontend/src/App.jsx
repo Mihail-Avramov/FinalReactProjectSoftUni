@@ -23,11 +23,13 @@ import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 // Потребителски страници
 import ProfilePage from './pages/user/ProfilePage';
 import ProfileEditPage from './pages/user/ProfileEditPage';
-//import AccountSettingsPage from './pages/user/AccountSettingsPage';
 import PasswordChangePage from './pages/user/PasswordChangePage';
 import DeleteAccountPage from './pages/user/DeleteAccountPage';
 //import MyRecipesPage from './pages/user/MyRecipesPage';
 //import MyFavoritesPage from './pages/user/MyFavoritesPage';
+
+// Страници за рецепти
+import RecipesPage from './pages/recipes/RecipesPage';
 
 function App() {
   return (
@@ -41,6 +43,7 @@ function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/recipes" element={<RecipesPage />} />
           
           {/* Маршрути само за гости */}
           <Route path="/login" element={
@@ -92,11 +95,6 @@ function App() {
           } />
 
           {/* Защитени маршрути само за влезли потребители 
-          <Route path="/account/settings" element={
-            <RequireAuth>
-              <AccountSettingsPage />
-            </RequireAuth>
-          } />
           <Route path="/my-recipes" element={
             <RequireAuth>
               <MyRecipesPage />

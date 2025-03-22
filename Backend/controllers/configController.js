@@ -47,36 +47,24 @@ const configController = {
           
           // Предварително зададени филтри за рецепти
           filters: {
-            // Категории - изброени в categories по-горе
-            // Трудност - изброена в difficulties по-горе
-            
-            // Време за приготвяне
-            preparationTime: [
-              { value: '15', label: 'До 15 минути' },
-              { value: '30', label: 'До 30 минути' },
-              { value: '60', label: 'До 1 час' },
-              { value: '120', label: 'До 2 часа' },
-              { value: '120+', label: 'Над 2 часа' }
-            ],
-            
-            servings: [
-              { value: '1-2', label: '1-2 порции' },
-              { value: '3-4', label: '3-4 порции' },
-              { value: '5-8', label: '5-8 порции' },
-              { value: '9+', label: 'Над 8 порции' }
-            ],
-            
-            // Добавени реално поддържани филтри
+            categor: "Филтриране по категория",
+            difficulty: "Филтриране по ниво на трудност",
+            minTime: "Минимално време за приготвяне",
+            maxTime: "Максимално време за приготвяне",
             search: "Текстово търсене по заглавие и описание",
             author: "Филтриране по ID на автора"
           },
           
           // Опции за сортиране
           sortOptions: [
-            { value: 'createdAt', label: 'Най-нови', direction: 'desc' },
-            { value: 'likes', label: 'Най-харесвани', direction: 'desc' },
-            { value: 'preparationTime', label: 'Най-бързи за готвене', direction: 'asc' },
-            { value: 'title', label: 'По азбучен ред', direction: 'asc' }
+            {sort: "createdAt", label: "Най-нови"},
+            {sort: "-createdAt", label: "Най-стари"},
+            {sort: "likes", label: "Най-харесвани"},
+            {sort: "-likes", label: "Най-малко харесвани"},
+            {sort: "title", label: "По заглавие (а-я)"},
+            {sort: "-title", label: "По заглавие (я-а)"},
+            {sort: "preparationTime", label: "По време за приготвяне (възходящо)"},
+            {sort: "-preparationTime", label: "По време за приготвяне (низходящо)"}
           ],
           
           // Изображения и миниатюри
