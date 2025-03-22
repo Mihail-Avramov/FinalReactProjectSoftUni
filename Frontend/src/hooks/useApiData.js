@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { isRequestCanceled } from '../utils/requestUtils';
 
 function useApiData(fetchFunction, dependencies = [], errorMessage) {
@@ -6,13 +6,31 @@ function useApiData(fetchFunction, dependencies = [], errorMessage) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Използваме useRef, за да запазим последната функция без да предизвикваме повторно изпълнение на ефекта
+   // Използваме useRef, за да запазим последната функция за извличане на данни
+  // и последното съобщение за грешка, което сме получили
   const fetchFunctionRef = useRef(fetchFunction);
+  const errorMessageRef = useRef(errorMessage);
   
   // Актуализираме ref при промяна на fetchFunction
   useEffect(() => {
     fetchFunctionRef.current = fetchFunction;
   }, [fetchFunction]);
+
+  // Актуализираме errorMessage ref
+  useEffect(() => {
+    errorMessageRef.current = errorMessage;
+  }, [errorMessage]);
+
+  // Създаваме стабилен ключ, базиран на съдържанието на dependencies
+  // Това решава проблема със spread оператора в dependency array
+  const dependenciesKey = useMemo(() => {
+    try {
+      return JSON.stringify(dependencies);
+    } catch {
+      // Като резервен вариант, ако масивът съдържа нестрингифицируеми стойности
+      return String(Math.random()); // Гарантира нов ефект
+    }
+  }, [dependencies]); // Използваме масива директно като зависимост
   
   // Главният useEffect за извличане на данни
   useEffect(() => {
@@ -22,7 +40,6 @@ function useApiData(fetchFunction, dependencies = [], errorMessage) {
     async function fetchData() {
       try {
         setLoading(true);
-        // Използваме ref.current вместо директната функция
         const result = await fetchFunctionRef.current(abortController.signal);
         
         if (isMounted) {
@@ -31,7 +48,7 @@ function useApiData(fetchFunction, dependencies = [], errorMessage) {
         }
       } catch (error) {
         if (!isRequestCanceled(error) && isMounted) {
-          setError(errorMessage || 'Не успяхме да заредим данните. Моля, опитайте по-късно.');
+          setError(errorMessageRef.current || 'Не успяхме да заредим данните. Моля, опитайте по-късно.');
           console.error('Error fetching data:', error);
         }
       } finally {
@@ -48,7 +65,7 @@ function useApiData(fetchFunction, dependencies = [], errorMessage) {
       abortController.abort();
     };
 
-  }, [...dependencies, errorMessage]);
+  }, [dependenciesKey]); // Използваме стрингифицирания ключ
   
   return { data, loading, error };
 }
