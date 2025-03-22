@@ -114,7 +114,7 @@ function Header() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/my-recipes" className={location.pathname.startsWith('/my-favorites') ? styles.active : ''}>
+                  <Link to="/my-favorites" className={location.pathname.startsWith('/my-favorites') ? styles.active : ''}>
                     <i className={`${styles.navIcon} fas fa-heart`}></i>
                     <span>Любими рецепти</span>
                   </Link>

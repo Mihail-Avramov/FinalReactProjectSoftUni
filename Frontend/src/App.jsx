@@ -27,7 +27,7 @@ import ProfileEditPage from './pages/user/ProfileEditPage';
 import PasswordChangePage from './pages/user/PasswordChangePage';
 import DeleteAccountPage from './pages/user/DeleteAccountPage';
 //import MyRecipesPage from './pages/user/MyRecipesPage';
-//import FavoritesPage from './pages/user/FavoritesPage';
+//import MyFavoritesPage from './pages/user/MyFavoritesPage';
 
 function App() {
   return (
@@ -102,9 +102,9 @@ function App() {
               <MyRecipesPage />
             </RequireAuth>
           } />
-          <Route path="/favorites" element={
+          <Route path="/my-favorites" element={
             <RequireAuth>
-              <FavoritesPage />
+              <MyFavoritesPage />
             </RequireAuth>
           } />*/}
           
