@@ -75,6 +75,12 @@
 
 .authNav {
   display: flex;
+  gap: 2rem;
+}
+
+.authButtons {
+  display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
@@ -85,78 +91,180 @@
   color: var(--text-primary);
   font-size: 1.5rem;
   cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  position: relative;
+  z-index: 120;
+  transition: background-color 0.3s ease;
 }
 
-/* Контейнер - вместо глобалния .container */
+.mobileMenuToggle:hover {
+  background-color: var(--bg-secondary);
+}
+
+.menuIcon {
+  position: relative;
+  width: 20px;
+  height: 18px;
+  display: inline-block;
+}
+
+.menuIcon span {
+  display: block;
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background: var(--text-primary);
+  border-radius: 2px;
+  opacity: 1;
+  left: 0;
+  transition: transform 0.25s ease-in-out, opacity 0.25s ease-in-out;
+}
+
+.menuIcon span:nth-child(1) {
+  top: 0;
+}
+
+.menuIcon span:nth-child(2) {
+  top: 8px;
+}
+
+.menuIcon span:nth-child(3) {
+  top: 16px;
+}
+
+.menuOpen span:nth-child(1) {
+  top: 8px;
+  transform: rotate(45deg);
+}
+
+.menuOpen span:nth-child(2) {
+  opacity: 0;
+}
+
+.menuOpen span:nth-child(3) {
+  top: 8px;
+  transform: rotate(-45deg);
+}
+
+.navIcon {
+  display: none;
+  margin-right: 0.5rem;
+  width: 1rem;
+  text-align: center;
+}
+
+.dropdownArrow {
+  margin-left: 0.3rem;
+  border-style: solid;
+  border-width: 0.25rem 0.25rem 0 0.25rem;
+  border-color: var(--text-secondary) transparent transparent;
+  display: inline-block;
+  height: 0;
+  width: 0;
+  vertical-align: middle;
+  transition: transform 0.3s;
+}
+
+.menuOpen .dropdownArrow {
+  transform: rotate(180deg);
+}
+
+.userDropdownMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background-color: var(--bg-primary);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-color);
+  min-width: 200px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s;
+  z-index: 150;
+  overflow: hidden;
+}
+
+.userSection.menuOpen .userDropdownMenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.userMenuHeader {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.menuDisplayName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.userMenuItem {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: background-color 0.2s;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.userMenuItem:hover {
+  background-color: var(--bg-secondary);
+  color: var(--primary);
+}
+
+.userMenuItem i {
+  width: 1rem;
+  text-align: center;
+}
+
+.logoutMenuItem {
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.25rem;
+  color: var(--primary);
+}
+
+.logoutMenuItem:hover {
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+.logoutIcon {
+  display: none;
+  margin-right: 0;
+}
+
+.mobileOnly {
+  display: none;
+}
+
+.registerLink {
+  color: var(--primary) !important;
+  font-weight: 600 !important;
+}
+
+.logoutNavLink {
+  color: var(--primary);
+}
+
+.logoutNavLink:hover {
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
 .container {
   width: 100%;
   max-width: var(--container-width);
   margin: 0 auto;
   padding: 0 20px;
-}
-
-/* Медиа запросы для адаптивности */
-@media (max-width: 992px) {
-  .mainNav ul {
-    gap: 1.5rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .headerContainer {
-    position: relative;
-  }
-  
-  .mobileMenuToggle {
-    display: block;
-  }
-  
-  .mainNav {
-    position: absolute;
-    top: var(--header-height);
-    left: 0;
-    width: 100%;
-    background-color: var(--bg-primary);
-    padding: 1rem;
-    box-shadow: 0 5px 10px var(--shadow-color);
-    transform: translateY(-100%);
-    opacity: 0;
-    visibility: hidden;
-    transition: transform var(--transition-normal), 
-                opacity var(--transition-normal),
-                visibility var(--transition-normal);
-    z-index: 90;
-  }
-  
-  .mainNav.open {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
-  }
-  
-  .mainNav ul {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .authNav .btn {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .header {
-    height: 60px;
-  }
-  
-  .logo h1 {
-    font-size: 1.2rem;
-  }
-  
-  .authNav {
-    gap: 0.5rem;
-  }
 }
 
 .userSection {
@@ -202,11 +310,285 @@
   text-overflow: ellipsis;
 }
 
-/* Медиа заявки за отзивчивост */
+@media (max-width: 992px) {
+  .mainNav ul {
+    gap: 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
-  .userSection {
+  .headerContainer {
+    position: relative;
+  }
+  
+  .mobileMenuToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    order: 1;
+  }
+  
+  .logo {
+    order: 2;
+    flex-grow: 1;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .mainNav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 100;
+    pointer-events: none;
+  }
+  
+  .mainNav.open {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  .mainNav ul {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80%;
+    max-width: 300px;
+    height: 100%;
+    background-color: var(--bg-primary);
     flex-direction: column;
+    gap: 0;
+    padding: 5rem 0 2rem;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .mainNav.open ul {
+    transform: translateX(0);
+  }
+  
+  .mainNav ul li {
+    width: 100%;
+  }
+  
+  .mainNav ul li a, 
+  .mainNav ul li .logoutNavLink {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+  }
+  
+  .mainNav ul li a:hover,
+  .mainNav ul li .logoutNavLink:hover {
+    background-color: var(--bg-secondary);
+  }
+  
+  .mainNav a:after,
+  .mainNav a.active:after {
+    display: none;
+  }
+  
+  .mainNav a.active {
+    background-color: rgba(var(--primary-rgb), 0.1);
+  }
+  
+  .navIcon {
+    display: inline-block;
+  }
+  
+  .authNav {
+    order: 3;
+  }
+  
+  .mobileOnly {
+    display: block;
+  }
+  
+  .authButtons {
+    display: none;
+  }
+  
+  .mainNav ul {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .authNav .btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .userSection {
     gap: 0.5rem;
+  }
+  
+  .logoutButton {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+  }  
+}
+
+@media (max-width: 650px) {
+  .logoutButtonText {
+    display: none;
+  }
+  
+  .logoutButtonIcon {
+    display: inline-block;
+  }
+  
+  .logoutButton {
+    padding: 0.35rem;
+    min-width: unset;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .userName {
+    max-width: 80px;
+  }
+}
+
+@media (max-width: 576px) {
+  .header {
+    height: 60px;
+    padding: 0;
+  }
+  
+  .logo h1 {
+    font-size: 1.2rem;
+  }
+  
+  .authNav {
+    gap: 0.5rem;
+  }
+  
+  .userSection {
+    position: relative;
+  }
+  
+  .userName {
+    display: none;
+  }
+  
+  .userAvatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .logoutText {
+    display: none;
+  }
+  
+  .logoutIcon {
+    display: inline-block;
+  }
+  
+  .logoutButton {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .dropdownArrow {
+    display: none;
+  }
+  
+  .userDropdownMenu {
+    min-width: 180px;
+    right: -10px;
+  }
+  
+  .userMenuItem {
+    padding: 0.85rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .userSection {
+    position: relative;
+  }
+
+  .userName {
+    display: none;
+  }
+  
+  .userAvatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .mobileUserMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--bg-primary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 0.5rem;
+    width: 150px;
+    display: none;
+    z-index: 100;
+  }
+  
+  .userSection.menuOpen .mobileUserMenu {
+    display: block;
+  }
+  
+  .mobileUserMenuItem {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+    transition: background-color var(--transition-fast);
+    border-radius: var(--border-radius);
+  }
+  
+  .mobileUserMenuItem:hover {
+    background-color: var(--bg-secondary);
+  }
+  
+  .mobileUserMenuName {
+    display: block;
+    font-weight: 500;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0.5rem;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .logoutButton {
+    display: none;
+  }
+  
+  .container {
+    padding: 0 10px;
+  }
+  
+  .mainNav ul {
+    width: 85%;
   }
 }
 
