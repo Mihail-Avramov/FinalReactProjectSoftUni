@@ -210,12 +210,16 @@ const RegisterForm = ({ onSuccess }) => {
       case 'firstName':
         if (!value) {
           error = 'Името е задължително';
+        } else if (value.length < 2) {
+          error = 'Името трябва да е поне 2 символа';
         }
         break;
         
       case 'lastName':
         if (!value) {
           error = 'Фамилията е задължителна';
+        } else if (value.length < 2) {
+          error = 'Фамилията трябва да е поне 2 символа';
         }
         break;
         
