@@ -28,7 +28,7 @@ const ProfileHeader = ({ profile, isOwnProfile }) => {
         
         {isOwnProfile ? (
           <div className={styles.actions}>
-            <Link to="/profile/edit" className="btn btn-secondary">
+            <Link to="/profile/edit" className="btn btn-primary">
               Редактирай профила
             </Link>
           </div>

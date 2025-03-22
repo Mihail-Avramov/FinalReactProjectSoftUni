@@ -132,7 +132,7 @@ const ProfileForm = ({ profile }) => {
       
       <Button
         type="submit"
-        className="btn btn-secondary"
+        variant="outline"
         disabled={isSubmitting}
         loading={isSubmitting}
       >

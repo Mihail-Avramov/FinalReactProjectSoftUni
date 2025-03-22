@@ -228,14 +228,14 @@ const PasswordChangePage = () => {
             <div className="form-actions">
               <Button
                 type="submit"
-                className="btn-primary"
+                variant="primary"
                 disabled={isSubmitting || Object.keys(errors).length > 0}
                 loading={isSubmitting}
               >
                 Промени паролата
               </Button>
               
-              <Link to="/profile" className="btn btn-secondary">
+              <Link to="/profile" className="btn btn-outline">
                 Отказ
               </Link>
             </div>

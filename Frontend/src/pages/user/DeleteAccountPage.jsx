@@ -95,13 +95,13 @@ const DeleteAccountPage = () => {
             <div className="form-actions">
               <Button
                 type="submit"
-                className="btn-primary"
+                variant="primary"
                 disabled={!password || isSubmitting}
               >
                 Изтрий акаунта
               </Button>
               
-              <Link to="/profile" className="btn btn-secondary">
+              <Link to="/profile" className="btn btn-outline">
                 Отказ
               </Link>
             </div>
@@ -120,14 +120,14 @@ const DeleteAccountPage = () => {
               <div className="modal-actions">
                 <Button
                   onClick={() => setShowConfirmation(false)}
-                  className="btn-outline"
+                  variant="outline"
                   disabled={isSubmitting}
                 >
                   Отказ
                 </Button>
                 <Button
                   onClick={handleConfirmDelete}
-                  className="btn-primary"
+                  variant="primary"
                   loading={isSubmitting}
                   disabled={isSubmitting}
                 >

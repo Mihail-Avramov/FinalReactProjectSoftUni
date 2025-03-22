@@ -63,7 +63,7 @@ const ProfileEditPage = () => {
           <div className="edit-section">
             <h2>Настройки на акаунта</h2>
             <div className="account-actions">
-              <Link to="/account/change-password" className="btn btn-secondary">
+              <Link to="/account/change-password" className="btn btn-outline">
                 Смяна на парола
               </Link>
               <Link to="/account/delete" className="btn btn-primary">

@@ -170,7 +170,7 @@ const ProfilePictureUpload = ({ currentImage }) => {
         <Button
           type="button"
           onClick={handleButtonClick}
-          className="btn-secondary"
+          variant="secondary"
           disabled={isUploading}
         >
           Избери снимка
@@ -180,7 +180,7 @@ const ProfilePictureUpload = ({ currentImage }) => {
           <Button
             type="button"
             onClick={handleUpload}
-            className="btn-secondary"
+            variant="outline"
             disabled={isUploading}
             loading={isUploading}
           >
@@ -188,12 +188,11 @@ const ProfilePictureUpload = ({ currentImage }) => {
           </Button>
         )}
         
-        {/* Проверяваме текущата локална стойност вместо prop */}
         {currentProfileImage && !selectedFile && (
           <Button
             type="button"
             onClick={handleDelete}
-            className="btn-primary"
+            variant="primary"
             disabled={isUploading}
           >
             Премахни снимката

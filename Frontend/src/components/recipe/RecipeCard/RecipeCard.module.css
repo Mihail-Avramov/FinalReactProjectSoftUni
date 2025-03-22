@@ -397,7 +397,7 @@
 
 .viewButton:hover {
   background-color: var(--primary-dark);
-  color: var(--text-primary);
+  color: var(--bg-primary);
   border-color: var(--primary);
   box-shadow: 0 5px 12px rgba(var(--primary-rgb, 30, 136, 229), 0.4);
   transform: translateY(-1px);

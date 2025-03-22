@@ -70,15 +70,16 @@ function Header() {
             </Link>
             <Button 
               onClick={handleLogout} 
-              className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm}`}
+              variant="outline"
+              size="small"
             >
               Изход
             </Button>
           </div>
         ) : (
           <>
-            <Link to="/login" className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm}`}>Вход</Link>
-            <Link to="/register" className={`${styles.btn} ${styles.btnPrimary} ${styles.btnSm}`}>Регистрация</Link>
+            <Link to="/login" className="btn btn-outline btn-sm">Вход</Link>
+            <Link to="/register" className="btn btn-primary btn-sm">Регистрация</Link>
           </>
         )}
         </div>
