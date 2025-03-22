@@ -85,7 +85,7 @@ const ProfilePage = () => {
               {activeTab === 'recipes' && (
                 <div className="recipes-grid">
                   {/* Тук ще бъдат показани рецептите на потребителя */}
-                  <p>Рецепти на потребителя</p>
+                  <p>Моите рецепти</p>
                 </div>
               )}
               
