@@ -310,13 +310,11 @@
   text-overflow: ellipsis;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
   .mainNav ul {
     gap: 1.5rem;
   }
-}
 
-@media (max-width: 768px) {
   .headerContainer {
     position: relative;
   }
@@ -440,31 +438,7 @@
   }  
 }
 
-@media (max-width: 650px) {
-  .logoutButtonText {
-    display: none;
-  }
-  
-  .logoutButtonIcon {
-    display: inline-block;
-  }
-  
-  .logoutButton {
-    padding: 0.35rem;
-    min-width: unset;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .userName {
-    max-width: 80px;
-  }
-}
-
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .header {
     height: 60px;
     padding: 0;
@@ -519,6 +493,30 @@
   
   .userMenuItem {
     padding: 0.85rem 1rem;
+  }
+}
+
+@media (max-width: 650px) {
+  .logoutButtonText {
+    display: none;
+  }
+  
+  .logoutButtonIcon {
+    display: inline-block;
+  }
+  
+  .logoutButton {
+    padding: 0.35rem;
+    min-width: unset;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .userName {
+    max-width: 80px;
   }
 }
 

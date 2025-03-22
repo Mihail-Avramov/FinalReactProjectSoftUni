@@ -76,7 +76,15 @@ function Header() {
         </div>
         
         {/* Основно навигационно меню */}
-        <nav className={`${styles.mainNav} ${mobileMenuOpen ? styles.open : ''}`}>
+        <nav 
+          className={`${styles.mainNav} ${mobileMenuOpen ? styles.open : ''}`}
+          onClick={(e) => {
+            // Проверка дали кликът е върху nav елемента, а не върху неговите деца
+            if (e.target === e.currentTarget) {
+              setMobileMenuOpen(false);
+            }
+          }}
+        >
           <ul>
             <li>
               <Link to="/" className={location.pathname === '/' ? styles.active : ''}>

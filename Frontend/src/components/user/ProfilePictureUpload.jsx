@@ -172,10 +172,11 @@ const ProfilePictureUpload = ({ currentImage }) => {
           onClick={handleButtonClick}
           variant="secondary"
           disabled={isUploading}
+          className="full-width-mobile" // Добавете този клас
         >
           Избери снимка
         </Button>
-        
+
         {selectedFile && (
           <Button
             type="button"
@@ -183,17 +184,19 @@ const ProfilePictureUpload = ({ currentImage }) => {
             variant="outline"
             disabled={isUploading}
             loading={isUploading}
+            className="full-width-mobile" // Добавете този клас
           >
             Качи снимката
           </Button>
         )}
-        
+
         {currentProfileImage && !selectedFile && (
           <Button
             type="button"
             onClick={handleDelete}
             variant="primary"
             disabled={isUploading}
+            className="full-width-mobile" // Добавете този клас
           >
             Премахни снимката
           </Button>

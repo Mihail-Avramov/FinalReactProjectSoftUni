@@ -28,7 +28,7 @@
   overflow: hidden;
   border: 4px solid var(--primary-light);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
 }
 
 .imageContainer:hover {
@@ -46,6 +46,8 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
+  width: 100%; /* Осигурява, че контейнерът заема цялата ширина */
+  max-width: 500px; /* Ограничава максималната ширина на десктоп */
 }
 
 .info {
@@ -54,4 +56,52 @@
   align-items: center;
   color: var(--text-secondary);
   font-size: 0.85rem;
+}
+
+/* Медиа заявки за отзивчив дизайн */
+@media (max-width: 768px) {
+  .container {
+    gap: 1rem; /* Намален gap за мобилни */
+  }
+  
+  .imageContainer {
+    width: 130px; /* Малко по-малка снимка на таблет */
+    height: 130px;
+  }
+  
+  .controls {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  /* Бутоните заемат цялата ширина */
+  .controls button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Текстът е центриран също на мобилни */
+  .info {
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .imageContainer {
+    width: 120px; /* Още по-малка снимка за малки смартфони */
+    height: 120px;
+    border-width: 3px; /* По-тънка рамка */
+  }
+  
+  .info {
+    flex-direction: row; /* Помества съдържанието в един ред за по-компактен изглед */
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  
+  .info small {
+    font-size: 0.8rem; /* По-малък размер на текста */
+  }
 }

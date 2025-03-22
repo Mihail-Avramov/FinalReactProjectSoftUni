@@ -149,7 +149,7 @@
   display: block;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
   .footerContent {
     flex-direction: column;
     gap: 2rem;

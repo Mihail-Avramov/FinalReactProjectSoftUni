@@ -120,7 +120,7 @@ const ProfileForm = ({ profile }) => {
           name="bio"
           value={formData.bio}
           onChange={handleChange}
-          rows="4"
+          rows="3"
           className={errors.bio ? 'form-control error' : 'form-control'}
           maxLength="200"
         />
@@ -130,14 +130,17 @@ const ProfileForm = ({ profile }) => {
         </div>
       </div>
       
-      <Button
-        type="submit"
-        variant="outline"
-        disabled={isSubmitting}
-        loading={isSubmitting}
-      >
-        Запази промените
-      </Button>
+      <div className="form-actions">
+        <Button
+          type="submit"
+          variant="outline"
+          disabled={isSubmitting}
+          loading={isSubmitting}
+          className="full-width-mobile"
+        >
+          Запази промените
+        </Button>
+      </div>
     </form>
   );
 };

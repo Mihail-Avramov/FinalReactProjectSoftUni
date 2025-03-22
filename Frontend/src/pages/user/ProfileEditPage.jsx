@@ -41,7 +41,7 @@ const ProfileEditPage = () => {
       />
       <div className="container">
         <div className="page-header">
-          <h1>Редактирай профил</h1>
+          <h1>Редактиране на профил</h1>
           <Link to="/profile" className="btn btn-outline">Обратно към профила</Link>
         </div>
         
