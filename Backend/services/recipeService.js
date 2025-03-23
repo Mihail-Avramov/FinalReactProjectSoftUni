@@ -486,6 +486,17 @@ const recipeService = {
         ];
       }
       
+      // Добавяне на филтри за време на приготвяне
+      if (filters.minPreparationTime) {
+        queryObj.preparationTime = queryObj.preparationTime || {};
+        queryObj.preparationTime.$gte = parseInt(filters.minPreparationTime);
+      }
+      
+      if (filters.maxPreparationTime) {
+        queryObj.preparationTime = queryObj.preparationTime || {};
+        queryObj.preparationTime.$lte = parseInt(filters.maxPreparationTime);
+      }
+      
       const totalDocs = await Recipe.countDocuments(queryObj);
       
       const recipes = await Recipe.find(queryObj)
@@ -622,6 +633,17 @@ async getFavoriteRecipes(userId, pagination = {}, filters = {}) {
         { title: { $regex: searchRegex } },
         { description: { $regex: searchRegex } }
       ];
+    }
+    
+    // Добавяне на филтри за време на приготвяне
+    if (filters.minPreparationTime) {
+      queryObj.preparationTime = queryObj.preparationTime || {};
+      queryObj.preparationTime.$gte = parseInt(filters.minPreparationTime);
+    }
+    
+    if (filters.maxPreparationTime) {
+      queryObj.preparationTime = queryObj.preparationTime || {};
+      queryObj.preparationTime.$lte = parseInt(filters.maxPreparationTime);
     }
     
     // Apply pagination

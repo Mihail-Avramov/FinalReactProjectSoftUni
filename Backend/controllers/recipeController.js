@@ -186,11 +186,12 @@ const recipeController = {
       const userId = String(req.params.id || req.user._id);
       const currentUserId = req.user ? String(req.user._id) : null;
 
-      // Извличане на филтрите от query параметрите
       const filters = {
         category: req.query.category,
         difficulty: req.query.difficulty,
-        search: req.query.search
+        search: req.query.search,
+        minPreparationTime: req.query.minTime,
+        maxPreparationTime: req.query.maxTime 
       };
 
       const pagination = {
@@ -218,11 +219,12 @@ const recipeController = {
     try {
       const userId = req.user._id;
       
-      // Извличане на филтрите от query параметрите
       const filters = {
         category: req.query.category,
         difficulty: req.query.difficulty,
-        search: req.query.search
+        search: req.query.search,
+        minPreparationTime: req.query.minTime,
+        maxPreparationTime: req.query.maxTime
       };
       
       const pagination = {
