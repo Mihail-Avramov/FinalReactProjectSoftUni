@@ -114,11 +114,30 @@ class RecipeApi {
    * @param {Object} options - опции за заявката
    */
   static async getUserRecipes(options = {}) {
-    const { page = 1, limit = 10, sort = 'createdAt', order = 'desc', signal } = options;
-    return apiClient.get('/recipes/users/', {
-      params: { page, limit, sort: `${order === 'desc' ? '-' : ''}${sort}` },
+    const { 
+      page = 1, 
+      limit = 10, 
+      sort = 'createdAt', 
+      order = 'desc',
+      search,
+      category,
+      difficulty,
       signal
-    });
+    } = options;
+  
+    // Конструиране на параметрите за заявката
+    const params = {
+      page,
+      limit,
+      sort: `${order === 'desc' ? '-' : ''}${sort}`
+    };
+  
+    // Добавяне на филтри, само ако не са празни
+    if (search) params.search = search;
+    if (category) params.category = category;
+    if (difficulty) params.difficulty = difficulty;
+  
+    return apiClient.get('/recipes/users/', { params, signal });
   }
   
   /**
@@ -127,11 +146,30 @@ class RecipeApi {
    * @param {Object} options - опции за заявката
    */
   static async getUserRecipesByUserId(userId, options = {}) {
-    const { page = 1, limit = 10, sort = 'createdAt', order = 'desc', signal } = options;
-    return apiClient.get(`/recipes/users/${userId}`, {
-      params: { page, limit, sort: `${order === 'desc' ? '-' : ''}${sort}` },
-      signal
-    });
+    const { 
+      page = 1, 
+      limit = 10, 
+      sort = 'createdAt', 
+      order = 'desc',
+      search,
+      category,
+      difficulty,
+      signal 
+    } = options;
+  
+    // Конструиране на параметрите за заявката
+    const params = {
+      page,
+      limit,
+      sort: `${order === 'desc' ? '-' : ''}${sort}`
+    };
+  
+    // Добавяне на филтри, само ако не са празни
+    if (search) params.search = search;
+    if (category) params.category = category;
+    if (difficulty) params.difficulty = difficulty;
+  
+    return apiClient.get(`/recipes/users/${userId}`, { params, signal });
   }
   
   /**
@@ -139,11 +177,30 @@ class RecipeApi {
    * @param {Object} options - опции за заявката
    */
   static async getFavoriteRecipes(options = {}) {
-    const { page = 1, limit = 10, sort = 'createdAt', order = 'desc', signal } = options;
-    return apiClient.get('/recipes/users/favorites', {
-      params: { page, limit, sort: `${order === 'desc' ? '-' : ''}${sort}` },
-      signal
-    });
+    const { 
+      page = 1, 
+      limit = 10, 
+      sort = 'createdAt', 
+      order = 'desc',
+      search,
+      category,
+      difficulty,
+      signal 
+    } = options;
+  
+    // Конструиране на параметрите за заявката
+    const params = {
+      page,
+      limit,
+      sort: `${order === 'desc' ? '-' : ''}${sort}`
+    };
+  
+    // Добавяне на филтри, само ако не са празни
+    if (search) params.search = search;
+    if (category) params.category = category;
+    if (difficulty) params.difficulty = difficulty;
+  
+    return apiClient.get('/recipes/users/favorites', { params, signal });
   }
   
   /**

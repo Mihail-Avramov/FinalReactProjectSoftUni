@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useRecipes } from '../../hooks/api/useRecipes';
 import { useConfig } from '../../hooks/api/useConfig';
@@ -54,7 +54,6 @@ const RecipesPage = () => {
   
   // Обработчик за промяна на страница
   const handlePageChange = useCallback((newPage) => {
-    console.log(`Промяна на страница: ${newPage}`);
     updatePage(newPage);
     
     // Актуализиране на URL параметрите
@@ -65,8 +64,6 @@ const RecipesPage = () => {
   
   // Обработчик за промяна на филтри
   const handleFilterChange = useCallback((filterData) => {
-    console.log('RecipesPage: handleFilterChange извикан с:', filterData);
-    
     // Актуализиране на URL параметрите
     const newParams = new URLSearchParams(searchParams);
     Object.entries(filterData).forEach(([key, value]) => {
@@ -87,16 +84,12 @@ const RecipesPage = () => {
   
   // Обработчик за промяна на сортиране
   const handleSortChange = useCallback((sortData) => {
-    console.log('RecipesPage: handleSortChange извикан с:', sortData);
-    
     // Обновяване на сортирането
     if (sortData.sort) {
-      console.log(`RecipesPage: извикване на setSort с ${sortData.sort}`);
       updateSort(sortData.sort);
     }
     
     if (sortData.order) {
-      console.log(`RecipesPage: извикване на setOrder с ${sortData.order}`);
       updateOrder(sortData.order);
     }
     
@@ -129,11 +122,6 @@ const RecipesPage = () => {
       author: ''
     });
   }, [limit, sortParam, setSearchParams, updateOptions]);
-  
-  // Debug logging
-  useEffect(() => {
-    console.log("Pagination state:", pagination);
-  }, [pagination]);
 
   return (
     <div className="recipes-page">

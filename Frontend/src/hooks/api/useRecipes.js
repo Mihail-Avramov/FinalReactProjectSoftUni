@@ -49,7 +49,6 @@ export function useRecipes() {
     
     const fetchRecipes = useCallback(
       async (signal) => {
-        console.log("Извикване на fetchRecipes с опции:", fetchOptions);
         const response = await RecipeApi.getRecipes({
           ...fetchOptions,
           signal
@@ -121,9 +120,19 @@ export function useRecipes() {
       setLimit,
       setSort,
       setOrder,
+      setOption,
       refresh,
       processApiResponse
     } = usePagination(initialOptions);
+    
+    // Нова функция за масово актуализиране на опции
+    const updateOptions = useCallback((options) => {
+      Object.entries(options).forEach(([key, value]) => {
+        if (value !== undefined) {
+          setOption(key, value);
+        }
+      });
+    }, [setOption]);
     
     const fetchUserRecipes = useCallback(
       async (signal) => {
@@ -132,6 +141,9 @@ export function useRecipes() {
           limit: fetchOptions.limit,
           sort: fetchOptions.sort,
           order: fetchOptions.order,
+          search: fetchOptions.search,
+          category: fetchOptions.category,
+          difficulty: fetchOptions.difficulty,
           signal
         });
         
@@ -153,6 +165,8 @@ export function useRecipes() {
       setLimit,
       setSort,
       setOrder,
+      setOption,    // Добавяме директен достъп до setOption
+      updateOptions, // Добавяме функция за масово актуализиране на опции
       refresh
     };
   };
@@ -168,9 +182,19 @@ export function useRecipes() {
       setLimit,
       setSort,
       setOrder,
+      setOption,
       refresh,
       processApiResponse
     } = usePagination(initialOptions);
+    
+    // Нова функция за масово актуализиране на опции
+    const updateOptions = useCallback((options) => {
+      Object.entries(options).forEach(([key, value]) => {
+        if (value !== undefined) {
+          setOption(key, value);
+        }
+      });
+    }, [setOption]);
     
     const fetchFavoriteRecipes = useCallback(
       async (signal) => {
@@ -179,6 +203,9 @@ export function useRecipes() {
           limit: fetchOptions.limit,
           sort: fetchOptions.sort,
           order: fetchOptions.order,
+          search: fetchOptions.search,
+          category: fetchOptions.category,
+          difficulty: fetchOptions.difficulty,
           signal
         });
         
@@ -200,6 +227,8 @@ export function useRecipes() {
       setLimit,
       setSort,
       setOrder,
+      setOption,    // Добавяме директен достъп до setOption
+      updateOptions, // Добавяме функция за масово актуализиране на опции
       refresh
     };
   };
@@ -228,6 +257,15 @@ export function useRecipes() {
       setOption('userId', userId);
     }, [userId, setOption]);
     
+    // Нова функция за масово актуализиране на опции
+    const updateOptions = useCallback((options) => {
+      Object.entries(options).forEach(([key, value]) => {
+        if (value !== undefined) {
+          setOption(key, value);
+        }
+      });
+    }, [setOption]);
+    
     const fetchUserRecipesByUserId = useCallback(
       async (signal) => {
         if (!fetchOptions.userId) return null;
@@ -239,6 +277,9 @@ export function useRecipes() {
             limit: fetchOptions.limit,
             sort: fetchOptions.sort,
             order: fetchOptions.order,
+            search: fetchOptions.search,
+            category: fetchOptions.category,
+            difficulty: fetchOptions.difficulty,
             signal
           }
         );
@@ -261,6 +302,8 @@ export function useRecipes() {
       setLimit,
       setSort,
       setOrder,
+      setOption,    // Добавяме директен достъп до setOption
+      updateOptions, // Добавяме функция за масово актуализиране на опции
       refresh
     };
   };

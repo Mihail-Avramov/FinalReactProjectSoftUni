@@ -37,21 +37,9 @@ const RecipeFilters = ({
 
   // Синхронизиране на сортирането с пропс
   useEffect(() => {
-    console.log(`Получени нови пропс за сортиране: sort=${sort}, order=${order}`);
     setCurrentSort(sort);
     setCurrentOrder(order);
   }, [sort, order]);
-  
-  // Дебъг log за конфигурацията при зареждане
-  useEffect(() => {
-    console.log("Заредена конфигурация:", config);
-    if (config?.recipe?.sortOptions) {
-      console.log("Опции за сортиране от конфигурацията:");
-      config.recipe.sortOptions.forEach((opt, i) => 
-        console.log(`  ${i}: ${JSON.stringify(opt)}`)
-      );
-    }
-  }, [config]);
 
   // Обработчици за търсене
   const handleSearchChange = (e) => {
@@ -107,13 +95,8 @@ const RecipeFilters = ({
     const newSort = e.target.value;
     setCurrentSort(newSort);
     
-    console.log("Избрана е опция за сортиране:", newSort);
-    
     // Директна проверка дали имаме валидна стойност
-    if (!newSort) {
-      console.warn("Избраната стойност за сортиране е празна!");
-      return; // Не изпращаме промени с празна стойност
-    }
+    if (!newSort) return; // Не изпращаме промени с празна стойност
     
     // Намиране на съответстващата опция в конфигурацията
     let matchingOption = null;
@@ -123,18 +106,14 @@ const RecipeFilters = ({
       // Използваме option.value вместо option.sort
       matchingOption = config.recipe.sortOptions.find(opt => opt.value === newSort);
       
-      console.log("Намерена опция за сортиране:", matchingOption);
-      
       // Ако опцията има посока, използваме я
       if (matchingOption && matchingOption.direction) {
         newOrder = matchingOption.direction;
         setCurrentOrder(newOrder);
-        console.log(`Задаване на посока от конфигурацията: ${newOrder}`);
       }
     }
     
     // Изпращаме заявка с новите стойности
-    console.log(`Изпращане на: sort=${newSort}, order=${newOrder}`);
     onSortChange({
       sort: newSort,
       order: newOrder
@@ -145,8 +124,6 @@ const RecipeFilters = ({
   const handleOrderChange = () => {
     const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';
     setCurrentOrder(newOrder);
-    
-    console.log(`Промяна на посоката на сортиране: ${newOrder}`);
     
     onSortChange({
       sort: currentSort,
@@ -263,7 +240,6 @@ const RecipeFilters = ({
                 
                 // Проверка дали имаме валидна стойност
                 if (!sortValue) {
-                  console.warn(`Невалидна опция за сортиране #${index}:`, option);
                   return null;
                 }
                 
