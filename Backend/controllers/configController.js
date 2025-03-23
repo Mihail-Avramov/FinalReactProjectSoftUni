@@ -57,10 +57,10 @@ const configController = {
           
           // Опции за сортиране
           sortOptions: [
-            {sort: "createdAt", label: "Най-нови"},
-            {sort: "-createdAt", label: "Най-стари"},
-            {sort: "likes", label: "Най-харесвани"},
-            {sort: "-likes", label: "Най-малко харесвани"},
+            {sort: "-createdAt", label: "Най-нови"},
+            {sort: "createdAt", label: "Най-стари"},
+            {sort: "-likes", label: "Най-харесвани"},
+            {sort: "likes", label: "Най-малко харесвани"},
             {sort: "title", label: "По заглавие (а-я)"},
             {sort: "-title", label: "По заглавие (я-а)"},
             {sort: "preparationTime", label: "По време за приготвяне (възходящо)"},
