@@ -141,6 +141,8 @@ export function useRecipes() {
           search: fetchOptions.search,
           category: fetchOptions.category,
           difficulty: fetchOptions.difficulty,
+          minTime: fetchOptions.minTime,
+          maxTime: fetchOptions.maxTime,
           signal
         });
         
@@ -203,6 +205,8 @@ export function useRecipes() {
           search: fetchOptions.search,
           category: fetchOptions.category,
           difficulty: fetchOptions.difficulty,
+          minTime: fetchOptions.minTime,
+          maxTime: fetchOptions.maxTime,
           signal
         });
         
@@ -277,6 +281,8 @@ export function useRecipes() {
             search: fetchOptions.search,
             category: fetchOptions.category,
             difficulty: fetchOptions.difficulty,
+            minTime: fetchOptions.minTime,
+            maxTime: fetchOptions.maxTime,
             signal
           }
         );

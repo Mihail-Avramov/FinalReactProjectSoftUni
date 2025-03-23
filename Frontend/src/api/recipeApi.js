@@ -122,6 +122,8 @@ class RecipeApi {
       search,
       category,
       difficulty,
+      minTime,
+      maxTime,
       signal
     } = options;
   
@@ -136,6 +138,8 @@ class RecipeApi {
     if (search) params.search = search;
     if (category) params.category = category;
     if (difficulty) params.difficulty = difficulty;
+    if (minTime) params.minTime = minTime;
+    if (maxTime) params.maxTime = maxTime;
   
     return apiClient.get('/recipes/users/', { params, signal });
   }
@@ -154,6 +158,8 @@ class RecipeApi {
       search,
       category,
       difficulty,
+      minTime,
+      maxTime,
       signal 
     } = options;
   
@@ -168,6 +174,8 @@ class RecipeApi {
     if (search) params.search = search;
     if (category) params.category = category;
     if (difficulty) params.difficulty = difficulty;
+    if (minTime) params.minTime = minTime;
+    if (maxTime) params.maxTime = maxTime; 
   
     return apiClient.get(`/recipes/users/${userId}`, { params, signal });
   }
@@ -185,6 +193,8 @@ class RecipeApi {
       search,
       category,
       difficulty,
+      minTime,
+      maxTime,
       signal 
     } = options;
   
@@ -199,6 +209,8 @@ class RecipeApi {
     if (search) params.search = search;
     if (category) params.category = category;
     if (difficulty) params.difficulty = difficulty;
+    if (minTime) params.minTime = minTime;
+    if (maxTime) params.maxTime = maxTime;
   
     return apiClient.get('/recipes/users/favorites', { params, signal });
   }

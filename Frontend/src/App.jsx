@@ -29,6 +29,7 @@ import DeleteAccountPage from './pages/user/DeleteAccountPage';
 // Страници за рецепти
 import RecipesPage from './pages/recipes/RecipesPage';
 import RecipeDetailPage from './pages/recipes/RecipeDetailPage';
+import CreateRecipePage from './pages/recipes/CreateRecipePage';
 import MyRecipesPage from './pages/recipes/MyRecipesPage';
 import MyFavoritesPage from './pages/recipes/MyFavoritesPage';
 
@@ -96,7 +97,13 @@ function App() {
             </RequireAuth>
           } />
 
-          {/* Защитени маршрути само за влезли потребители */}
+          {/* Защитени маршрути за рецепти */}
+          <Route path="/recipes/create" element={
+            <RequireAuth>
+              <CreateRecipePage />
+            </RequireAuth>
+          } />
+
           <Route path="/my-recipes" element={
             <RequireAuth>
               <MyRecipesPage />
