@@ -22,14 +22,14 @@ const RecipeFilters = ({
     setLocalFilters(filters);
     
     // Определяне на избраното време от филтрите
-    if (filters.maxTime === '15') {
-      setSelectedTime(15);
-    } else if (filters.maxTime === '30') {
+    if (filters.maxTime === '30' && !filters.minTime) {
       setSelectedTime(30);
-    } else if (filters.maxTime === '60') {
-      setSelectedTime(60);
-    } else if (filters.minTime === '60') {
+    } else if (filters.minTime === '31' && filters.maxTime === '60') {
+      setSelectedTime(31);
+    } else if (filters.minTime === '61' && filters.maxTime === '120') {
       setSelectedTime(61);
+    } else if (filters.minTime === '121') {
+      setSelectedTime(121);
     } else {
       setSelectedTime(0);
     }
@@ -82,14 +82,16 @@ const RecipeFilters = ({
       // Задаваме новото време
       setSelectedTime(time);
       
-      if (time === 15) {
-        maxTime = '15';
-      } else if (time === 30) {
+      if (time === 30) {
         maxTime = '30';
-      } else if (time === 60) {
+      } else if (time === 31) {
+        minTime = '31';
         maxTime = '60';
-      } else if (time > 60) {
-        minTime = '60';
+      } else if (time === 61) {
+        minTime = '61';
+        maxTime = '120';        
+      } else if (time == 121) {
+        minTime = '121';
       }
     }
     
@@ -217,13 +219,6 @@ const RecipeFilters = ({
         <div className="time-buttons">
           <button
             type="button"
-            className={`time-btn ${selectedTime === 15 ? 'active' : ''}`}
-            onClick={() => handleTimeChange(15)}
-          >
-            До 15 мин
-          </button>
-          <button
-            type="button"
             className={`time-btn ${selectedTime === 30 ? 'active' : ''}`}
             onClick={() => handleTimeChange(30)}
           >
@@ -231,17 +226,24 @@ const RecipeFilters = ({
           </button>
           <button
             type="button"
-            className={`time-btn ${selectedTime === 60 ? 'active' : ''}`}
-            onClick={() => handleTimeChange(60)}
+            className={`time-btn ${selectedTime === 31 ? 'active' : ''}`}
+            onClick={() => handleTimeChange(31)}
           >
-            До 60 мин
+            30 - 60 мин
           </button>
           <button
             type="button"
             className={`time-btn ${selectedTime === 61 ? 'active' : ''}`}
             onClick={() => handleTimeChange(61)}
           >
-            Над 60 мин
+            60 - 120 мин
+          </button>
+          <button
+            type="button"
+            className={`time-btn ${selectedTime === 121 ? 'active' : ''}`}
+            onClick={() => handleTimeChange(121)}
+          >
+            Над 120 мин
           </button>
         </div>
       </div>
