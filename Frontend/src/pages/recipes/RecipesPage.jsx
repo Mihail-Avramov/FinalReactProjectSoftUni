@@ -7,6 +7,7 @@ import RecipeList from '../../components/recipe/RecipeList/RecipeList';
 import Pagination from '../../components/common/Pagination';
 import Alert from '../../components/common/Alert';
 import SEO from '../../components/common/SEO';
+import LoadingOverlay from '../../components/common/LoadingOverlay';
 import './RecipesPage.css';
 
 const RecipesPage = () => {
@@ -64,6 +65,7 @@ const RecipesPage = () => {
   
   // Обработчик за промяна на филтри
   const handleFilterChange = useCallback((filterData) => {
+    
     // Актуализиране на URL параметрите
     const newParams = new URLSearchParams(searchParams);
     Object.entries(filterData).forEach(([key, value]) => {
@@ -84,6 +86,7 @@ const RecipesPage = () => {
   
   // Обработчик за промяна на сортиране
   const handleSortChange = useCallback((sortData) => {
+    
     // Обновяване на сортирането
     if (sortData.sort) {
       updateSort(sortData.sort);
@@ -99,19 +102,30 @@ const RecipesPage = () => {
       const sortParam = sortData.order === 'desc' ? `-${sortData.sort}` : sortData.sort;
       newParams.set('sort', sortParam);
     }
+    newParams.set('page', 1);
     setSearchParams(newParams);
-  }, [searchParams, setSearchParams, updateSort, updateOrder]);
+
+    updateOptions({
+      sort: sortData.sort,
+      order: sortData.order,
+      page: 1
+    });
+
+  }, [searchParams, setSearchParams, updateSort, updateOrder, updateOptions]);
   
   // Изчистване на филтрите
   const clearFilters = useCallback(() => {
-    // Запазваме само page, limit и sort параметрите
+    // Задаваме стойности по подразбиране
+    const defaultSort = '-createdAt';
+    
+    // Създаваме нови параметри
     const newParams = new URLSearchParams();
     newParams.set('page', 1);
     newParams.set('limit', limit);
-    newParams.set('sort', sortParam);
+    newParams.set('sort', defaultSort); // Сега задаваме стойност по подразбиране
     setSearchParams(newParams);
     
-    // Актуализиране на опциите за заявката
+    // Актуализиране на опциите за заявката с всички нужни параметри
     updateOptions({
       page: 1,
       search: '',
@@ -119,9 +133,11 @@ const RecipesPage = () => {
       difficulty: '',
       minTime: '',
       maxTime: '',
-      author: ''
+      author: '',
+      sort: 'createdAt',
+      order: 'desc'
     });
-  }, [limit, sortParam, setSearchParams, updateOptions]);
+  }, [limit, setSearchParams, updateOptions]);
 
   return (
     <div className="recipes-page">
@@ -160,32 +176,30 @@ const RecipesPage = () => {
           )}
           
           {/* Резултати от търсенето */}
-          {loading ? (
+          <LoadingOverlay 
+            active={loading} 
+            message="Зареждане на рецепти..."
+            minHeight={recipes && recipes.length ? 'auto' : '400px'}
+          >
             <RecipeList 
-              loading={true}
-              count={limit}
+              recipes={recipes || []} 
+              loading={false}  // Винаги false, защото overlay-ът поема loading state
+              emptyMessage={
+                filters.search 
+                  ? `Няма намерени рецепти за "${filters.search}".`
+                  : "Няма намерени рецепти, съответстващи на филтрите."
+              }
             />
-          ) : (
-            <>
-              <RecipeList 
-                recipes={recipes} 
-                emptyMessage={
-                  filters.search 
-                    ? `Няма намерени рецепти за "${filters.search}".`
-                    : "Няма намерени рецепти, съответстващи на филтрите."
-                }
+            
+            {/* Пагинация */}
+            {pagination && pagination.total > pagination.limit && (
+              <Pagination 
+                currentPage={pagination.page}
+                totalPages={pagination.pages || Math.ceil(pagination.total / pagination.limit)}
+                onPageChange={handlePageChange}
               />
-              
-              {/* Пагинация */}
-              {pagination && pagination.total > pagination.limit && (
-                <Pagination 
-                  currentPage={pagination.page}
-                  totalPages={pagination.pages || Math.ceil(pagination.total / pagination.limit)}
-                  onPageChange={handlePageChange}
-                />
-              )}
-            </>
-          )}
+            )}
+          </LoadingOverlay>
         </main>
       </div>
     </div>

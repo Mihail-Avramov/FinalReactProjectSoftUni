@@ -19,8 +19,6 @@ export function useRecipes() {
       'Не успяхме да заредим популярните рецепти'
     );
   };
-  
-  // Корекция на usePaginatedRecipes функцията
 
   /**
    * Hook за списък с рецепти с пагинация
@@ -38,7 +36,7 @@ export function useRecipes() {
       processApiResponse
     } = usePagination(initialOptions);
     
-    // Нова функция за масово актуализиране на опции
+    // Функция за масово актуализиране на опции
     const updateOptions = useCallback((options) => {
       Object.entries(options).forEach(([key, value]) => {
         if (value !== undefined) {
@@ -59,7 +57,7 @@ export function useRecipes() {
       [fetchOptions, processApiResponse]
     );
     
-    // Подобрени версии на функциите за сортиране
+    // Функциите за сортиране
     const enhancedSetSort = useCallback((newSort) => {
       console.log("enhancedSetSort извикан с:", newSort);
       originalSetSort(newSort);
@@ -80,7 +78,6 @@ export function useRecipes() {
       'Не успяхме да заредим рецептите'
     );
     
-    // Важно! Връщаме резултата
     return {
       ...result,
       pagination,
@@ -125,7 +122,7 @@ export function useRecipes() {
       processApiResponse
     } = usePagination(initialOptions);
     
-    // Нова функция за масово актуализиране на опции
+    // Функция за масово актуализиране на опции
     const updateOptions = useCallback((options) => {
       Object.entries(options).forEach(([key, value]) => {
         if (value !== undefined) {
@@ -165,8 +162,8 @@ export function useRecipes() {
       setLimit,
       setSort,
       setOrder,
-      setOption,    // Добавяме директен достъп до setOption
-      updateOptions, // Добавяме функция за масово актуализиране на опции
+      setOption,
+      updateOptions,
       refresh
     };
   };
@@ -187,7 +184,7 @@ export function useRecipes() {
       processApiResponse
     } = usePagination(initialOptions);
     
-    // Нова функция за масово актуализиране на опции
+    // Функция за масово актуализиране на опции
     const updateOptions = useCallback((options) => {
       Object.entries(options).forEach(([key, value]) => {
         if (value !== undefined) {
@@ -227,8 +224,8 @@ export function useRecipes() {
       setLimit,
       setSort,
       setOrder,
-      setOption,    // Добавяме директен достъп до setOption
-      updateOptions, // Добавяме функция за масово актуализиране на опции
+      setOption,
+      updateOptions,
       refresh
     };
   };
@@ -257,7 +254,7 @@ export function useRecipes() {
       setOption('userId', userId);
     }, [userId, setOption]);
     
-    // Нова функция за масово актуализиране на опции
+    // Функция за масово актуализиране на опции
     const updateOptions = useCallback((options) => {
       Object.entries(options).forEach(([key, value]) => {
         if (value !== undefined) {
@@ -302,8 +299,8 @@ export function useRecipes() {
       setLimit,
       setSort,
       setOrder,
-      setOption,    // Добавяме директен достъп до setOption
-      updateOptions, // Добавяме функция за масово актуализиране на опции
+      setOption,
+      updateOptions,
       refresh
     };
   };

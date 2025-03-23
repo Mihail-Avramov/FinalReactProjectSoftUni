@@ -2,6 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RecipeFilters.css';
 
+// Помощни функции за различни операции
+const getSortFieldFromSortOption = (sortOption) => {
+  // Премахваме минуса от началото, ако съществува
+  if (!sortOption || typeof sortOption !== 'string') return '';
+  return sortOption.replace(/^-/, '');
+};
+
+const getOrderFromSortOption = (sortOption) => {
+  // Определяме посоката на сортиране - ако има минус, тогава е desc, иначе asc
+  if (!sortOption || typeof sortOption !== 'string') return 'desc';
+  return sortOption.startsWith('-') ? 'desc' : 'asc';
+};
+
+// Функция за съкращаване на етикетите за по-добра четимост
+const getShortenedLabel = (label) => {
+  const labels = {
+    "По време за приготвяне (възходящо)": "Най-бързи първо",
+    "По време за приготвяне (низходящо)": "Най-бавни първо",
+  };
+  return labels[label] || label;
+};
+
 const RecipeFilters = ({ 
   filters, 
   onFilterChange, 
@@ -12,7 +34,7 @@ const RecipeFilters = ({
   order = 'desc'
 }) => {
   const [localFilters, setLocalFilters] = useState(filters);
-  const [currentSort, setCurrentSort] = useState(sort);
+  const [currentSort, setCurrentSort] = useState(`${sort}:${order}`);
   const [currentOrder, setCurrentOrder] = useState(order);
   const [selectedTime, setSelectedTime] = useState(0);
   const navigate = useNavigate();
@@ -37,7 +59,7 @@ const RecipeFilters = ({
 
   // Синхронизиране на сортирането с пропс
   useEffect(() => {
-    setCurrentSort(sort);
+    setCurrentSort(`${sort}:${order}`);
     setCurrentOrder(order);
   }, [sort, order]);
 
@@ -92,48 +114,62 @@ const RecipeFilters = ({
   
   // Обработчик за сортиране
   const handleSortChange = (e) => {
-    const newSort = e.target.value;
-    setCurrentSort(newSort);
+    const rawValue = e.target.value;
+    // Разделяме комбинираната стойност на поле и посока
+    const [newSort, direction] = rawValue.split(':');
+    
+    setCurrentSort(rawValue); // Запазваме цялата стойност за правилна селекция
     
     // Директна проверка дали имаме валидна стойност
     if (!newSort) return; // Не изпращаме промени с празна стойност
     
-    // Намиране на съответстващата опция в конфигурацията
-    let matchingOption = null;
-    let newOrder = currentOrder;
-    
-    if (config?.recipe?.sortOptions) {
-      // Използваме option.value вместо option.sort
-      matchingOption = config.recipe.sortOptions.find(opt => opt.value === newSort);
-      
-      // Ако опцията има посока, използваме я
-      if (matchingOption && matchingOption.direction) {
-        newOrder = matchingOption.direction;
-        setCurrentOrder(newOrder);
-      }
+    // Изпращаме заявка с новите стойности
+    if (direction) {
+      setCurrentOrder(direction);
     }
     
-    // Изпращаме заявка с новите стойности
     onSortChange({
       sort: newSort,
-      order: newOrder
-    });
-  };
-  
-  // Обработчик за промяна на посоката на сортиране
-  const handleOrderChange = () => {
-    const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';
-    setCurrentOrder(newOrder);
-    
-    onSortChange({
-      sort: currentSort,
-      order: newOrder
+      order: direction || currentOrder
     });
   };
   
   // За отваряне на страницата за създаване на рецепта
   const handleCreateClick = () => {
     navigate('/recipes/create');
+  };
+
+  const handleClearAllFilters = () => {
+    const emptyFilters = {
+      search: '',
+      category: '',
+      difficulty: '',
+      minTime: '',
+      maxTime: '',
+      author: ''
+    };
+    const defaultSort = 'createdAt';
+    const defaultOrder = 'desc';
+    
+    // 2. Обновяваме локалното състояние
+    setLocalFilters(emptyFilters);
+    setSelectedTime(0);
+    setCurrentSort(`${defaultSort}:${defaultOrder}`);
+    setCurrentOrder(defaultOrder);
+    
+    // Първо изчистваме филтрите
+    onFilterChange(emptyFilters);
+    
+    // След това задаваме сортирането по подразбиране
+    onSortChange({
+      sort: defaultSort,
+      order: defaultOrder
+    });
+    
+    // Накрая извикваме общата функция след кратко забавяне
+    setTimeout(() => {
+      onClearFilters();
+    }, 0);
   };
 
   return (
@@ -233,33 +269,96 @@ const RecipeFilters = ({
             onChange={handleSortChange}
             className="sort-select"
           >
-            {config && config.recipe && Array.isArray(config.recipe.sortOptions) ? 
-              config.recipe.sortOptions.map((option, index) => {
-                // Извличане на чистата стойност за сортиране (без знак минус)
-                const sortValue = option.value || '';
-                
-                // Проверка дали имаме валидна стойност
-                if (!sortValue) {
-                  return null;
-                }
-                
-                return (
-                  <option key={index} value={sortValue}>
-                    {option.label}
-                  </option>
-                );
-              })
-              : <option value="createdAt">Най-нови</option>
-            }
+            {config && config.recipe && Array.isArray(config.recipe.sortOptions) ? (
+              <>
+                {/* Групирани опции за време на създаване */}
+                <optgroup label="Дата на създаване">
+                  {config.recipe.sortOptions
+                    .filter(opt => opt.sort && /^-?createdAt$/.test(opt.sort))
+                    .map((option, index) => {
+                      const sortField = getSortFieldFromSortOption(option.sort);
+                      const direction = getOrderFromSortOption(option.sort);
+                      
+                      return (
+                        <option 
+                          key={`date-${index}`} 
+                          value={`${sortField}:${direction}`} // Комбинираме поле и посока в един стринг
+                          data-direction={direction}
+                        >
+                          {option.label}
+                        </option>
+                      );
+                    })
+                  }
+                </optgroup>
+
+                {/* Групирани опции за харесвания */}
+                <optgroup label="Харесвания">
+                  {config.recipe.sortOptions
+                    .filter(opt => opt.sort && /^-?likes$/.test(opt.sort))
+                    .map((option, index) => {
+                      const sortField = getSortFieldFromSortOption(option.sort);
+                      const direction = getOrderFromSortOption(option.sort);
+                      
+                      return (
+                        <option 
+                          key={`likes-${index}`} 
+                          value={`${sortField}:${direction}`} // Комбинираме поле и посока в един стринг
+                          data-direction={direction}
+                        >
+                          {option.label}
+                        </option>
+                      );
+                    })
+                  }
+                </optgroup>
+
+                {/* Групирани опции за заглавие */}
+                <optgroup label="Заглавие">
+                  {config.recipe.sortOptions
+                    .filter(opt => opt.sort && /^-?title$/.test(opt.sort))
+                    .map((option, index) => {
+                      const sortField = getSortFieldFromSortOption(option.sort);
+                      const direction = getOrderFromSortOption(option.sort);
+                      
+                      return (
+                        <option 
+                          key={`title-${index}`} 
+                          value={`${sortField}:${direction}`} // Комбинираме поле и посока в един стринг
+                          data-direction={direction}
+                        >
+                          {option.label}
+                        </option>
+                      );
+                    })
+                  }
+                </optgroup>
+
+                {/* Групирани опции за време на приготвяне */}
+                <optgroup label="Време за приготвяне">
+                  {config.recipe.sortOptions
+                    .filter(opt => opt.sort && /^-?preparationTime$/.test(opt.sort))
+                    .map((option, index) => {
+                      const sortField = getSortFieldFromSortOption(option.sort);
+                      const direction = getOrderFromSortOption(option.sort);
+                      
+                      return (
+                        <option 
+                          key={`time-${index}`} 
+                          value={`${sortField}:${direction}`} // Комбинираме поле и посока в един стринг
+                          data-direction={direction}
+                        >
+                          {getShortenedLabel(option.label)}
+                        </option>
+                      );
+                    })
+                  }
+                </optgroup>
+              </>
+            ) : (
+              <option value="createdAt">Най-нови</option>
+            )}
           </select>
-          <button 
-            type="button"
-            className="order-toggle"
-            onClick={handleOrderChange}
-            title={currentOrder === 'asc' ? 'Низходящо' : 'Възходящо'}
-          >
-            <i className={`fas fa-sort-${currentOrder === 'asc' ? 'up' : 'down'}`}></i>
-          </button>
         </div>
       </div>
       
@@ -267,7 +366,7 @@ const RecipeFilters = ({
         <button 
           type="button"
           className="clear-filters"
-          onClick={onClearFilters}
+          onClick={handleClearAllFilters}
         >
           Изчисти филтрите
         </button>
