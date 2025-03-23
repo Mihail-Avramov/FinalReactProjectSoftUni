@@ -25,12 +25,12 @@ import ProfilePage from './pages/user/ProfilePage';
 import ProfileEditPage from './pages/user/ProfileEditPage';
 import PasswordChangePage from './pages/user/PasswordChangePage';
 import DeleteAccountPage from './pages/user/DeleteAccountPage';
-//import MyRecipesPage from './pages/user/MyRecipesPage';
-//import MyFavoritesPage from './pages/user/MyFavoritesPage';
 
 // Страници за рецепти
 import RecipesPage from './pages/recipes/RecipesPage';
 import RecipeDetailPage from './pages/recipes/RecipeDetailPage';
+import MyRecipesPage from './pages/recipes/MyRecipesPage';
+import MyFavoritesPage from './pages/recipes/MyFavoritesPage';
 
 function App() {
   return (
@@ -96,7 +96,7 @@ function App() {
             </RequireAuth>
           } />
 
-          {/* Защитени маршрути само за влезли потребители 
+          {/* Защитени маршрути само за влезли потребители */}
           <Route path="/my-recipes" element={
             <RequireAuth>
               <MyRecipesPage />
@@ -106,7 +106,7 @@ function App() {
             <RequireAuth>
               <MyFavoritesPage />
             </RequireAuth>
-          } />*/}
+          } />
           
           {/* Маршрути за профил - публично достъпен профил с id параметър */}
           <Route path="/profile/:userId" element={<ProfilePage />} />
