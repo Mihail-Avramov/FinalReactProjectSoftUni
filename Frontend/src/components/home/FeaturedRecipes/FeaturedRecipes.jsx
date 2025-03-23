@@ -61,7 +61,7 @@ function FeaturedRecipes({ recipes = [], loading = false, error = null }) {
         )}
         
         <div className={styles.viewAll}>
-          <Link to="/recipes" className={styles.viewAllButton}>Виж всички рецепти</Link>
+          <Link to="/recipes" className="btn btn-primary">Виж всички рецепти</Link>
         </div>
       </div>
     </section>
