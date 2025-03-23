@@ -426,7 +426,7 @@ const recipeService = {
   /**
    * Get user's recipes with optimized response format
    */
-  async getUserRecipes(userId, pagination = {}, currentUserId = null) {
+  async getUserRecipes(userId, pagination = {}, currentUserId = null, filters = {}) {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       throw new AppError(errorMessages.validation.invalidObjectId, 400);
     }
@@ -437,9 +437,29 @@ const recipeService = {
       const skip = (page - 1) * limit;
       const sort = pagination.sort || '-createdAt';
       
-      const totalDocs = await Recipe.countDocuments({ author: userId });
+      // Създаване на query обект с базовия филтър за автора
+      const queryObj = { author: userId };
       
-      const recipes = await Recipe.find({ author: userId })
+      // Добавяне на допълнителни филтри, ако са посочени
+      if (filters.category) {
+        queryObj.category = filters.category;
+      }
+      
+      if (filters.difficulty) {
+        queryObj.difficulty = filters.difficulty;
+      }
+      
+      if (filters.search) {
+        const searchRegex = new RegExp(filters.search, 'i');
+        queryObj.$or = [
+          { title: { $regex: searchRegex } },
+          { description: { $regex: searchRegex } }
+        ];
+      }
+      
+      const totalDocs = await Recipe.countDocuments(queryObj);
+      
+      const recipes = await Recipe.find(queryObj)
         .select('title description category preparationTime difficulty servings createdAt updatedAt images author likesCount')
         .sort(sort)
         .skip(skip)
@@ -447,6 +467,7 @@ const recipeService = {
         .populate('author', 'username firstName lastName profilePicture')
         .lean();
       
+      // Останалата логика остава същата
       if (recipes.length > 0) {
         const recipeIds = recipes.map(recipe => recipe._id);
         
@@ -526,7 +547,7 @@ const recipeService = {
 /**
  * Get user's favorite recipes - optimized implementation
  */
-async getFavoriteRecipes(userId, pagination = {}) {
+async getFavoriteRecipes(userId, pagination = {}, filters = {}) {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new AppError(errorMessages.validation.invalidObjectId, 400);
   }
@@ -555,16 +576,36 @@ async getFavoriteRecipes(userId, pagination = {}) {
       };
     }
     
+    // Създаване на query обект с базовия филтър за ID-та
+    const queryObj = { _id: { $in: favoriteIds } };
+    
+    // Добавяне на допълнителни филтри, ако са посочени
+    if (filters.category) {
+      queryObj.category = filters.category;
+    }
+    
+    if (filters.difficulty) {
+      queryObj.difficulty = filters.difficulty;
+    }
+    
+    if (filters.search) {
+      const searchRegex = new RegExp(filters.search, 'i');
+      queryObj.$or = [
+        { title: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } }
+      ];
+    }
+    
     // Apply pagination
     const page = parseInt(pagination.page) || 1;
     const limit = parseInt(pagination.limit) || 10;
     const skip = (page - 1) * limit;
     
-    // Count total favorites
-    const totalDocs = favoriteIds.length;
+    // Count total matching favorites
+    const totalDocs = await Recipe.countDocuments(queryObj);
     
     // Get recipes with pagination - ONLY required fields
-    const recipes = await Recipe.find({ _id: { $in: favoriteIds } })
+    const recipes = await Recipe.find(queryObj)
       .select('title description category preparationTime difficulty servings createdAt updatedAt images author likesCount')
       .sort('-createdAt')
       .skip(skip)
@@ -572,6 +613,7 @@ async getFavoriteRecipes(userId, pagination = {}) {
       .populate('author', 'username firstName lastName profilePicture')
       .lean();
     
+    // Останалата логика остава същата
     if (recipes.length > 0) {
       const recipeIds = recipes.map(recipe => recipe._id);
       
