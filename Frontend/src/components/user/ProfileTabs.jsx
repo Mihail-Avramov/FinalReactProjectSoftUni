@@ -6,7 +6,6 @@ const ProfileTabs = ({ activeTab, setActiveTab, isOwnProfile }) => {
     { id: 'recipes', label: 'Рецепти', icon: 'utensils' },
   ];
   
-  // Добавяме таб за любими само ако е собствен профил
   if (isOwnProfile) {
     tabs.splice(1, 0, { id: 'favorites', label: 'Любими', icon: 'heart' });
   }

@@ -30,6 +30,7 @@ import DeleteAccountPage from './pages/user/DeleteAccountPage';
 
 // Страници за рецепти
 import RecipesPage from './pages/recipes/RecipesPage';
+import RecipeDetailPage from './pages/recipes/RecipeDetailPage';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/recipes" element={<RecipesPage />} />
+          <Route path="/recipes/:id" element={<RecipeDetailPage />} />
           
           {/* Маршрути само за гости */}
           <Route path="/login" element={

@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/api/useAuth';
 import Button from '../common/Button';
+import UserAvatar from '../user/UserAvatar';
 import styles from './Header.module.css';
-import defaultAvatar from '/images/default-avatar.webp';
 
 function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -157,14 +157,11 @@ function Header() {
                 title={`Профил на ${displayName}`}
               >
                 <div className={styles.userProfile}>
-                  <img 
-                    src={user?.profilePicture || defaultAvatar}
+                  <UserAvatar 
+                    src={user?.profilePicture}
                     alt={`${displayName}'s avatar`}
                     className={styles.userAvatar}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = defaultAvatar;
-                    }} 
+                    size="medium"
                   />
                   <span className={styles.userName}>{displayName}</span>
                 </div>

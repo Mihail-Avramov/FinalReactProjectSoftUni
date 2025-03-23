@@ -1,0 +1,822 @@
+.recipePage {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 0;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.recipeContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+/* Галерия със снимки */
+.recipeImageGallery {
+  position: relative;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  background-color: var(--bg-secondary);
+  margin-bottom: 1rem;
+  height: auto;
+  width: 100%;
+}
+
+/* Категория и бадж */
+.mobileRecipeMeta {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 5;
+}
+
+.categoryBadge,
+.desktopCategoryBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 30px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.desktopCategoryBadge {
+  margin-bottom: 1rem;
+}
+
+.categoryIcon {
+  display: inline-flex;
+  margin-right: 0.5rem;
+}
+
+/* Съдържание на рецептата */
+.recipeContent {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+}
+
+.recipeHeader {
+  margin-bottom: 2rem;
+}
+
+.recipeHeaderTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.recipeTitleSection {
+  flex: 1;
+}
+
+.recipeTitle {
+  font-size: 2.25rem;
+  margin: 0;
+  margin-top: 0.5rem;
+  color: var(--text-primary);
+  line-height: 1.2;
+  font-family: var(--font-heading);
+}
+
+/* Действия с рецепта */
+.recipeActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.actionButton {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.actionButton svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.actionButton:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow);
+}
+
+.actionActive {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.actionCount {
+  position: absolute;
+  bottom: -0.5rem;
+  right: -0.5rem;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.editButton {
+  background: var(--primary);
+  border: none;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all var(--transition-fast);
+}
+
+.editButton:hover {
+  background-color: var(--primary-dark);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow);
+}
+
+/* Информация за автора */
+.recipeAuthor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.authorLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition-fast);
+}
+
+.authorLink:hover {
+  color: var(--primary);
+}
+
+.authorInfo {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.75rem;
+}
+
+.authorName {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.authorUsername {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.recipeDate {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Мета информация */
+.recipeMeta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 0;
+  padding: 1.25rem;
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+}
+
+.metaIcon {
+  margin-right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metaIcon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.metaContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.metaLabel {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.metaValue {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-family: var(--font-heading);
+}
+
+/* Описание */
+.recipeDescription {
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.recipeDescription h2 {
+  font-family: var(--font-heading);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.recipeDescription p {
+  line-height: 1.6;
+  color: var(--text-primary);
+  font-size: 1.0625rem;
+  margin: 0;
+}
+
+/* Съставки и инструкции */
+.recipeComponents {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--primary);
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+.sectionHeading svg {
+  margin-right: 0.75rem;
+  color: var(--primary);
+  width: 24px;
+  height: 24px;
+}
+
+/* Списък със съставки */
+.ingredientsList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.5rem 2rem;
+}
+
+.ingredientItem {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed var(--border-color);
+  color: var(--text-primary);
+}
+
+.ingredientItem:last-child {
+  border-bottom: none;
+}
+
+.checkboxCircle {
+  min-width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  margin-right: 1rem;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.ingredientItem:hover .checkboxCircle {
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+/* Списък с инструкции */
+.instructionsList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+}
+
+.instructionItem {
+  display: flex;
+  padding: 1rem 0;
+  border-bottom: 1px dashed var(--border-color);
+  position: relative;
+}
+
+.instructionItem:last-child {
+  border-bottom: none;
+}
+
+.stepNumber {
+  background-color: var(--primary);
+  color: white;
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.stepText {
+  flex: 1;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Responsive design */
+@media screen and (min-width: 768px) {
+  .recipeContainer {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .recipeImageGallery {
+    margin-bottom: 0;
+  }
+  
+  .mobileRecipeMeta {
+    display: none;
+  }
+  
+  .recipeComponents {
+    grid-template-columns: 300px 1fr;
+  }
+
+  .recipeTopSection {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  
+  .recipeMainContent {
+    grid-template-columns: 300px 1fr;
+    align-items: start;
+    gap: 3rem;
+  }
+
+  .ingredientsList {
+    grid-template-columns: 1fr; /* Съставките в една колона на десктоп */
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .recipeTopSection {
+    grid-template-columns: 500px 1fr;
+  }
+  
+  .recipeMainContent {
+    grid-template-columns: 350px 1fr;
+  }
+
+  .recipeMeta {
+    margin-top: 1rem;
+  }
+
+  .recipeMedia {
+    max-width: 500px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .desktopCategoryBadge {
+    display: none;
+  }
+  
+  .recipeMeta {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  
+  .recipeTitle {
+    font-size: 1.75rem;
+  }
+
+  .recipeImageGallery {
+    height: 300px;
+  }
+
+  .recipeInfoContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.25rem;
+  }
+}
+
+/* Секция коментари */
+.commentSection {
+  margin-top: 3rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 2rem;
+}
+
+/* Само допълнителни промени за рецептите */
+
+/* Медиа секция */
+.recipeMedia {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Top section layout */
+.recipeTopSection {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+/* Основно съдържание */
+.recipeContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+}
+
+/* Горна секция (галерия и инфо) */
+.recipeTopSection {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+/* Контейнер за галерия със снимки */
+.recipeImageContainer {
+  width: 100%;
+}
+
+.recipeImageGallery {
+  position: relative;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  background-color: var(--bg-secondary);
+  width: 100%;
+}
+
+/* Контейнер за информация за рецептата */
+.recipeInfoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Секция с описание */
+.recipeDescription {
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1.5rem;
+}
+
+.recipeDescription p {
+  line-height: 1.6;
+  color: var(--text-primary);
+  font-size: 1.0625rem;
+  margin: 0;
+}
+
+/* Мета информация */
+.recipeMeta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+/* Съставки и инструкции */
+.recipeDirectionsContainer {
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.recipeMainContent {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+/* Добавени стилове за акордиони */
+
+/* Акордион секция */
+.accordionSection {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.accordionSection:last-child {
+  border-bottom: none;
+}
+
+/* Заглавие на акордион */
+.accordionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1.25rem 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+  outline: none;
+}
+
+.accordionHeader:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Заглавие на акордион */
+.accordionTitle {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+}
+
+.accordionTitle svg {
+  margin-right: 0.75rem;
+  color: var(--primary);
+  width: 24px;
+  height: 24px;
+}
+
+/* Икона за разгъване/свиване */
+.accordionIcon {
+  color: var(--text-secondary);
+  transition: transform 0.3s ease;
+}
+
+/* Съдържание на акордион */
+.accordionContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  opacity: 0;
+  padding: 0 2rem;
+}
+
+.accordionOpen {
+  max-height: 2000px; /* Достатъчно голяма стойност, за да се покаже съдържанието */
+  opacity: 1;
+  padding: 0.5rem 2rem 2rem;
+}
+
+/* Списък със съставки */
+.ingredientsList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.5rem 2rem;
+}
+
+.ingredientItem {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed var(--border-color);
+  color: var(--text-primary);
+}
+
+.ingredientItem:last-child {
+  border-bottom: none;
+}
+
+.checkboxCircle {
+  min-width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  margin-right: 1rem;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.ingredientItem:hover .checkboxCircle {
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+/* Списък с инструкции */
+.instructionsList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.instructionItem {
+  display: flex;
+  padding: 1rem 0;
+  border-bottom: 1px dashed var(--border-color);
+  position: relative;
+}
+
+.instructionItem:last-child {
+  border-bottom: none;
+}
+
+.stepNumber {
+  background-color: var(--primary);
+  color: white;
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.stepText {
+  flex: 1;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Допълнителни анимации за акордионите */
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.accordionOpen .ingredientsList,
+.accordionOpen .instructionsList {
+  animation: fadeDown 0.3s ease-in-out;
+}
+
+/* Анимация на иконата */
+.accordionHeader[aria-expanded="true"] .accordionIcon {
+  transform: rotate(180deg);
+}
+
+@media screen and (min-width: 1025px) {
+  .recipeTopSection {
+    grid-template-columns: 500px 1fr;
+  }
+  
+  .recipeImageContainer {
+    max-width: 500px;
+  }
+  
+  .recipeMainContent {
+    grid-template-columns: 350px 1fr;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .recipeInfoContainer {
+    flex-direction: row;
+    gap: 1.5rem;
+    padding: 0;
+  }
+
+  .recipeDescription {
+    margin: 0;
+  }
+
+  .recipeMeta {
+    margin: 0;
+  }
+}
+
+@media screen and (max-width: 920px) {
+  .recipeInfoContainer {
+    flex-direction: column;
+  }
+}
+
+/* Responsive styles */
+@media screen and (max-width: 767px) {
+  .accordionHeader {
+    padding: 1rem 1.25rem;
+  }
+  
+  .accordionOpen {
+    padding: 0.5rem 1.25rem 1.5rem;
+  }
+  
+  .ingredientsList {
+    grid-template-columns: 1fr;
+  }
+  
+  .recipeMainContent {
+    grid-template-columns: 300px 1fr;
+    gap: 3rem;
+  }
+  
+  .recipeDirectionsContainer {
+    padding: 1.5rem;
+  }
+
+  .recipeImageGallery {
+    height: auto;
+  }
+}
+
+
+@media screen and (max-width: 480px) {
+  .recipeMeta {
+    grid-template-columns: 1fr;
+  }
+  
+  .recipeDirectionsContainer {
+    padding: 1.25rem;
+  }
+}

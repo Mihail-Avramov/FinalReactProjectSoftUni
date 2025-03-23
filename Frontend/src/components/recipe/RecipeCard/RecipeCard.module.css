@@ -1,20 +1,24 @@
 /* Основен контейнер за рецептата */
 .recipeCard {
+  background-color: var(--bg-card, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: 100%; /* Важно: запълва цялата височина на wrapper-а */
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  background-color: var(--white);
-  box-shadow: var(--box-shadow-sm);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  border: 1px solid transparent;
+  transform: translateY(0);
 }
 
 /* Подобрен hover ефект - повдигане и по-изразителна сянка */
 .recipeCard:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--box-shadow-md);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+  border-color: rgba(var(--primary-rgb, 30, 136, 229), 0.2);
 }
 
 /* Добавяме допълнителен светлинен ефект при hover */
@@ -38,8 +42,8 @@
 
 /* Секция за изображението - увеличавам височината */
 .recipeImage {
-  height: 200px; /* Фиксирана височина за изображенията */
   position: relative;
+  height: 200px; /* Увеличена височина от 180px на 200px */
   overflow: hidden;
   background-color: #f0f0f0;
   z-index: 0;
@@ -104,10 +108,10 @@
 
 /* Съдържание на рецептата */
 .recipeContent {
+  padding: 15px;
   display: flex;
   flex-direction: column;
-  flex: 1; /* Запълва останалото пространство */
-  padding: 1.25rem;
+  flex: 1;
   position: relative;
 }
 
@@ -121,15 +125,16 @@
 }
 
 .recipeTitle {
-  font-size: 1.25rem;
-  margin: 0 0 1rem;
-  color: var(--text-primary);
-  height: 2.8rem; /* ~2 реда текст */
-  overflow: hidden;
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--text-primary, #333);
   transition: color 0.2s ease;
 }
 
@@ -327,26 +332,24 @@
 
 /* Описание на рецептата - не е центрирано */
 .recipeDescription {
-  color: var(--text-secondary);
-  margin: 1rem 0;
-  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+  margin: 20px 0;
+  font-size: 0.85rem;
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* Винаги показва 3 реда */
-  line-clamp: 3;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 3.6em; /* ~3 реда текст */
-  flex: 1; /* Заема останалото пространство */
 }
 
 /* Футър на рецептата */
 .recipeFooter {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: auto; /* Избутва футъра към дъното */
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
 }
 
 /* Данни за автора */
