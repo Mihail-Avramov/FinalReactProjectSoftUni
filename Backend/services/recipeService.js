@@ -13,6 +13,32 @@ const TRENDING_CACHE_ENABLED = config.api.caching.trendingRecipes.enabled;
 const DEFAULT_TRENDING_LIMIT = config.api.caching.trendingRecipes.defaultLimit;
 
 /**
+ * Валидни полета за сортиране
+ */
+const validSortFields = ['createdAt', 'likesCount', 'preparationTime', 'title', 'difficulty', 'commentCount'];
+
+/**
+ * Трансформира и валидира полето за сортиране
+ */
+const transformSortField = (sortField) => {
+  // Първо обработваме специалния случай с 'likes'
+  if (sortField === 'likes') return 'likesCount';
+  if (sortField === '-likes') return '-likesCount';
+  
+  // След това валидираме полето
+  const isDescending = sortField.startsWith('-');
+  const cleanField = isDescending ? sortField.substring(1) : sortField;
+  
+  // Проверка дали полето е валидно
+  if (!validSortFields.includes(cleanField)) {
+    return '-createdAt'; // Връщаме по подразбиране сортиране
+  }
+  
+  // Връщаме валидното поле
+  return sortField;
+};
+
+/**
  * Recipe Service - Contains business logic for recipe operations
  */
 const recipeService = {
@@ -62,8 +88,9 @@ const recipeService = {
       const limit = parseInt(pagination.limit) || 10;
       const skip = (page - 1) * limit;
       
-      // Apply sorting
-      const sortField = pagination.sort || '-createdAt';
+      // Apply sorting with transformation
+      const originalSortField = pagination.sort || '-createdAt';
+      const sortField = transformSortField(originalSortField);
       
       // Execute query with pagination - selective fields for optimization
       const recipes = await Recipe.find(queryObj)
@@ -171,7 +198,6 @@ const recipeService = {
     try {
       if (recipeData.imageFiles && recipeData.imageFiles.length > 0) {
         try {
-          // Директно подаваме файловете към подобрения метод
           uploadedImages = await imageService.uploadMultipleImages(recipeData.imageFiles, 'recipes');
         } catch (uploadError) {
           console.error('Error uploading images:', uploadError);
@@ -435,7 +461,10 @@ const recipeService = {
       const page = parseInt(pagination.page) || 1;
       const limit = parseInt(pagination.limit) || 10;
       const skip = (page - 1) * limit;
-      const sort = pagination.sort || '-createdAt';
+      
+      // Apply sorting with transformation
+      const originalSort = pagination.sort || '-createdAt';
+      const sort = transformSortField(originalSort);
       
       // Създаване на query обект с базовия филтър за автора
       const queryObj = { author: userId };
@@ -467,7 +496,6 @@ const recipeService = {
         .populate('author', 'username firstName lastName profilePicture')
         .lean();
       
-      // Останалата логика остава същата
       if (recipes.length > 0) {
         const recipeIds = recipes.map(recipe => recipe._id);
         
@@ -604,16 +632,19 @@ async getFavoriteRecipes(userId, pagination = {}, filters = {}) {
     // Count total matching favorites
     const totalDocs = await Recipe.countDocuments(queryObj);
     
+    // Apply sorting with transformation instead of fixed sort
+    const originalSort = pagination.sort || '-createdAt';
+    const sort = transformSortField(originalSort);
+    
     // Get recipes with pagination - ONLY required fields
     const recipes = await Recipe.find(queryObj)
       .select('title description category preparationTime difficulty servings createdAt updatedAt images author likesCount')
-      .sort('-createdAt')
+      .sort(sort)
       .skip(skip)
       .limit(limit)
       .populate('author', 'username firstName lastName profilePicture')
       .lean();
     
-    // Останалата логика остава същата
     if (recipes.length > 0) {
       const recipeIds = recipes.map(recipe => recipe._id);
       

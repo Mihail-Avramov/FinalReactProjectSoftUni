@@ -227,7 +227,8 @@ const recipeController = {
       
       const pagination = {
         page: parseInt(req.query.page) || 1,
-        limit: parseInt(req.query.limit) || 10
+        limit: parseInt(req.query.limit) || 10,
+        sort: req.query.sort || '-createdAt' // Добавяме sort параметъра
       };
       
       const result = await recipeService.getFavoriteRecipes(userId, pagination, filters);
