@@ -7,6 +7,10 @@ import styles from './RecipeCard.module.css';
 function RecipeCard({ recipe }) {
   const categoryLabel = getCategoryLabel(recipe.category);
   
+  const hasValidImages = recipe.images && 
+                        Array.isArray(recipe.images) && 
+                        recipe.images.length > 0;
+  
   const difficultyClass = {
     easy: styles.difficultyEasy,
     medium: styles.difficultyMedium,
@@ -42,8 +46,9 @@ function RecipeCard({ recipe }) {
     <div className={styles.recipeCard}>
       <div className={styles.recipeImage}>
         <ImageCarousel 
-          images={recipe.images || []} 
-          alt={recipe.title} 
+          images={hasValidImages ? recipe.images : []}
+          alt={recipe.title}
+          noImageFallback="/images/no-image-500.jpg"
         />
         <div className={styles.cardOverlay}>
           <span className={styles.recipeCategory}>

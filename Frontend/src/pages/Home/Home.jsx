@@ -10,19 +10,6 @@ function Home() {
   const { useTrending } = useRecipes();
   const { data: trendingRecipes, loading, error } = useTrending(6);
 
-  if (loading && (!trendingRecipes || trendingRecipes.length === 0)) {
-    return (
-      <>
-        <SEO
-          title="Начало"
-          description="CulinaryCorner - Открийте, споделете и се насладете на хиляди вкусни рецепти от цял свят. Разгледайте най-популярните рецепти, вдъхновете се и започнете своето кулинарно пътешествие."
-          keywords="рецепти, готвене, храна, кулинария, вкусни ястия, популярни рецепти, кулинарни идеи"
-        />
-        <LoadingSpinner />
-      </>
-    );
-  }
-
   return (
     <div className={styles.homePage}>
       <SEO
@@ -31,7 +18,7 @@ function Home() {
         keywords="рецепти, готвене, храна, кулинария, вкусни ястия, популярни рецепти, кулинарни идеи"
         ogImage={trendingRecipes && trendingRecipes.length > 0 ? trendingRecipes[0].images[0] : undefined}
       />
-      <Hero trendingRecipe={trendingRecipes && trendingRecipes.length > 0 ? trendingRecipes[0] : null} />
+      <Hero trendingRecipe={trendingRecipes && trendingRecipes.length > 0 ? trendingRecipes[0] : null} loading={loading} />
       <FeaturedRecipes recipes={trendingRecipes || []} loading={loading} error={error} />
     </div>
   );

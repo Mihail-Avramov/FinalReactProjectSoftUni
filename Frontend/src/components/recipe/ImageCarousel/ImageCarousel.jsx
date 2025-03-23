@@ -1,14 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './ImageCarousel.module.css';
 
-function ImageCarousel({ images, alt }) {
+function ImageCarousel({ images, alt, noImageFallback = '/images/no-image-500.jpg' }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const timerRef = useRef(null);
 
+  // Проверяваме дали имаме изображения
+  const hasValidImages = Array.isArray(images) && images.length > 0 && 
+                        images.some(img => img && (img.card || img.url));
+  
+  // Определяме масива със снимки за показване
+  const displayImages = hasValidImages 
+    ? images.filter(img => img && (img.card || img.url))
+    : [{ url: noImageFallback, card: noImageFallback }];
+
   const changeSlide = useCallback((newIndex) => {
-    if (isTransitioning) return;
+    if (isTransitioning || displayImages.length <= 1) return;
     
     setIsTransitioning(true);
     setCurrentIndex(newIndex);
@@ -16,12 +25,12 @@ function ImageCarousel({ images, alt }) {
     setTimeout(() => {
       setIsTransitioning(false);
     }, 600);
-  }, [isTransitioning]);
+  }, [isTransitioning, displayImages.length]);
 
   useEffect(() => {
-    if (!isHovering && images.length > 1) {
+    if (!isHovering && displayImages.length > 1) {
       timerRef.current = setInterval(() => {
-        changeSlide((currentIndex + 1) % images.length);
+        changeSlide((currentIndex + 1) % displayImages.length);
       }, 5000);
       
       return () => {
@@ -30,7 +39,7 @@ function ImageCarousel({ images, alt }) {
         }
       };
     }
-  }, [images.length, isHovering, currentIndex, changeSlide]);
+  }, [displayImages.length, isHovering, currentIndex, changeSlide]);
 
   const handleNext = (e) => {
     e.preventDefault();
@@ -40,7 +49,7 @@ function ImageCarousel({ images, alt }) {
       clearInterval(timerRef.current);
     }
     
-    changeSlide((currentIndex + 1) % images.length);
+    changeSlide((currentIndex + 1) % displayImages.length);
   };
 
   const handlePrev = (e) => {
@@ -51,7 +60,7 @@ function ImageCarousel({ images, alt }) {
       clearInterval(timerRef.current);
     }
     
-    changeSlide((currentIndex - 1 + images.length) % images.length);
+    changeSlide((currentIndex - 1 + displayImages.length) % displayImages.length);
   };
 
   const handleDotClick = (index) => {
@@ -63,23 +72,16 @@ function ImageCarousel({ images, alt }) {
   };
 
   useEffect(() => {
-    if (images.length > 1) {
-      setCurrentIndex(Math.floor(Math.random() * images.length));
+    if (displayImages.length > 1) {
+      setCurrentIndex(Math.floor(Math.random() * displayImages.length));
     }
-  }, [images.length]);
+  }, [displayImages.length]);
 
-  const placeholderImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2YwZjBmMCIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5Ij7QndGP0LzQsCDQuNC30L7QsdGA0LDQttC10L3QuNC1PC90ZXh0Pjwvc3ZnPg==';
-
-  if (!images || images.length === 0) {
-    return (
-      <div className={styles.carousel}>
-        <div className={styles.placeholder}>
-          <span className={styles.placeholderIcon}>🖼️</span>
-          <img src={placeholderImage} alt={alt || 'Рецепта без изображение'} />
-        </div>
-      </div>
-    );
-  }
+  // Обработчик за грешки при зареждане на изображение
+  const handleImageError = (e) => {
+    console.log('Грешка при зареждане на изображение');
+    e.target.src = noImageFallback;
+  };
 
   return (
     <div 
@@ -88,7 +90,7 @@ function ImageCarousel({ images, alt }) {
       onMouseLeave={() => setIsHovering(false)}
     >
       <div className={styles.carouselTrack}>
-        {images.map((image, index) => (
+        {displayImages.map((image, index) => (
           <div 
             key={index} 
             className={`${styles.carouselSlide} ${index === currentIndex ? styles.activeSlide : ''}`}
@@ -98,16 +100,17 @@ function ImageCarousel({ images, alt }) {
             }}
           >
             <img 
-              src={image.card || image.url} 
-              alt={`${alt || 'Recipe'} ${index + 1}`}
+              src={image.card || image.url || noImageFallback} 
+              alt={`${alt || 'Рецепта'} ${displayImages.length > 1 ? index + 1 : ''}`}
               loading="lazy"
+              onError={handleImageError}
               className={index === currentIndex ? styles.activeImage : ''}
             />
           </div>
         ))}
       </div>
       
-      {images.length > 1 && (
+      {displayImages.length > 1 && (
         <>
           <button 
             className={`${styles.controlButton} ${styles.prevButton}`} 
@@ -128,7 +131,7 @@ function ImageCarousel({ images, alt }) {
           </button>
           
           <div className={styles.dots}>
-            {images.map((_, index) => (
+            {displayImages.map((_, index) => (
               <span 
                 key={index} 
                 className={`${styles.dot} ${index === currentIndex ? styles.dotActive : ''}`}

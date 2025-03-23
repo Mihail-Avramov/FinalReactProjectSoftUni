@@ -6,7 +6,6 @@ import RecipeFilters from '../../components/recipe/RecipeFilters/RecipeFilters';
 import RecipeList from '../../components/recipe/RecipeList/RecipeList';
 import Pagination from '../../components/common/Pagination';
 import Alert from '../../components/common/Alert';
-import LoadingSpinner from '../../components/common/LoadingSpinner/LoadingSpinner';
 import SEO from '../../components/common/SEO';
 import './RecipesPage.css';
 
@@ -16,7 +15,7 @@ const RecipesPage = () => {
   
   // Извличане на параметрите от URL
   const page = parseInt(searchParams.get('page')) || 1;
-  const limit = parseInt(searchParams.get('limit')) || 10;
+  const limit = parseInt(searchParams.get('limit')) || 6;
   const sortParam = searchParams.get('sort') || '-createdAt';
   
   // Определяне на поле и посока за сортиране
@@ -174,7 +173,10 @@ const RecipesPage = () => {
           
           {/* Резултати от търсенето */}
           {loading ? (
-            <LoadingSpinner message="Зареждане на рецепти..." />
+            <RecipeList 
+              loading={true}
+              count={limit}
+            />
           ) : (
             <>
               <RecipeList 

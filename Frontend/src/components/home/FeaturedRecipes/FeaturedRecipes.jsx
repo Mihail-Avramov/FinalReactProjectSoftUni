@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import RecipeCard from '../../recipe/RecipeCard';
-import LoadingSpinner from '../../common/LoadingSpinner';
+import RecipeSkeleton from '../../recipe/RecipeSkeleton/RecipeSkeleton';
 import styles from './FeaturedRecipes.module.css';
 
 function FeaturedRecipes({ recipes = [], loading = false, error = null }) {
@@ -11,8 +11,15 @@ function FeaturedRecipes({ recipes = [], loading = false, error = null }) {
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
             <h2>Популярни рецепти</h2>
+            <p>Най-харесваните рецепти от нашата общност</p>
           </div>
-          <LoadingSpinner />
+          <div className={styles.recipesGrid}>
+            {Array(6).fill(0).map((_, index) => (
+              <div key={`skeleton-${index}`} className={styles.recipeCardWrapper}>
+                <RecipeSkeleton />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     );

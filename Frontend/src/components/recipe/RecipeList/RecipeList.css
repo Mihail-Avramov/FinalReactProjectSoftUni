@@ -1,7 +1,8 @@
 .recipe-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(3, 1fr); /* 3 карти на ред */
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .recipe-card-link {
@@ -16,8 +17,24 @@
   transform: translateY(-3px);
 }
 
+/* Контейнер за всяка карта, действа като "изравнител" */
+.recipe-card-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* Медия запитвания, съответстващи на тези във FeaturedRecipes */
+@media (max-width: 992px) {
+  .recipe-list {
+    grid-template-columns: repeat(2, 1fr); /* 2 карти на ред */
+    gap: 1.5rem;
+  }
+}
+
 @media (max-width: 576px) {
   .recipe-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* 1 карта на ред */
+    gap: 1.5rem;
   }
 }

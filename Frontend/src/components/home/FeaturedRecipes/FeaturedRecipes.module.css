@@ -64,16 +64,19 @@
   border-radius: 20px;
 }
 
-/* Улучшенная сетка для более заполненного вида */
+/* Подобрен responsive grid */
 .recipesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr); /* Точно 3 карти на ред по подразбиране */
   gap: 2rem;
   margin-bottom: 3rem;
 }
 
-/* Добавляем анимацию появления для карточек */
+/* Промяна във wrapper-а за рецепти */
 .recipeCardWrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
   animation: fadeInUp 0.6s ease forwards;
   opacity: 0;
 }
@@ -163,7 +166,7 @@
   }
 }
 
-/* Медия запитвания для адаптивности */
+/* Медия запитвания с точни breakpoints */
 @media (max-width: 1200px) {
   .recipesGrid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -181,8 +184,8 @@
   }
   
   .recipesGrid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(2, 1fr); /* Точно 2 карти на ред за таблети */
+    gap: 1.5rem;
   }
 }
 
@@ -223,7 +226,7 @@
   }
   
   .recipesGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Точно 1 карта на ред за мобилни устройства */
     gap: 1.5rem;
   }
   
