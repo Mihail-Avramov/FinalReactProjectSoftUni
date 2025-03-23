@@ -186,13 +186,20 @@ const recipeController = {
       const userId = String(req.params.id || req.user._id);
       const currentUserId = req.user ? String(req.user._id) : null;
 
+      // Извличане на филтрите от query параметрите
+      const filters = {
+        category: req.query.category,
+        difficulty: req.query.difficulty,
+        search: req.query.search
+      };
+
       const pagination = {
         page: parseInt(req.query.page) || 1,
         limit: parseInt(req.query.limit) || 10,
         sort: req.query.sort || '-createdAt'
       };
       
-      const result = await recipeService.getUserRecipes(userId, pagination, currentUserId);
+      const result = await recipeService.getUserRecipes(userId, pagination, currentUserId, filters);
       
       res.status(200).json({
         success: true,
@@ -211,12 +218,19 @@ const recipeController = {
     try {
       const userId = req.user._id;
       
+      // Извличане на филтрите от query параметрите
+      const filters = {
+        category: req.query.category,
+        difficulty: req.query.difficulty,
+        search: req.query.search
+      };
+      
       const pagination = {
         page: parseInt(req.query.page) || 1,
         limit: parseInt(req.query.limit) || 10
       };
       
-      const result = await recipeService.getFavoriteRecipes(userId, pagination);
+      const result = await recipeService.getFavoriteRecipes(userId, pagination, filters);
       
       res.status(200).json({
         success: true,
