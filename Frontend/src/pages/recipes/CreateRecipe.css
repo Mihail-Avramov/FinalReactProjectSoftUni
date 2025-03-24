@@ -173,3 +173,35 @@
     width: 100%;
   }
 }
+
+.form-text-counter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.form-text-counter .text-warning {
+  color: var(--warning);
+}
+
+.form-text-counter .text-danger {
+  color: var(--danger);
+}
+
+/* Добавете стилове за валидационно състояние */
+.form-control.is-validating {
+  border-color: var(--primary-light);
+}
+
+/* Анимация за проверяване на полето */
+@keyframes validating-pulse {
+  0% { border-color: var(--primary-light); }
+  50% { border-color: var(--primary); }
+  100% { border-color: var(--primary-light); }
+}
+
+.form-control.is-validating {
+  animation: validating-pulse 1.5s infinite;
+}

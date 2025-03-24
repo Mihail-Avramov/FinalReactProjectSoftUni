@@ -40,6 +40,9 @@ const CreateRecipePage = () => {
   // Състояние на грешките
   const [formErrors, setFormErrors] = useState({});
   
+  // Добавете тези състояния за проследяване на докоснати полета
+  const [touchedFields, setTouchedFields] = useState({});
+
   // Обработчик на промяна на полетата
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,10 +51,43 @@ const CreateRecipePage = () => {
       [name]: value
     }));
     
-    // Изчистване на грешка при въвеждане
-    if (formErrors[name]) {
-      setFormErrors(prevErrors => ({ ...prevErrors, [name]: null }));
+    // Валидиране само ако полето е било докоснато
+    if (touchedFields[name] && validators[name]) {
+      const error = validators[name](value);
+      setFormErrors(prevErrors => ({ 
+        ...prevErrors, 
+        [name]: error
+      }));
     }
+  };
+
+  // Добавете обработчик за onBlur събитие
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    
+    // Маркираме полето като докоснато
+    setTouchedFields(prev => ({ ...prev, [name]: true }));
+    
+    // Валидираме полето
+    if (validators[name]) {
+      const error = validators[name](value);
+      setFormErrors(prevErrors => ({ 
+        ...prevErrors, 
+        [name]: error 
+      }));
+    }
+  };
+
+  const handleIngredientFieldBlur = () => {
+    setTouchedFields(prev => ({ ...prev, ingredients: true }));
+    const error = validators.ingredients(formData.ingredients);
+    setFormErrors(prevErrors => ({ ...prevErrors, ingredients: error }));
+  };
+  
+  const handleStepFieldBlur = () => {
+    setTouchedFields(prev => ({ ...prev, steps: true }));
+    const error = validators.steps(formData.steps);
+    setFormErrors(prevErrors => ({ ...prevErrors, steps: error }));
   };
   
   // Управление на съставките
@@ -64,9 +100,13 @@ const CreateRecipePage = () => {
       ingredients: updatedIngredients
     }));
     
-    // Изчистване на грешки
-    if (formErrors.ingredients) {
-      setFormErrors(prevErrors => ({ ...prevErrors, ingredients: null }));
+    // Валидиране на съставките ако полето е било докоснато
+    if (touchedFields.ingredients) {
+      const error = validators.ingredients(updatedIngredients);
+      setFormErrors(prevErrors => ({ 
+        ...prevErrors, 
+        ingredients: error 
+      }));
     }
   };
   
@@ -75,6 +115,13 @@ const CreateRecipePage = () => {
       ...prevData,
       ingredients: [...prevData.ingredients, '']
     }));
+    
+    // Валидиране ако полето е било докоснато
+    if (touchedFields.ingredients) {
+      const updatedIngredients = [...formData.ingredients, ''];
+      const error = validators.ingredients(updatedIngredients);
+      setFormErrors(prevErrors => ({ ...prevErrors, ingredients: error }));
+    }
   };
   
   const removeIngredient = (index) => {
@@ -87,6 +134,12 @@ const CreateRecipePage = () => {
       ...prevData,
       ingredients: updatedIngredients
     }));
+    
+    // Валидиране ако полето е било докоснато
+    if (touchedFields.ingredients) {
+      const error = validators.ingredients(updatedIngredients);
+      setFormErrors(prevErrors => ({ ...prevErrors, ingredients: error }));
+    }
   };
   
   // Управление на стъпките
@@ -99,9 +152,13 @@ const CreateRecipePage = () => {
       steps: updatedSteps
     }));
     
-    // Изчистване на грешки
-    if (formErrors.steps) {
-      setFormErrors(prevErrors => ({ ...prevErrors, steps: null }));
+    // Валидиране на стъпките ако полето е било докоснато
+    if (touchedFields.steps) {
+      const error = validators.steps(updatedSteps);
+      setFormErrors(prevErrors => ({ 
+        ...prevErrors, 
+        steps: error 
+      }));
     }
   };
   
@@ -110,6 +167,12 @@ const CreateRecipePage = () => {
       ...prevData,
       steps: [...prevData.steps, '']
     }));
+    
+    if (touchedFields.steps) {
+      const updatedSteps = [...formData.steps, ''];
+      const error = validators.steps(updatedSteps);
+      setFormErrors(prevErrors => ({ ...prevErrors, steps: error }));
+    }
   };
   
   const removeStep = (index) => {
@@ -122,6 +185,11 @@ const CreateRecipePage = () => {
       ...prevData,
       steps: updatedSteps
     }));
+    
+    if (touchedFields.steps) {
+      const error = validators.steps(updatedSteps);
+      setFormErrors(prevErrors => ({ ...prevErrors, steps: error }));
+    }
   };
   
   // Нов обработчик за множество изображения
@@ -135,38 +203,24 @@ const CreateRecipePage = () => {
     setFormErrors(prev => ({ ...prev, images: null }));
   };
   
-  // Валидация на формата
-  const validateForm = () => {
-    const errors = {};
-    
-    if (!formData.title.trim()) errors.title = 'Заглавието е задължително';
-    if (!formData.category) errors.category = 'Категорията е задължителна';
-    if (!formData.difficulty) errors.difficulty = 'Сложността е задължителна';
-    
-    const prepTime = parseInt(formData.preparationTime);
-    if (isNaN(prepTime) || prepTime <= 0) {
-      errors.preparationTime = 'Въведете валидно време за приготвяне';
+  // Подменете validateForm с новата версия
+const validateForm = () => {
+  // Валидираме всички полета при изпращане
+  const errors = {};
+  
+  // Валидиране на базовите полета
+  Object.keys(validators).forEach(field => {
+    if (field === 'ingredients' || field === 'steps') {
+      const error = validators[field](formData[field]);
+      if (error) errors[field] = error;
+    } else {
+      const error = validators[field](formData[field]);
+      if (error) errors[field] = error;
     }
-    
-    const servings = parseInt(formData.servings);
-    if (isNaN(servings) || servings <= 0) {
-      errors.servings = 'Въведете валиден брой порции';
-    }
-    
-    if (!formData.description.trim()) errors.description = 'Описанието е задължително';
-    
-    // Проверка за празни съставки
-    const hasEmptyIngredients = formData.ingredients.some(ingredient => !ingredient.trim());
-    if (hasEmptyIngredients) errors.ingredients = 'Всички съставки трябва да са попълнени';
-    
-    // Проверка за празни стъпки
-    const hasEmptySteps = formData.steps.some(step => !step.trim());
-    if (hasEmptySteps) errors.steps = 'Всички стъпки трябва да са попълнени';
-    
-    // Изображение не е задължително (засега)
-    
-    return errors;
-  };
+  });
+  
+  return errors;
+};
   
   // Подготовка на FormData за API заявката
   const prepareFormDataForApi = () => {
@@ -316,9 +370,12 @@ const CreateRecipePage = () => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder="Въведете заглавие"
                 error={formErrors.title}
                 required
+                maxLength={100}
+                characterCounter={true}
               />
               
               <div className="form-row">
@@ -331,6 +388,7 @@ const CreateRecipePage = () => {
                       name="category"
                       value={formData.category}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       className={`form-control ${formErrors.category ? 'is-invalid' : ''}`}
                       required
                     >
@@ -352,6 +410,7 @@ const CreateRecipePage = () => {
                       name="difficulty"
                       value={formData.difficulty}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       className={`form-control ${formErrors.difficulty ? 'is-invalid' : ''}`}
                       required
                     >
@@ -374,6 +433,7 @@ const CreateRecipePage = () => {
                     min="1"
                     value={formData.preparationTime}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Въведете минути"
                     error={formErrors.preparationTime}
                     required
@@ -388,6 +448,7 @@ const CreateRecipePage = () => {
                     min="1"
                     value={formData.servings}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Въведете брой порции"
                     error={formErrors.servings}
                     required
@@ -403,11 +464,18 @@ const CreateRecipePage = () => {
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className={`form-control ${formErrors.description ? 'is-invalid' : ''}`}
                   placeholder="Въведете кратко описание на рецептата"
                   rows="4"
                   required
+                  maxLength={500}
                 />
+                <div className="form-text-counter">
+                  <span className={formData.description.length > 450 ? 'text-warning' : ''}>
+                    {formData.description.length}/{500}
+                  </span>
+                </div>
                 {formErrors.description && <div className="form-error">{formErrors.description}</div>}
               </div>
             </div>
@@ -430,6 +498,7 @@ const CreateRecipePage = () => {
                     name={`ingredient-${index}`}
                     value={ingredient}
                     onChange={(e) => handleIngredientChange(index, e.target.value)}
+                    onBlur={handleIngredientFieldBlur}
                     placeholder={`Съставка ${index + 1}`}
                   />
                   <div className="input-actions">
@@ -467,6 +536,7 @@ const CreateRecipePage = () => {
                           name={`step-${index}`}
                           value={step}
                           onChange={(e) => handleStepChange(index, e.target.value)}
+                          onBlur={handleStepFieldBlur}
                           className="form-control"
                           placeholder={`Стъпка ${index + 1}`}
                           rows="2"
@@ -510,6 +580,77 @@ const CreateRecipePage = () => {
       </div>
     </div>
   );
+};
+
+// Добавете тези функции под основната функция CreateRecipePage
+
+// Валидатори за отделни полета
+const validators = {
+  title: (value) => {
+    if (!value?.trim()) return 'Заглавието е задължително';
+    if (value.length > 100) return 'Заглавието не може да надвишава 100 символа';
+    return null;
+  },
+  
+  description: (value) => {
+    if (!value?.trim()) return 'Описанието е задължително';
+    if (value.length > 500) return 'Описанието не може да надвишава 500 символа';
+    return null;
+  },
+  
+  category: (value) => {
+    if (!value) return 'Категорията е задължителна';
+    return null;
+  },
+  
+  difficulty: (value) => {
+    if (!value) return 'Сложността е задължителна';
+    return null;
+  },
+  
+  preparationTime: (value) => {
+    const time = parseInt(value);
+    if (!value || isNaN(time)) return 'Времето за приготвяне е задължително';
+    if (time < 1) return 'Времето трябва да бъде поне 1 минута';
+    if (time > 10000) return 'Времето не може да надвишава 10000 минути';
+    return null;
+  },
+  
+  servings: (value) => {
+    const servings = parseInt(value);
+    if (!value || isNaN(servings)) return 'Броят порции е задължителен';
+    if (servings < 1) return 'Броят порции трябва да бъде поне 1';
+    if (servings > 100) return 'Броят порции не може да надвишава 100';
+    return null;
+  },
+  
+  ingredients: (ingredients) => {
+    if (!ingredients || !ingredients.length) return 'Добавете поне една съставка';
+    
+    if (ingredients.some(ing => !ing.trim())) {
+      return 'Всички съставки трябва да са попълнени';
+    }
+    
+    if (ingredients.length > 50) {
+      return 'Броят съставки не може да надвишава 50';
+    }
+    
+    return null;
+  },
+  
+  steps: (steps) => {
+    if (!steps || !steps.length) return 'Добавете поне една стъпка';
+    
+    if (steps.some(step => !step.trim())) {
+      return 'Всички стъпки трябва да са попълнени';
+    }
+    
+    if (steps.length > 30) {
+      return 'Броят стъпки не може да надвишава 30';
+    }
+    
+    return null;
+  }
 };
 
 export default CreateRecipePage;
