@@ -183,7 +183,7 @@ const RecipeDetailPage = () => {
               
               {isOwner && (
                 <Link 
-                  to={`/recipes/edit/${recipe._id}`}
+                  to={`/recipes/${recipe._id}/edit`}
                   className={styles.editButton}
                   title="Редактирай рецептата"
                 >
