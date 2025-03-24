@@ -31,6 +31,7 @@ import RecipesPage from './pages/recipes/RecipesPage';
 import RecipeDetailPage from './pages/recipes/RecipeDetailPage';
 import CreateRecipePage from './pages/recipes/CreateRecipePage';
 import EditRecipePage from './pages/recipes/EditRecipePage';
+import DeleteRecipePage from './pages/recipes/DeleteRecipePage';
 import MyRecipesPage from './pages/recipes/MyRecipesPage';
 import MyFavoritesPage from './pages/recipes/MyFavoritesPage';
 
@@ -107,6 +108,11 @@ function App() {
           <Route path="/recipes/:id/edit" element={
             <RequireAuth>
               <EditRecipePage />
+            </RequireAuth>
+          } />
+          <Route path="/recipes/:id/delete" element={
+            <RequireAuth>
+              <DeleteRecipePage />
             </RequireAuth>
           } />
           <Route path="/my-recipes" element={
