@@ -214,15 +214,6 @@ class RecipeApi {
   
     return apiClient.get('/recipes/users/favorites', { params, signal });
   }
-  
-  /**
-   * Bulk операция с любими рецепти (добавяне/премахване на множество)
-   * @param {Array} recipeIds - масив с ID-та на рецепти
-   * @param {string} action - действие ('like' или 'unlike')
-   */
-  static async bulkToggleFavorites(recipeIds, action) {
-    return apiClient.post('/recipes/favorites/bulk', { recipeIds, action });
-  }
 }
 
 export default RecipeApi;

@@ -2,13 +2,12 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormInput from '../../components/common/FormInput';
 import Button from '../../components/common/Button';
-import ImageUpload from '../../components/common/ImageUpload';
+import BulkImageUpload from '../../components/common/BulkImageUpload/BulkImageUpload';
 import Alert from '../../components/common/Alert';
 import LoadingOverlay from '../../components/common/LoadingOverlay/LoadingOverlay';
 import SEO from '../../components/common/SEO';
 import { useConfig } from '../../hooks/api/useConfig';
 import { useRecipes } from '../../hooks/api/useRecipes';
-import { validateImage } from '../../utils/imageOptimization';
 import './CreateRecipe.css';
 
 const CreateRecipePage = () => {
@@ -24,8 +23,7 @@ const CreateRecipePage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [previewImage, setPreviewImage] = useState(null);
-  const [imageFile, setImageFile] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
   
   // Състояние на формата
   const [formData, setFormData] = useState({
@@ -126,29 +124,15 @@ const CreateRecipePage = () => {
     }));
   };
   
-  // Управление на изображението
-  const handleImageChange = (file) => {
-    if (!file) {
-      setImageFile(null);
-      setPreviewImage(null);
-      setFormErrors(prev => ({ ...prev, image: null }));
+  // Нов обработчик за множество изображения
+  const handleImagesChange = (images, validationInfo) => {
+    if (validationInfo?.error) {
+      setFormErrors(prev => ({ ...prev, images: validationInfo.error }));
       return;
     }
     
-    // Валидация на изображението
-    const validation = validateImage(file);
-    if (!validation.valid) {
-      setFormErrors(prev => ({ ...prev, image: validation.error }));
-      return;
-    }
-    
-    // Изчистване на грешка при валидно изображение
-    setFormErrors(prev => ({ ...prev, image: null }));
-    setImageFile(file);
-    
-    // Създаване на URL за преглед
-    const imageUrl = URL.createObjectURL(file);
-    setPreviewImage(imageUrl);
+    setImageFiles(images);
+    setFormErrors(prev => ({ ...prev, images: null }));
   };
   
   // Валидация на формата
@@ -206,10 +190,10 @@ const CreateRecipePage = () => {
       apiFormData.append(`instructions[${index}]`, step);
     });
     
-    // Добавяне на изображение, ако има
-    if (imageFile) {
-      apiFormData.append('images', imageFile);
-    }
+    // Добавяне на множество изображения
+    imageFiles.forEach(imageData => {
+      apiFormData.append('images', imageData.file);
+    });
     
     return apiFormData;
   };
@@ -286,8 +270,7 @@ const CreateRecipePage = () => {
       steps: ['']
     });
     
-    setImageFile(null);
-    setPreviewImage(null);
+    setImageFiles([]);
     setFormErrors({});
     setError(null);
     
@@ -430,12 +413,12 @@ const CreateRecipePage = () => {
             </div>
             
             <div className="form-section">
-              <h2>Изображение</h2>
-              <ImageUpload
-                label="Снимка на ястието"
-                onChange={handleImageChange}
-                currentImage={previewImage}
-                error={formErrors.image}
+              <h2>Изображения</h2>
+              <BulkImageUpload
+                label="Снимки на ястието (до 5 снимки)"
+                onChange={handleImagesChange}
+                currentImages={imageFiles}
+                error={formErrors.images}
               />
             </div>
             
