@@ -35,9 +35,6 @@ const ProfilePage = () => {
   const seoDescription = isOwnProfile 
     ? 'Вашият профил в CulinaryCorner - преглед на рецепти, статистики и лична информация.'
     : `Профил на ${profileName} в CulinaryCorner - преглед на рецепти и кулинарни постижения.`;
-  
-  // Добавете по-добри условия за проверка на зареждането
-  console.log("Profile state:", { profile, stats, loading, error }); // Добавете за дебъгване
 
   if (loading && !profile) {
     return <LoadingSpinner />;
