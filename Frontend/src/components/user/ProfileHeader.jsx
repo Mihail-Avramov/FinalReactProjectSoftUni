@@ -34,7 +34,9 @@ const ProfileHeader = ({ profile, isOwnProfile }) => {
           </div>
         ) : (
           <div className={styles.actions}>
-            {/* Тук могат да бъдат добавени бутони за интеракция с други потребители */}
+            <Link to={`/profile/${profile._id}/recipes`} className="btn btn-primary">
+              Разгледай рецептите
+            </Link>
           </div>
         )}
       </div>

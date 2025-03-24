@@ -23,6 +23,7 @@ import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 
 // Потребителски страници
 import ProfilePage from './pages/user/ProfilePage';
+import UserRecipesPage from './pages/user/UserRecipesPage';
 import ProfileEditPage from './pages/user/ProfileEditPage';
 import PasswordChangePage from './pages/user/PasswordChangePage';
 import DeleteAccountPage from './pages/user/DeleteAccountPage';
@@ -134,6 +135,7 @@ function App() {
           
           {/* Маршрути за профил - публично достъпен профил с id параметър */}
           <Route path="/profile/:userId" element={<ProfilePage />} />
+          <Route path="/profile/:userId/recipes" element={<UserRecipesPage />} />
           
           {/* Страница за грешка */}
           <Route path="*" element={<NotFound />} />

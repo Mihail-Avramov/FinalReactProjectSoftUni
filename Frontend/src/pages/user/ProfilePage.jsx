@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/api/useAuth';
 import { useProfile } from '../../hooks/api/useProfile';
 import ProfileHeader from '../../components/user/ProfileHeader';
-import ProfileTabs from '../../components/user/ProfileTabs';
 import ProfileStats from '../../components/user/ProfileStats';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import Alert from '../../components/common/Alert';
@@ -14,7 +13,6 @@ const ProfilePage = () => {
   const { userId } = useParams(); // Ако преглеждаме чужд профил
   const { user } = useAuth();
   const { profile, stats, loading, error, loadProfile, loadStats } = useProfile();
-  const [activeTab, setActiveTab] = useState('recipes');
   
   // Флаг дали това е собственият профил на потребителя
   const isOwnProfile = !userId || (user && user._id === userId);
@@ -75,39 +73,6 @@ const ProfilePage = () => {
             
             <ProfileStats stats={stats} />
             
-            <ProfileTabs 
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              isOwnProfile={isOwnProfile}
-            />
-            
-            <div className="profile-content">
-              {activeTab === 'recipes' && (
-                <div className="recipes-grid">
-                  {/* Тук ще бъдат показани рецептите на потребителя */}
-                  <p>Моите рецепти</p>
-                </div>
-              )}
-              
-              {activeTab === 'favorites' && isOwnProfile && (
-                <div className="recipes-grid">
-                  {/* Тук ще бъдат показани любими рецепти */}
-                  <p>Любими рецепти</p>
-                </div>
-              )}
-              
-              {activeTab === 'about' && (
-                <div className="profile-about">
-                  <h3>За {profile.firstName}</h3>
-                  <p>{profile.bio || 'Няма налична информация.'}</p>
-                  {isOwnProfile && (
-                    <Link to="/profile/edit" className="btn btn-primary">
-                      Редактирай профил
-                    </Link>
-                  )}
-                </div>
-              )}
-            </div>
           </>
         )}
       </div>

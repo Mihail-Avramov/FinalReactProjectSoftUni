@@ -435,3 +435,246 @@ textarea.form-control {
     min-height: 170px; /* Около 10 реда на малки телефони */
   }
 }
+
+/* Добавете тези стилове към съществуващия CSS файл */
+
+.user-recipes-page .user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-light);
+  border-radius: var(--border-radius);
+}
+
+.user-avatar-sm {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.back-to-profile {
+  margin-bottom: 1.5rem;
+}
+
+/* Стилове за заглавен ред с потребител */
+.profile-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-avatar-md {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.user-header-content {
+  min-width: 0;
+}
+
+.user-header-content h1 {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.username {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.header-actions {
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
+/* Медиа запит за малки екрани */
+@media (max-width: 576px) {
+  .profile-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-actions {
+    margin-left: 0;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  
+  .header-actions .btn {
+    width: 100%;
+    display: block;
+    text-align: center;
+  }
+}
+
+/* Основна структура на страницата с рецепти на потребител */
+.user-recipes-page {
+  padding: 1rem;
+}
+
+/* Заглавна част винаги видима първо */
+.recipes-top-header {
+  position: relative;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content:flex-start;
+  background-color: var(--bg-light);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  box-shadow: var(--box-shadow-sm);
+}
+
+/* Бутон за връщане на мобилни устройства */
+.back-arrow-mobile {
+  margin-right: 0.75rem;
+  display: none;
+}
+
+.back-arrow-mobile .btn-link {
+  color: var(--text-primary);
+  padding: 0.25rem;
+  font-size: 1.25rem;
+}
+
+/* Стилове за заглавен ред с потребител */
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.user-avatar-md {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-light);
+}
+
+.user-header-content {
+  flex: 1;
+}
+
+.user-header-content h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.username {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* За рецепти на потребителската страница */
+.recipes-container {
+  margin-top: 1rem;
+}
+
+/* Връщане към профила - десктоп */
+.back-to-profile {
+  margin-bottom: 1.5rem;
+}
+
+/* Предотвратява избутване на съдържанието от LoadingOverlay */
+.recipes-loading-overlay {
+  margin-top: 0;
+}
+
+/* Alert съобщения */
+.top-margin-alert {
+  margin-bottom: 1rem;
+}
+
+/* Показва и скрива елементи според размера на екрана */
+.desktop-only {
+  display: block;
+}
+
+/* Специализирани медия запити за потребителските рецепти */
+@media (max-width: 992px) {
+  .user-header-content h1 {
+    font-size: 1.5rem;
+  }
+  
+  .user-avatar-md {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .recipes-page {
+    padding: 0.75rem;
+  }
+  
+  /* Показва мобилния бутон за връщане назад */
+  .back-arrow-mobile {
+    display: block;
+  }
+  
+  /* Скрива десктоп бутона в sidebar */
+  .desktop-only {
+    display: none;
+  }
+  
+  /* Намалява отстъпа между заглавието и съдържанието */
+  .recipes-top-header {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    align-items: flex-start;
+  }
+  
+  /* Подобрена подредба на филтрите и съдържанието */
+  .recipes-container {
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .recipes-page {
+    padding: 0.5rem;
+  }
+  
+  /* Адаптира заглавната част за много малки екрани */
+  .user-header {
+    gap: 0.75rem;
+  }
+  
+  .user-avatar-md {
+    width: 40px;
+    height: 40px;
+    border-width: 2px;
+  }
+  
+  .user-header-content h1 {
+    font-size: 1.25rem;
+    white-space: normal; /* Позволява пренасяне на текста */
+    max-width: 100%;
+  }
+  
+  /* Намалява минималната височина на LoadingOverlay за компактност */
+  .recipes-loading-overlay[data-min-height="200px"] {
+    min-height: 150px !important;
+  }
+}
