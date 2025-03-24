@@ -136,10 +136,14 @@
 
 .form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.form-actions-right {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .ingredient-error, .step-error {

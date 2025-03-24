@@ -8,6 +8,7 @@ import LoadingOverlay from '../../components/common/LoadingOverlay/LoadingOverla
 import SEO from '../../components/common/SEO';
 import { useConfig } from '../../hooks/api/useConfig';
 import { useRecipes } from '../../hooks/api/useRecipes';
+import { useAuth } from '../../hooks/api/useAuth';
 import RecipeApi from '../../api/recipeApi';
 import './CreateRecipe.css';
 
@@ -17,6 +18,7 @@ const EditRecipePage = () => {
   const { data: config } = useConfig();
   const { useRecipeActions } = useRecipes();
   const { updateRecipe } = useRecipeActions();
+  const { user } = useAuth();
   
   // Референция към формата
   const formRef = useRef(null);
@@ -58,7 +60,18 @@ const EditRecipePage = () => {
         setLoading(true);
         const recipe = await RecipeApi.getById(id);
         
-        // Преобразуване на изображения за показване
+        // Проверяваме дали потребителят е създател на рецептата
+        if (recipe.author._id !== user?._id) {
+          // Ако не е създател, пренасочваме към страницата с детайли
+          navigate(`/recipes/${id}`, { 
+            state: { 
+              error: "Нямате право да редактирате тази рецепта." 
+            } 
+          });
+          return;
+        }
+        
+        // Продължаваме с нормалното зареждане на данните...
         const formattedImages = recipe.images.map(img => ({
           id: img._id || img.id,
           publicId: img.publicId,
@@ -92,7 +105,7 @@ const EditRecipePage = () => {
     };
     
     fetchRecipe();
-  }, [id]);
+  }, [id, navigate, user?._id]);
   
   // Обработчик на промяна на полетата
   const handleChange = (e) => {
@@ -634,12 +647,23 @@ const EditRecipePage = () => {
               </div>
               
               <div className="form-actions">
-                <Button type="button" variant="secondary" onClick={handleCancel}>
-                  Отказ
-                </Button>
-                <Button type="submit" variant="primary" disabled={submitting}>
-                  Запази промените
-                </Button>
+                <div className="form-actions-left">
+                  <Button 
+                    type="button" 
+                    variant="danger" 
+                    onClick={() => navigate(`/recipes/${id}/delete`)}
+                  >
+                    <i className="fa fa-trash-alt mr-2"></i> Изтриване на рецептата
+                  </Button>
+                </div>
+                <div className="form-actions-right">
+                  <Button type="button" variant="secondary" onClick={handleCancel}>
+                    Отказ
+                  </Button>
+                  <Button type="submit" variant="primary" disabled={submitting}>
+                    Запази промените
+                  </Button>
+                </div>
               </div>
             </form>
           )}
