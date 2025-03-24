@@ -19,6 +19,7 @@ const FormInput = ({
   maxLength,
   disabled = false,
   className = '',
+  characterCounter,
   ...otherProps
 }) => {
   const id = `input-${name || Math.random().toString(36).substring(2, 9)}`;
@@ -79,6 +80,16 @@ const FormInput = ({
           </span>
         )}
       </div>
+      
+      {characterCounter && maxLength && (
+        <div className="form-text-counter">
+          <span className={
+            value?.length > maxLength * 0.9 ? 'text-warning' : ''
+          }>
+            {value?.length || 0}/{maxLength}
+          </span>
+        </div>
+      )}
       
       {error && <div className="form-error">{error}</div>}
     </div>
