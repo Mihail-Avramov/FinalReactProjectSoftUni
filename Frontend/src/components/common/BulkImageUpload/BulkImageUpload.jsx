@@ -141,14 +141,17 @@ const BulkImageUpload = ({ label, onChange, currentImages = [], className, error
       
       {currentImages.length > 0 && (
         <div className="clear-images-container">
-          <Button 
+            <Button 
             type="button" 
             variant="outline-danger" 
             size="small" 
-            onClick={() => onChange([])}
-          >
+            onClick={() => {
+                const existingToRemove = currentImages.filter(img => img.existing);
+                onChange([], { removedExisting: existingToRemove });
+            }}
+            >
             Премахни всички снимки
-          </Button>
+            </Button>
         </div>
       )}
     </div>
