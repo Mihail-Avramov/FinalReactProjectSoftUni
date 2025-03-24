@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useRecipes } from '../../hooks/api/useRecipes';
 import { useAuth } from '../../hooks/api/useAuth';
 import { getCategoryLabel, getCategoryIcon, getDifficultyLabel } from '../../utils/recipeHelpers';
@@ -14,10 +14,27 @@ import styles from './RecipeDetailPage.module.css';
 const RecipeDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  // Добавяме location за достъп до state параметри при пренасочване
+  const location = useLocation();
   const { isAuthenticated, user } = useAuth();
   const { useRecipe, useRecipeActions } = useRecipes();
-  const { data: recipe, loading, error, refresh } = useRecipe(id);
+  const { data: recipe, loading, error: apiError, refresh } = useRecipe(id);
   const { toggleLike, toggleFavorite } = useRecipeActions();
+  
+  // Добавяме състояния за съобщения от пренасочване
+  const [error, setError] = useState(location.state?.error || null);
+  const [success, setSuccess] = useState(location.state?.success || null);
+  
+  // Изчистваме състоянието на location.state след показване
+  useEffect(() => {
+    if (location.state?.error || location.state?.success) {
+      // Използваме setTimeout за да се уверим, че компонентът е монтиран
+      const timer = setTimeout(() => {
+        window.history.replaceState({}, document.title);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
   
   const [actionStatus, setActionStatus] = useState({
     isLiked: false,
@@ -115,8 +132,9 @@ const RecipeDetailPage = () => {
     }
   };
 
+  // В render частта, добавяме съобщенията за грешка/успех преди основното съдържание
   if (loading) return <LoadingSpinner message="Зареждане на рецепта..." />;
-  if (error) return <Alert type="error" message={error} />;
+  if (apiError) return <Alert type="error" message={apiError} />;
   if (!recipe) return <Alert type="warning" message="Рецептата не е намерена" />;
 
   const categoryLabel = getCategoryLabel(recipe.category);
@@ -134,6 +152,27 @@ const RecipeDetailPage = () => {
       />
       
       <div className="container">
+        {/* Добавяме Alert съобщения за грешки или успешни операции */}
+        {error && (
+          <Alert 
+            type="error" 
+            dismissible 
+            onDismiss={() => setError(null)}
+          >
+            {error}
+          </Alert>
+        )}
+        
+        {success && (
+          <Alert 
+            type="success" 
+            dismissible 
+            onDismiss={() => setSuccess(null)}
+          >
+            {success}
+          </Alert>
+        )}
+        
         {/* Заглавна секция */}
         <header className={styles.recipeHeader}>
           <div className={styles.recipeHeaderTop}>

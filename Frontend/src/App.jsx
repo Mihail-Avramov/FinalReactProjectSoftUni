@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './hooks/api/AuthProvider';
 import Layout from './components/layout/Layout';
 import { RequireAuth, RequireGuest } from './components/auth/ProtectedRoutes';
+import { RequireAuthor } from './components/auth/RequireAuthor';
 
 // Основни страници
 import Home from './pages/Home/Home';
@@ -107,12 +108,17 @@ function App() {
           } />
           <Route path="/recipes/:id/edit" element={
             <RequireAuth>
-              <EditRecipePage />
+              <RequireAuthor action="edit">
+                <EditRecipePage />
+              </RequireAuthor>
             </RequireAuth>
           } />
+
           <Route path="/recipes/:id/delete" element={
             <RequireAuth>
-              <DeleteRecipePage />
+              <RequireAuthor action="delete">
+                <DeleteRecipePage />
+              </RequireAuthor>
             </RequireAuth>
           } />
           <Route path="/my-recipes" element={

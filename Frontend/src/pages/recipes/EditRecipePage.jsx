@@ -60,17 +60,6 @@ const EditRecipePage = () => {
         setLoading(true);
         const recipe = await RecipeApi.getById(id);
         
-        // Проверяваме дали потребителят е създател на рецептата
-        if (recipe.author._id !== user?._id) {
-          // Ако не е създател, пренасочваме към страницата с детайли
-          navigate(`/recipes/${id}`, { 
-            state: { 
-              error: "Нямате право да редактирате тази рецепта." 
-            } 
-          });
-          return;
-        }
-        
         // Продължаваме с нормалното зареждане на данните...
         const formattedImages = recipe.images.map(img => ({
           id: img._id || img.id,

@@ -29,17 +29,6 @@ const DeleteRecipePage = () => {
         setLoading(true);
         const fetchedRecipe = await RecipeApi.getById(id);
         
-        // Проверяваме дали потребителят е създател на рецептата
-        if (fetchedRecipe.author._id !== user?._id) {
-          // Ако не е създател, пренасочваме към страницата с детайли
-          navigate(`/recipes/${id}`, { 
-            state: { 
-              error: "Нямате право да изтриете тази рецепта." 
-            } 
-          });
-          return;
-        }
-        
         setRecipe(fetchedRecipe);
         setError(null);
       } catch (err) {
