@@ -412,6 +412,7 @@ const RecipeDetailPage = () => {
           <CommentSection 
             comments={recipe.comments} 
             recipeId={recipe._id}
+            recipeOwnerId={recipe.author?._id}
             commentCount={recipe.commentCount}
             onCommentAdded={refresh}
           />

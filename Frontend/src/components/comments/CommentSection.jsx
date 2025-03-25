@@ -1,133 +1,262 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useComment } from '../../hooks/api/useComment';
 import { useAuth } from '../../hooks/api/useAuth';
 import UserAvatar from '../user/UserAvatar/UserAvatar';
-import CommentApi from '../../api/commentApi';
+import Pagination from '../common/Pagination';
+import Alert from '../common/Alert';
+import LoadingSpinner from '../common/LoadingSpinner';
+import ConfirmModal from '../common/ConfirmModal';
 import styles from './CommentSection.module.css';
 
-const CommentSection = ({ comments = [], recipeId, commentCount = 0, onCommentAdded }) => {
+const CommentSection = ({ recipeId, recipeOwnerId, onCommentAdded }) => {
   const { isAuthenticated, user } = useAuth();
-  const navigate = useNavigate();
-  const [newComment, setNewComment] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [newCommentContent, setNewCommentContent] = useState('');
+  const [editContent, setEditContent] = useState('');
+  
+  // Състояние за модалния прозорец
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: '',
+    message: '',
+    confirmText: '',
+    onConfirm: () => {},
+    type: 'warning'
+  });
+  
+  // Проверка дали текущият потребител е собственик на рецептата
+  const isRecipeOwner = isAuthenticated && user && String(user._id) === String(recipeOwnerId);
+  
+  const {
+    comments = [],
+    pagination = { 
+      totalItems: 0, 
+      page: 1, 
+      totalPages: 0,
+      limit: 5
+    },
+    loading,
+    error,
+    editingComment,
+    createComment,
+    updateComment,
+    deleteComment,
+    canEditComment,
+    startEditing,
+    cancelEditing,
+    setPage,
+  } = useComment(recipeId);
 
-  const handleSubmitComment = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: `/recipes/${recipeId}`, message: 'Влезте в профила си, за да коментирате' } });
-      return;
-    }
-    
-    if (!newComment.trim()) {
-      setError('Моля, въведете коментар.');
-      return;
-    }
-    
-    setIsSubmitting(true);
-    setError('');
-    
-    try {
-      await CommentApi.create(recipeId, { content: newComment });
-      setNewComment('');
+    if (newCommentContent.trim() === '') return;
+
+    const result = await createComment(newCommentContent);
+    if (result) {
+      setNewCommentContent('');
       if (onCommentAdded) onCommentAdded();
-    } catch (err) {
-      setError(err.message || 'Възникна грешка при публикуването на коментара.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('bg-BG', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    if (!editingComment || editContent.trim() === '') return;
+
+    const success = await updateComment(editingComment._id, editContent);
+    if (success) {
+      cancelEditing();
+    }
   };
 
-  // Използваме commentCount от API вместо дължината на масива с коментари
-  const totalComments = commentCount || comments?.length || 0;
-  const hasMoreComments = commentCount > comments?.length;
+  const handleStartEdit = (comment) => {
+    startEditing(comment);
+    setEditContent(comment.content);
+  };
+  
+  // Функция за отваряне на модал за потвърждение на изтриване
+  const openDeleteConfirmation = (commentId, isCommentAuthor, authorName) => {
+    const isModeration = isRecipeOwner && !isCommentAuthor;
+    
+    let config = {
+      onConfirm: () => deleteComment(commentId),
+      confirmText: 'Изтрий',
+      type: isModeration ? 'warning' : 'danger'
+    };
+    
+    if (isModeration) {
+      config.title = 'Модериране на коментар';
+      config.message = `Като автор на рецептата имате право да модерирате коментарите. Сигурни ли сте, че искате да изтриете коментара на ${authorName || 'този потребител'}?`;
+      config.confirmText = 'Модерирай';
+    } else {
+      config.title = 'Изтриване на коментар';
+      config.message = 'Сигурни ли сте, че искате да изтриете този коментар? Това действие не може да бъде отменено.';
+    }
+    
+    setModalConfig(config);
+    setModalOpen(true);
+  };
 
   return (
-    <section className={styles.commentSection}>
-      <h2 className={styles.sectionHeading}>
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <path fill="currentColor" d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/>
-        </svg>
-        Коментари ({totalComments})
-      </h2>
-
-      <div className={styles.commentForm}>
-        {isAuthenticated ? (
-          <>
-            <UserAvatar src={user?.profilePicture} alt={user?.username} size="medium" />
-            <form onSubmit={handleSubmitComment} className={styles.form}>
-              <div className={styles.inputWrapper}>
-                <textarea
-                  className={styles.commentInput}
-                  placeholder="Добавете вашия коментар..."
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  disabled={isSubmitting}
-                  maxLength={500}
-                />
-                {error && <p className={styles.errorMessage}>{error}</p>}
-              </div>
-              <button 
-                type="submit" 
-                className={styles.submitButton}
-                disabled={isSubmitting || !newComment.trim()}
-              >
-                {isSubmitting ? 'Изпращане...' : 'Публикувай'}
-              </button>
-            </form>
-          </>
-        ) : (
-          <div className={styles.loginPrompt}>
-            <p>За да коментирате, моля <Link to="/login">влезте в профила си</Link> или <Link to="/register">се регистрирайте</Link>.</p>
-          </div>
-        )}
-      </div>
-
-      <div className={styles.commentsList}>
-        {comments && comments.length > 0 ? (
-          <>
-            {comments.map((comment) => (
-              <div key={comment._id} className={styles.comment}>
-                <div className={styles.commentHeader}>
-                  <Link to={`/profile/${comment.author?._id}`} className={styles.commentAuthor}>
-                    <UserAvatar src={comment.author?.profilePicture} alt={comment.author?.username} size="small" />
-                    <span className={styles.authorName}>{comment.author?.username || 'Анонимен'}</span>
-                  </Link>
-                  <span className={styles.commentDate}>{formatDate(comment.createdAt)}</span>
-                </div>
-                <div className={styles.commentContent}>
-                  {comment.content}
-                </div>
-              </div>
-            ))}
-            
-            {hasMoreComments && (
-              <div className={styles.moreComments}>
-                <Link to={`/recipes/${recipeId}/comments`} className={styles.viewAllLink}>
-                  Вижте всички {totalComments} коментара
-                </Link>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className={styles.emptyComments}>
-            <p>Все още няма коментари. Бъдете първият, който ще коментира!</p>
-          </div>
-        )}
-      </div>
-    </section>
+    <div className={styles.commentSection}>
+      <h3 className={styles.commentsTitle}>
+        Коментари ({pagination?.totalItems ?? 0})
+      </h3>
+      
+      {error && <Alert type="error">{error}</Alert>}
+      
+      {/* Съобщение за модераторски права */}
+      {isRecipeOwner && comments.length > 0 && (
+        <div className={styles.moderationNote}>
+          <i className="fas fa-shield-alt"></i>
+          <span>Като собственик на рецептата, имате право да модерирате коментарите.</span>
+        </div>
+      )}
+      
+      {/* Форма за нов коментар - само за логнати потребители */}
+      {isAuthenticated ? (
+        <div className={styles.commentForm}>
+          <UserAvatar 
+            src={user?.profilePicture} 
+            alt={user?.username}
+            size="small" 
+          />
+          <form onSubmit={handleSubmit}>
+            <textarea
+              value={newCommentContent}
+              onChange={(e) => setNewCommentContent(e.target.value)}
+              placeholder="Напишете коментар..."
+              maxLength={500}
+              required
+            />
+            <button 
+              type="submit" 
+              disabled={loading || newCommentContent.trim() === ''}
+            >
+              {loading ? 'Изпращане...' : 'Коментирай'}
+            </button>
+          </form>
+        </div>
+      ) : (
+        <div className={styles.commentLoginPrompt}>
+          <p>Трябва да <a href="/login">влезете в профила си</a>, за да можете да коментирате.</p>
+        </div>
+      )}
+      
+      {/* Списък с коментари */}
+      {loading && comments.length === 0 ? (
+        <LoadingSpinner size="small" message="Зареждане на коментари..." />
+      ) : (
+        <div className={styles.commentsList}>
+          {comments.length === 0 ? (
+            <p className={styles.noComments}>Все още няма коментари. Бъдете първият, който ще коментира!</p>
+          ) : (
+            <>
+              {comments.map(comment => {
+                // Проверка дали потребителят е автор на коментара
+                const isCommentAuthor = isAuthenticated && user && String(user._id) === String(comment.author?._id);
+                const authorName = comment.author?.firstName && comment.author?.lastName
+                  ? `${comment.author.firstName} ${comment.author.lastName}`
+                  : comment.author?.username || 'Анонимен';
+                
+                return (
+                  <div key={comment._id} className={styles.commentItem}>
+                    <div className={styles.commentHeader}>
+                      <UserAvatar 
+                        src={comment.author?.profilePicture} 
+                        alt={comment.author?.username}
+                        size="small" 
+                      />
+                      <div className={styles.commentMeta}>
+                        <div className={styles.commentAuthor}>
+                          {authorName}
+                          {isCommentAuthor && <span className={styles.authorBadge}>Автор</span>}
+                        </div>
+                        <div className={styles.commentDate}>
+                          {new Date(comment.createdAt).toLocaleDateString('bg-BG', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {editingComment && editingComment._id === comment._id ? (
+                      <form onSubmit={handleUpdate}>
+                        <textarea
+                          value={editContent}
+                          onChange={(e) => setEditContent(e.target.value)}
+                          maxLength={500}
+                          required
+                          autoFocus
+                        />
+                        <div className={styles.commentActions}>
+                          <button type="submit" disabled={loading || editContent.trim() === ''}>
+                            Запази промените
+                          </button>
+                          <button type="button" onClick={cancelEditing}>
+                            Отказ
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <>
+                        <div className={styles.commentContent}>{comment.content}</div>
+                        
+                        <div className={styles.commentActions}>
+                          {canEditComment(comment) && (
+                            <button 
+                              onClick={() => handleStartEdit(comment)}
+                              className={styles.actionButton}
+                              title="Редактирай коментара"
+                            >
+                              <i className="fas fa-edit"></i> Редактирай
+                            </button>
+                          )}
+                          
+                          {/* Показваме бутон за изтриване ако е собственик на коментара ИЛИ собственик на рецептата */}
+                          {(isCommentAuthor || isRecipeOwner) && (
+                            <button 
+                              onClick={() => openDeleteConfirmation(comment._id, isCommentAuthor, authorName)}
+                              className={`${styles.actionButton} ${isRecipeOwner && !isCommentAuthor ? styles.moderationButton : ''}`}
+                              title={isRecipeOwner && !isCommentAuthor ? "Модерирай този коментар" : "Изтрий коментара"}
+                            >
+                              <i className={`fas ${isRecipeOwner && !isCommentAuthor ? 'fa-shield-alt' : 'fa-trash'}`}></i> 
+                              {isRecipeOwner && !isCommentAuthor ? 'Модерирай' : 'Изтрий'}
+                            </button>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </>
+          )}
+          
+          {/* Пагинация */}
+          {pagination && pagination.totalPages > 1 && (
+            <Pagination 
+              currentPage={pagination.page} 
+              totalPages={pagination.totalPages} 
+              onPageChange={setPage} 
+            />
+          )}
+        </div>
+      )}
+      
+      {/* Модален прозорец за потвърждение */}
+      <ConfirmModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={modalConfig.onConfirm}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        confirmText={modalConfig.confirmText}
+        type={modalConfig.type}
+      />
+    </div>
   );
 };
 
