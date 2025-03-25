@@ -4,6 +4,8 @@ const commentController = require('../controllers/commentController');
 const { protect } = require('../middleware/auth');
 const { commentValidation, idParamValidation } = require('../utils/validation');
 
+router.get('/recipe/:id', idParamValidation, commentController.getRecipeComments);
+
 router.use(protect);
 
 router.post(
@@ -12,8 +14,6 @@ router.post(
   commentValidation,
   commentController.createComment
 );
-
-router.get('/recipe/:id', idParamValidation, commentController.getRecipeComments);
 
 router.put(
   '/:id',
