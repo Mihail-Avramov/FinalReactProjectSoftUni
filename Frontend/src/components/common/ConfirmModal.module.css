@@ -1,0 +1,213 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+  width: 100%;
+  max-width: 450px;
+  background-color: var(--bg-primary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow-hover);
+  overflow: hidden;
+  animation: slideIn 0.25s ease-out;
+  transform-origin: center center;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  width: 30px;
+  height: 30px;
+}
+
+.closeButton:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+}
+
+.modalBody {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.iconContainer {
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.warning .iconContainer {
+  color: #ff9800;
+  background-color: rgba(255, 152, 0, 0.1);
+}
+
+.danger .iconContainer {
+  color: var(--primary);
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+.info .iconContainer {
+  color: #2196f3;
+  background-color: rgba(33, 150, 243, 0.1);
+}
+
+.modalMessage {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.cancelButton, .confirmButton {
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-heading);
+}
+
+.cancelButton {
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.cancelButton:hover {
+  background-color: var(--bg-hover, #f0f0f0);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow);
+}
+
+.confirmButton {
+  color: white;
+  border: none;
+}
+
+.confirm-warning {
+  background-color: #ff9800;
+}
+
+.confirm-warning:hover {
+  background-color: #f57c00;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+}
+
+.confirm-danger {
+  background-color: var(--primary);
+}
+
+.confirm-danger:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(var(--primary-rgb), 0.3);
+}
+
+.confirm-info {
+  background-color: #2196f3;
+}
+
+.confirm-info:hover {
+  background-color: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* За малки екрани */
+@media (max-width: 576px) {
+  .modalContent {
+    max-width: 90%;
+    margin: 0 1rem;
+  }
+  
+  .modalFooter {
+    flex-direction: column-reverse;
+  }
+  
+  .cancelButton, .confirmButton {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .modalBody {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .iconContainer {
+    margin-bottom: 0.5rem;
+  }
+}
