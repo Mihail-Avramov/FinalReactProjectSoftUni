@@ -45,7 +45,7 @@ const recipeController = {
   async getRecipeById(req, res, next) {
     try {
       const { id } = req.params;
-      const includeComments = req.query.comments == 'true';
+      const includeComments = req.query.comments === 'true';
       
       // Extract user ID if authenticated
       const userId = req.user ? req.user._id : null;
