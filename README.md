@@ -2,6 +2,11 @@
 
 A full-stack recipe sharing platform where users can discover, create, and share recipes with a community of food enthusiasts.
 
+## 🌐 Live Demo
+
+- **Frontend:** [CulinaryCorner](https://culinarycorner.netlify.app)
+- **API:** [CulinaryCorner API](https://culinarycornerapi.onrender.com/api)
+
 ## 🍲 Overview
 
 CulinaryCorner allows users to:
@@ -19,12 +24,17 @@ CulinaryCorner allows users to:
 - Context API for state management
 - CSS Modules for styling
 - Axios for API communication
+- Cloudinary for image uploads
 
 ### Backend
 - Express.js
 - MongoDB Atlas
 - JWT authentication
 - Cloudinary for image storage
+- Express-validator for input validation
+- Bcrypt for password hashing
+- Helmet for security headers
+- Rate limiting for API protection
 
 ## 🛠️ Setup Instructions
 
@@ -70,13 +80,20 @@ CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 NODE_ENV=development
+EMAIL_HOST=your_email_host
+EMAIL_PORT=your_email_port
+EMAIL_USER=your_email_user
+EMAIL_PASSWORD=your_email_password
+EMAIL_FROM_NAME=CulinaryCorner
+EMAIL_FROM_ADDRESS=noreply@culinarycorner.com
+FRONTEND_URL=http://localhost:5173
 ```
 
 In the Frontend folder:
 ```
 VITE_API_URL=http://localhost:5000/api
-VITE_CLOUDINARY_UPLOAD_PRESET=culinary_corner
-VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+VITE_CLOUDINARY_UR=https://api.cloudinary.com/v1_1/your-cloud-name/upload
+VITE_CLOUDINARY_PRESET=culinary_corner
 VITE_APP_NAME=CulinaryCorner
 ```
 
@@ -111,6 +128,3 @@ npm start
 ## 📄 License
 
 MIT License
-
-
-
