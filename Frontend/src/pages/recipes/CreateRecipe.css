@@ -59,7 +59,7 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1rem;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .input-with-action .form-group {
@@ -70,7 +70,6 @@
 .input-actions {
   display: flex;
   gap: 0.25rem;
-  padding-top: 2.65rem;
 }
 
 .action-btn {
@@ -131,7 +130,12 @@
 }
 
 .step-input {
-  flex-grow: 1;
+  flex: 1;
+  position: relative;
+}
+
+.step-input .form-group {
+  margin-bottom: 1.5rem;
 }
 
 .form-actions {
@@ -184,6 +188,9 @@
   margin-top: 0.25rem;
   font-size: 0.75rem;
   color: var(--text-secondary);
+  position: absolute;
+  right: 10px;
+  bottom: -20px;
 }
 
 .form-text-counter .text-warning {
@@ -192,6 +199,10 @@
 
 .form-text-counter .text-danger {
   color: var(--danger);
+}
+
+.text-warning {
+  color: var(--warning);
 }
 
 /* Добавете стилове за валидационно състояние */
@@ -280,4 +291,10 @@
   display: flex;
   justify-content: center;
   gap: 1rem;
+}
+
+.ingredient-input-container {
+  flex: 1;
+  position: relative;
+  margin-bottom: 10px;
 }

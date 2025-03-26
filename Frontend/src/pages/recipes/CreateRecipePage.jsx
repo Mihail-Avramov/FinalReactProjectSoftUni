@@ -494,13 +494,21 @@ const validateForm = () => {
               <h2>Съставки</h2>
               {formData.ingredients.map((ingredient, index) => (
                 <div className="input-with-action" key={`ingredient-${index}`}>
-                  <FormInput
-                    name={`ingredient-${index}`}
-                    value={ingredient}
-                    onChange={(e) => handleIngredientChange(index, e.target.value)}
-                    onBlur={handleIngredientFieldBlur}
-                    placeholder={`Съставка ${index + 1}`}
-                  />
+                  <div className="ingredient-input-container" style={{ position: 'relative', width: '100%' }}>
+                    <FormInput
+                      name={`ingredient-${index}`}
+                      value={ingredient}
+                      onChange={(e) => handleIngredientChange(index, e.target.value)}
+                      onBlur={handleIngredientFieldBlur}
+                      placeholder={`Съставка ${index + 1}`}
+                      maxLength={200} // Добавяме ограничение за въвеждане
+                    />
+                    <div className="form-text-counter" style={{ position: 'absolute', right: '10px', bottom: '-20px' }}>
+                      <span className={ingredient.length > 180 ? 'text-warning' : ''}>
+                        {ingredient.length}/200
+                      </span>
+                    </div>
+                  </div>
                   <div className="input-actions">
                     <button type="button" className="action-btn delete-btn" onClick={() => removeIngredient(index)}>
                       <i className="fa fa-trash"></i>
@@ -530,7 +538,7 @@ const validateForm = () => {
                 <div className="input-with-action" key={`step-${index}`}>
                   <div className="step-container">
                     <div className="step-number">{index + 1}</div>
-                    <div className="step-input">
+                    <div className="step-input" style={{ position: 'relative', width: '100%' }}>
                       <div className="form-group">
                         <textarea
                           name={`step-${index}`}
@@ -540,7 +548,13 @@ const validateForm = () => {
                           className="form-control"
                           placeholder={`Стъпка ${index + 1}`}
                           rows="2"
+                          maxLength={500} // Добавяме ограничение за въвеждане
                         />
+                        <div className="form-text-counter" style={{ position: 'absolute', right: '10px', bottom: '-20px' }}>
+                          <span className={step.length > 450 ? 'text-warning' : ''}>
+                            {step.length}/500
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="input-actions">
@@ -630,6 +644,11 @@ const validators = {
     if (ingredients.some(ing => !ing.trim())) {
       return 'Всички съставки трябва да са попълнени';
     }
+
+    const tooLongIngredient = ingredients.find(ing => ing.length > 200);
+    if (tooLongIngredient) {
+      return `Съставката "${tooLongIngredient.substring(0, 20)}..." надвишава 200 символа`;
+    }
     
     if (ingredients.length > 50) {
       return 'Броят съставки не може да надвишава 50';
@@ -643,6 +662,11 @@ const validators = {
     
     if (steps.some(step => !step.trim())) {
       return 'Всички стъпки трябва да са попълнени';
+    }
+
+    const tooLongStepIndex = steps.findIndex(step => step.length > 500);
+    if (tooLongStepIndex !== -1) {
+      return `Стъпка ${tooLongStepIndex + 1} надвишава 500 символа`;
     }
     
     if (steps.length > 30) {
