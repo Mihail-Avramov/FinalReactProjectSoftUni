@@ -5,7 +5,7 @@ A full-stack recipe sharing platform where users can discover, create, and share
 ## 🌐 Live Demo
 
 - **Frontend:** [CulinaryCorner](https://culinarycorner.onrender.com/)
-- **API:** [CulinaryCorner API](https://culinarycornerapi.onrender.com/api)
+- **API:** [CulinaryCorner API](https://culinarycornerapi.onrender.com/)
 
 ## 🍲 Overview
 
@@ -123,7 +123,9 @@ npm start
 
 ## 👨‍💻 Developers
 
-- Mihail Avramov (@mavramov)
+### Mihail Avramov
+[![GitHub](https://img.shields.io/badge/GitHub-Mihail--Avramov-181717?style=flat&logo=github)](https://github.com/Mihail-Avramov)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Mihail%20Avramov-0077B5?style=flat&logo=linkedin)](https://www.linkedin.com/in/mihailavramov/)
 
 ## 📄 License
 
