@@ -4,7 +4,6 @@ import Hero from '../../components/home/Hero';
 import FeaturedRecipes from '../../components/home/FeaturedRecipes';
 import { useRecipes } from '../../hooks/api/useRecipes';
 import styles from './Home.module.css';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 function Home() {
   const { useTrending } = useRecipes();
