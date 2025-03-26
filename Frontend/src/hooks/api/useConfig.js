@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import useApiData from '../useApiData';
-import ConfigApi from '../../api/ConfigApi';
+import ConfigApi from '../../api/configApi';
 
 export function useConfig() {
   const fetchConfig = useCallback(
