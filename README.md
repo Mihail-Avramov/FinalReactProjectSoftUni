@@ -5,7 +5,7 @@ A full-stack recipe sharing platform where users can discover, create, and share
 ## 🌐 Live Demo
 
 - **Frontend:** [CulinaryCorner](https://culinarycorner.onrender.com/)
-- **API:** [CulinaryCorner API](https://culinarycornerapi.onrender.com/api)
+- **API:** [CulinaryCorner API](https://culinarycornerapi.onrender.com)
 
 ## 🍲 Overview
 
