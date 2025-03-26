@@ -70,6 +70,8 @@
   resize: none;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   padding: 0.75rem;
   min-height: 100px;
   font-family: inherit;
