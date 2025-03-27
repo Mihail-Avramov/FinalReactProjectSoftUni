@@ -41,7 +41,7 @@ import MyRecipesPage from './pages/recipes/MyRecipesPage';
 import MyFavoritesPage from './pages/recipes/MyFavoritesPage';
 
 function App() {
-  const { loading: configLoading, error } = useConfig();
+  const { loading: configLoading } = useConfig();
   const [showSlowLoadingMessage, setShowSlowLoadingMessage] = useState(false);
   
   useEffect(() => {
@@ -70,16 +70,6 @@ function App() {
     );
   }
   
-  if (error) {
-    return (
-      <div className="app-error">
-        <h2>Грешка при зареждане на приложението</h2>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Опитайте отново</button>
-      </div>
-    );
-  }
-
   return (
     <AuthProvider>
       <Layout>
