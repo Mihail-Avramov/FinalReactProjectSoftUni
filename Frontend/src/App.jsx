@@ -1,9 +1,12 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './hooks/api/AuthProvider';
-import Layout from './components/layout/Layout';
 import { RequireAuth, RequireGuest } from './components/auth/ProtectedRoutes';
 import { RequireAuthor } from './components/auth/RequireAuthor';
+import Layout from './components/layout/Layout';
+import { useConfig } from './hooks/api/useConfig';
+import LoadingSpinner from './components/common/LoadingSpinner/LoadingSpinner';
 
 // Основни страници
 import Home from './pages/Home/Home';
@@ -38,6 +41,45 @@ import MyRecipesPage from './pages/recipes/MyRecipesPage';
 import MyFavoritesPage from './pages/recipes/MyFavoritesPage';
 
 function App() {
+  const { loading: configLoading, error } = useConfig();
+  const [showSlowLoadingMessage, setShowSlowLoadingMessage] = useState(false);
+  
+  useEffect(() => {
+    let timer;
+    if (configLoading) {
+      // След 3 секунди зареждане, показваме съобщение за събуждане на сървъра
+      timer = setTimeout(() => {
+        setShowSlowLoadingMessage(true);
+      }, 3000);
+    } else {
+      setShowSlowLoadingMessage(false);
+    }
+    
+    return () => clearTimeout(timer);
+  }, [configLoading]);
+  
+  if (configLoading) {
+    return (
+      <div className="app-initializing">
+        <LoadingSpinner 
+          message={showSlowLoadingMessage 
+            ? "Събуждане на сървъра след период на неактивност. Моля, изчакайте..." 
+            : "Зареждане на приложението..."} 
+        />
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="app-error">
+        <h2>Грешка при зареждане на приложението</h2>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>Опитайте отново</button>
+      </div>
+    );
+  }
+
   return (
     <AuthProvider>
       <Layout>
