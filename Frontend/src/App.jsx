@@ -1,12 +1,10 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import AppInitializer from './components/common/AppInitializer/AppInitializer';
 import { AuthProvider } from './hooks/api/AuthProvider';
 import { RequireAuth, RequireGuest } from './components/auth/ProtectedRoutes';
 import { RequireAuthor } from './components/auth/RequireAuthor';
 import Layout from './components/layout/Layout';
-import { useConfig } from './hooks/api/useConfig';
-import LoadingSpinner from './components/common/LoadingSpinner/LoadingSpinner';
 
 // Основни страници
 import Home from './pages/Home/Home';
@@ -41,139 +39,113 @@ import MyRecipesPage from './pages/recipes/MyRecipesPage';
 import MyFavoritesPage from './pages/recipes/MyFavoritesPage';
 
 function App() {
-  const { loading: configLoading } = useConfig();
-  const [showSlowLoadingMessage, setShowSlowLoadingMessage] = useState(false);
-  
-  useEffect(() => {
-    let timer;
-    if (configLoading) {
-      // След 3 секунди зареждане, показваме съобщение за събуждане на сървъра
-      timer = setTimeout(() => {
-        setShowSlowLoadingMessage(true);
-      }, 3000);
-    } else {
-      setShowSlowLoadingMessage(false);
-    }
-    
-    return () => clearTimeout(timer);
-  }, [configLoading]);
-  
-  if (configLoading) {
-    return (
-      <div className="app-initializing">
-        <LoadingSpinner 
-          message={showSlowLoadingMessage 
-            ? "Събуждане на сървъра след период на неактивност. Моля, изчакайте..." 
-            : "Зареждане на приложението..."} 
-        />
-      </div>
-    );
-  }
   
   return (
-    <AuthProvider>
-      <Layout>
-        <Routes>
-          {/* Публични маршрути */}
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/recipes" element={<RecipesPage />} />
-          <Route path="/recipes/:id" element={<RecipeDetailPage />} />
-          
-          {/* Маршрути само за гости */}
-          <Route path="/login" element={
-            <RequireGuest>
-              <LoginPage />
-            </RequireGuest>
-          } />
-          <Route path="/register" element={
-            <RequireGuest>
-              <RegisterPage />
-            </RequireGuest>
-          } />
-          <Route path="/forgot-password" element={
-            <RequireGuest>
-              <ForgotPasswordPage />
-            </RequireGuest>
-          } />
-          <Route path="/reset-password/:token" element={
-            <RequireGuest>
-              <ResetPasswordPage />
-            </RequireGuest>
+    <AppInitializer>
+      <AuthProvider>
+        <Layout>
+          <Routes>
+            {/* Публични маршрути */}
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/recipes" element={<RecipesPage />} />
+            <Route path="/recipes/:id" element={<RecipeDetailPage />} />
+            
+            {/* Маршрути само за гости */}
+            <Route path="/login" element={
+              <RequireGuest>
+                <LoginPage />
+              </RequireGuest>
             } />
-          <Route path="/verify-email/:token" element={
-            <RequireGuest>
-              <VerifyEmailPage />
-            </RequireGuest>
+            <Route path="/register" element={
+              <RequireGuest>
+                <RegisterPage />
+              </RequireGuest>
             } />
-          
-          {/* Защитени маршрути само за влезли потребители */}
-          <Route path="/profile" element={
-            <RequireAuth>
-              <ProfilePage />
-            </RequireAuth>
-          } />
-          <Route path="/profile/edit" element={
-            <RequireAuth>
-              <ProfileEditPage />
-            </RequireAuth>
-          } />
-          <Route path="/account/change-password" element={
-            <RequireAuth>
-              <PasswordChangePage />
-            </RequireAuth>
-          } />
-          <Route path="/account/delete" element={
-            <RequireAuth>
-              <DeleteAccountPage />
-            </RequireAuth>
-          } />
+            <Route path="/forgot-password" element={
+              <RequireGuest>
+                <ForgotPasswordPage />
+              </RequireGuest>
+            } />
+            <Route path="/reset-password/:token" element={
+              <RequireGuest>
+                <ResetPasswordPage />
+              </RequireGuest>
+              } />
+            <Route path="/verify-email/:token" element={
+              <RequireGuest>
+                <VerifyEmailPage />
+              </RequireGuest>
+              } />
+            
+            {/* Защитени маршрути само за влезли потребители */}
+            <Route path="/profile" element={
+              <RequireAuth>
+                <ProfilePage />
+              </RequireAuth>
+            } />
+            <Route path="/profile/edit" element={
+              <RequireAuth>
+                <ProfileEditPage />
+              </RequireAuth>
+            } />
+            <Route path="/account/change-password" element={
+              <RequireAuth>
+                <PasswordChangePage />
+              </RequireAuth>
+            } />
+            <Route path="/account/delete" element={
+              <RequireAuth>
+                <DeleteAccountPage />
+              </RequireAuth>
+            } />
 
-          {/* Защитени маршрути за рецепти */}
-          <Route path="/recipes/create" element={
-            <RequireAuth>
-              <CreateRecipePage />
-            </RequireAuth>
-          } />
-          <Route path="/recipes/:id/edit" element={
-            <RequireAuth>
-              <RequireAuthor action="edit">
-                <EditRecipePage />
-              </RequireAuthor>
-            </RequireAuth>
-          } />
+            {/* Защитени маршрути за рецепти */}
+            <Route path="/recipes/create" element={
+              <RequireAuth>
+                <CreateRecipePage />
+              </RequireAuth>
+            } />
+            <Route path="/recipes/:id/edit" element={
+              <RequireAuth>
+                <RequireAuthor action="edit">
+                  <EditRecipePage />
+                </RequireAuthor>
+              </RequireAuth>
+            } />
 
-          <Route path="/recipes/:id/delete" element={
-            <RequireAuth>
-              <RequireAuthor action="delete">
-                <DeleteRecipePage />
-              </RequireAuthor>
-            </RequireAuth>
-          } />
-          <Route path="/my-recipes" element={
-            <RequireAuth>
-              <MyRecipesPage />
-            </RequireAuth>
-          } />
-          <Route path="/my-favorites" element={
-            <RequireAuth>
-              <MyFavoritesPage />
-            </RequireAuth>
-          } />
-          
-          {/* Маршрути за профил - публично достъпен профил с id параметър */}
-          <Route path="/profile/:userId" element={<ProfilePage />} />
-          <Route path="/profile/:userId/recipes" element={<UserRecipesPage />} />
-          
-          {/* Страница за грешка */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Layout>
-    </AuthProvider>
+            <Route path="/recipes/:id/delete" element={
+              <RequireAuth>
+                <RequireAuthor action="delete">
+                  <DeleteRecipePage />
+                </RequireAuthor>
+              </RequireAuth>
+            } />
+            <Route path="/my-recipes" element={
+              <RequireAuth>
+                <MyRecipesPage />
+              </RequireAuth>
+            } />
+            <Route path="/my-favorites" element={
+              <RequireAuth>
+                <MyFavoritesPage />
+              </RequireAuth>
+            } />
+            
+            {/* Маршрути за профил - публично достъпен профил с id параметър */}
+            <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route path="/profile/:userId/recipes" element={<UserRecipesPage />} />
+            
+            {/* Страница за грешка */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Layout>
+      </AuthProvider>
+    </AppInitializer>
   );
 }
 
