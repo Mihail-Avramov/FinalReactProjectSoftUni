@@ -63,7 +63,7 @@ export function formatTime(seconds) {
  * Проверка дали работим в тъмен режим
  */
 export function isDarkMode() {
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
 }
 
 /**
