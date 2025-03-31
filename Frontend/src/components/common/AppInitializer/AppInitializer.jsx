@@ -75,8 +75,8 @@ const AppInitializer = ({ children }) => {
         <div className="loading-content">
           {/* Лого - заменете src с реалния път до вашето лого */}
           <img 
-            src="/images/logo.png" 
-            alt="CulinaryCorner" 
+            src="/favicon-32x32.png"
+            alt="CulinaryCorner"
             className="app-logo"
             onError={(e) => {
               e.target.style.display = 'none';
