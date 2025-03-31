@@ -75,7 +75,7 @@ const AppInitializer = ({ children }) => {
         <div className="loading-content">
           {/* Лого - заменете src с реалния път до вашето лого */}
           <img 
-            src="/favicon-32x32.png"
+            src="/android-chrome-192x192.png"
             alt="CulinaryCorner"
             className="app-logo"
             onError={(e) => {
