@@ -59,14 +59,12 @@ export function useRecipes() {
     
     // Функциите за сортиране
     const enhancedSetSort = useCallback((newSort) => {
-      console.log("enhancedSetSort извикан с:", newSort);
       originalSetSort(newSort);
       // Директно обновяване на данните
       refresh();
     }, [originalSetSort, refresh]);
   
     const enhancedSetOrder = useCallback((newOrder) => {
-      console.log("enhancedSetOrder извикан с:", newOrder);
       originalSetOrder(newOrder);
       // Директно обновяване на данните
       refresh();

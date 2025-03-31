@@ -270,8 +270,6 @@ const EditRecipePage = () => {
       .filter(img => !currentIds.includes(img.publicId))
       .map(img => img.publicId);
     
-    console.log('Снимки за премахване:', removedIds);
-    
     setExistingImages(existing);
     setNewImages(newFiles);
     setRemovedImageIds(removedIds);
@@ -333,7 +331,6 @@ const EditRecipePage = () => {
     
     // Добавяне на публични ID-та на изображения за премахване с деббугване
     if (removedImageIds.length > 0) {
-      console.log('Изпращане на снимки за премахване:', removedImageIds);
       apiFormData.append('removedImages', JSON.stringify(removedImageIds));
     }
     
@@ -366,11 +363,6 @@ const EditRecipePage = () => {
       
       // Подготовка на данните за API заявката
       const recipeData = prepareFormDataForApi();
-      
-      // Логове за дебъгване на заявката
-      console.log('Изпращане на заявка:');
-      console.log('- Нови снимки:', newImages.length);
-      console.log('- Премахнати снимки:', removedImageIds);
       
       // Изпращане на заявката за обновяване
       await updateRecipe(id, recipeData);

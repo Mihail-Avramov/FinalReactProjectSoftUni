@@ -79,7 +79,6 @@ function ImageCarousel({ images, alt, noImageFallback = '/images/no-image-500.jp
 
   // Обработчик за грешки при зареждане на изображение
   const handleImageError = (e) => {
-    console.log('Грешка при зареждане на изображение');
     e.target.src = noImageFallback;
   };
 
