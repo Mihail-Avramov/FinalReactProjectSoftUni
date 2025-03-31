@@ -5,7 +5,7 @@
   flex-direction: column;
   border-radius: var(--border-radius);
   overflow: hidden;
-  background-color: var(--white);
+  background-color: var(--bg-primary);
   box-shadow: var(--box-shadow-sm);
   position: relative;
 }
@@ -39,7 +39,7 @@
 
 .imageArea {
   height: 200px;
-  background-color: #e0e0e0;
+  background-color: var(--bg-secondary);
 }
 
 .content {
@@ -53,7 +53,7 @@
   height: 28px;
   width: 90%;
   margin: 0 auto 1rem;
-  background-color: #e0e0e0;
+  background-color: vaer(--bg-secondary);
   border-radius: 4px;
 }
 
@@ -66,7 +66,7 @@
 .metaBadge {
   height: 24px;
   width: 30%;
-  background-color: #e0e0e0;
+  background-color: var(--bg-secondary);
   border-radius: 12px;
 }
 
@@ -81,7 +81,7 @@
 .descLine {
   height: 12px;
   width: 100%;
-  background-color: #e0e0e0;
+  background-color: var(--bg-secondary);
   border-radius: 4px;
 }
 
