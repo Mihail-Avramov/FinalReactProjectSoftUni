@@ -40,6 +40,7 @@
   margin-bottom: 1.2rem;
   position: relative;
   padding-bottom: 0.5rem;
+  color: var(--primary);
 }
 
 .footerSection h3:after {
@@ -63,6 +64,7 @@
   font-size: 0.95rem;
   transition: color var(--transition-fast), transform var(--transition-fast);
   display: inline-block;
+  padding: 0;
 }
 
 .footerSection a:hover {
@@ -220,12 +222,6 @@
   
   .footerSection {
     padding-bottom: 0;
-  }
-
-  .accordionContent.open {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem 1rem;
   }
 }
 
