@@ -82,6 +82,8 @@ function Hero({ trendingRecipe }) {
                     </span>
                     <input
                       type="text"
+                      id="recipe-search"
+                      name="recipe-search"
                       placeholder="Търси рецепти, съставки или техники..."
                       className={styles.searchInput}
                       value={searchQuery}
