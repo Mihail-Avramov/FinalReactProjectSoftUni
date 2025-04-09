@@ -178,6 +178,8 @@ const RecipeFilters = ({
         <div className="search-input-group">
           <input
             type="search"
+            id="recipe-search-input"
+            name="recipe-search"
             placeholder="Търси рецепти..."
             value={localFilters.search || ''}
             onChange={handleSearchChange}
@@ -265,6 +267,8 @@ const RecipeFilters = ({
         <h3>Сортиране</h3>
         <div className="sort-controls">
           <select 
+            id="recipe-sort-select"
+            name="recipe-sort"
             value={currentSort}
             onChange={handleSortChange}
             className="sort-select"
