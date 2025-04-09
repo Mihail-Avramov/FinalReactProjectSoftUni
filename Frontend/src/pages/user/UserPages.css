@@ -35,7 +35,7 @@
   align-items: center;
   justify-content: center;
   background-color: var(--primary);
-  color: white;
+  color: var(--bg-primary);
   font-size: 3rem;
   font-weight: bold;
   border: 5px solid var(--primary-light);
@@ -134,15 +134,15 @@
 }
 
 .edit-section {
-  background-color: #fff;
-  border-radius: 8px;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--box-shadow);
 }
 
 .edit-section h2 {
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.5rem;
 }
 
@@ -192,10 +192,10 @@
 .form-container {
   max-width: 600px;
   margin: 0 auto;
-  background-color: #fff;
-  border-radius: 8px;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
   padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--box-shadow);
   position: relative;
 }
 
@@ -231,15 +231,15 @@
 }
 
 .warning-box {
-  background-color: #fff3f3;
-  border-left: 4px solid #ff4d4d;
+  background-color: rgba(var(--primary-rgb), 0.1);
+  border-left: 4px solid var(--primary);
   padding: 1rem;
   margin-bottom: 2rem;
-  border-radius: 4px;
+  border-radius: var(--border-radius-sm);
 }
 
 .warning-box h2 {
-  color: #ff4d4d;
+  color: var(--primary);
   margin-bottom: 0.5rem;
   font-size: 1.2rem;
 }
@@ -258,12 +258,12 @@
 }
 
 .modal-content {
-  background-color: #fff;
-  border-radius: 8px;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
   padding: 2rem;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--box-shadow-hover);
 }
 
 .modal-actions {
@@ -300,8 +300,8 @@
   height: 150px;
   border-radius: 50%;
   overflow: hidden;
-  border: 5px solid #f0f0f0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 5px solid var(--border-color);
+  box-shadow: var(--box-shadow);
 }
 
 .profile-image {
@@ -321,7 +321,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -368,7 +368,7 @@
   background-color: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .form-control:focus {
@@ -378,7 +378,7 @@
 }
 
 .form-control.error {
-  border-color: #dc3545;
+  border-color: var(--primary);
 }
 
 textarea.form-control {
@@ -387,7 +387,7 @@ textarea.form-control {
 }
 
 .error-message {
-  color: #dc3545;
+  color: var(--primary);
   font-size: 0.875rem;
   margin-top: 0.5rem;
 }
@@ -420,7 +420,7 @@ textarea.form-control {
 textarea.form-control {
   resize: vertical;
   min-height: 100px;
-  transition: height 0.3s ease;
+  transition: height var(--transition-normal);
 }
 
 /* Динамична промяна на височината според ширината на екрана */
@@ -444,7 +444,7 @@ textarea.form-control {
   gap: 1rem;
   margin-top: 1rem;
   padding: 0.75rem 1rem;
-  background-color: var(--bg-light);
+  background-color: var(--bg-secondary);
   border-radius: var(--border-radius);
 }
 
@@ -537,10 +537,10 @@ textarea.form-control {
   display: flex;
   align-items: flex-start;
   justify-content:flex-start;
-  background-color: var(--bg-light);
+  background-color: var(--bg-secondary);
   border-radius: var(--border-radius);
   padding: 1rem;
-  box-shadow: var(--box-shadow-sm);
+  box-shadow: var(--box-shadow);
 }
 
 /* Бутон за връщане на мобилни устройства */
