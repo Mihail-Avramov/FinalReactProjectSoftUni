@@ -189,10 +189,7 @@ npm run dev
 Create a .env file in the Frontend directory with the following:
 
 ```
-VITE_API_URL=https://api.culinarycorner.com/api
-VITE_CLOUDINARY_URL=https://api.cloudinary.com/v1_1/your-cloud-name/upload
-VITE_CLOUDINARY_PRESET=culinary_corner
-VITE_APP_NAME=CulinaryCorner
+VITE_API_URL=https://your_backend_API_URL
 ```
 
 ### Building for Production

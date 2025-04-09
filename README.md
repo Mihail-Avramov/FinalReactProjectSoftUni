@@ -92,9 +92,6 @@ FRONTEND_URL=http://localhost:5173
 In the Frontend folder:
 ```
 VITE_API_URL=http://localhost:5000/api
-VITE_CLOUDINARY_UR=https://api.cloudinary.com/v1_1/your-cloud-name/upload
-VITE_CLOUDINARY_PRESET=culinary_corner
-VITE_APP_NAME=CulinaryCorner
 ```
 
 4. Start the application

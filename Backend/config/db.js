@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/culinary_corner';
+
 // Database connection options for better reliability and performance
 const options = {
   serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of default 30s
@@ -12,7 +14,7 @@ const options = {
  */
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, options);
+    const conn = await mongoose.connect(MONGODB_URI, options);
     
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     
