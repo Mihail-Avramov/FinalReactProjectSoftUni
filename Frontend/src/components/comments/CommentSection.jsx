@@ -121,6 +121,8 @@ const CommentSection = ({ recipeId, recipeOwnerId, onCommentAdded }) => {
           />
           <form onSubmit={handleSubmit}>
             <textarea
+              id="new-comment"
+              name="commentContent"
               value={newCommentContent}
               onChange={(e) => setNewCommentContent(e.target.value)}
               placeholder="Напишете коментар..."
@@ -185,6 +187,8 @@ const CommentSection = ({ recipeId, recipeOwnerId, onCommentAdded }) => {
                     {editingComment && editingComment._id === comment._id ? (
                       <form onSubmit={handleUpdate}>
                         <textarea
+                          id={`edit-comment-${comment._id}`}
+                          name={`edit-comment-${comment._id}`}
                           value={editContent}
                           onChange={(e) => setEditContent(e.target.value)}
                           maxLength={500}

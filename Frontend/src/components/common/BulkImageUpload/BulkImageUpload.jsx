@@ -5,7 +5,7 @@ import './BulkImageUpload.css';
 
 const MAX_FILES = 5;
 
-const BulkImageUpload = ({ label, onChange, currentImages = [], className, error }) => {
+const BulkImageUpload = ({ id = 'bulk-image-upload', label, onChange, currentImages = [], className, error }) => {
   const fileInputRef = useRef(null);
   const [dragActive, setDragActive] = useState(false);
   
@@ -88,13 +88,24 @@ const BulkImageUpload = ({ label, onChange, currentImages = [], className, error
   
   return (
     <div className={`bulk-image-upload-container ${className || ''}`}>
-      {label && <label className="bulk-image-upload-label">{label}</label>}
+      {label && <label className="bulk-image-upload-label" htmlFor={`${id}-input`}>{label}</label>}
       
       <div className="bulk-image-counter">
         <span className={currentImages.length >= MAX_FILES ? 'limit-reached' : ''}>
           {currentImages.length} / {MAX_FILES} изображения
         </span>
       </div>
+
+      <input 
+        id={`${id}-input`}
+        ref={fileInputRef}
+        type="file" 
+        multiple
+        accept="image/jpeg,image/png,image/webp"
+        onChange={handleChange}
+        style={{ display: 'none' }}
+        disabled={currentImages.length >= MAX_FILES}
+      />
       
       {currentImages.length < MAX_FILES && (
         <div 
@@ -104,16 +115,7 @@ const BulkImageUpload = ({ label, onChange, currentImages = [], className, error
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
-        >
-          <input 
-            ref={fileInputRef}
-            type="file" 
-            multiple
-            accept="image/jpeg,image/png,image/webp"
-            onChange={handleChange}
-            style={{ display: 'none' }}
-          />
-          
+        >          
           <div className="upload-placeholder">
             <i className="fa fa-cloud-upload-alt"></i>
             <p>Плъзнете и пуснете изображения тук или кликнете за да изберете</p>

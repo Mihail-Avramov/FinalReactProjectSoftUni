@@ -441,10 +441,11 @@ const EditRecipePage = () => {
                 <div className="form-row">
                   <div className="form-col">
                     <div className="form-group">
-                      <label className="form-label">
+                      <label className="form-label" htmlFor="category-select">
                         Категория<span className="required-mark">*</span>
                       </label>
                       <select
+                        id="category-select"
                         name="category"
                         value={formData.category}
                         onChange={handleChange}
@@ -463,10 +464,11 @@ const EditRecipePage = () => {
                   
                   <div className="form-col">
                     <div className="form-group">
-                      <label className="form-label">
+                      <label className="form-label" htmlFor="difficulty-select">
                         Сложност<span className="required-mark">*</span>
                       </label>
                       <select
+                        id="difficulty-select"
                         name="difficulty"
                         value={formData.difficulty}
                         onChange={handleChange}
@@ -517,10 +519,11 @@ const EditRecipePage = () => {
                 </div>
                 
                 <div className="form-group">
-                  <label className="form-label">
+                  <label className="form-label" htmlFor="description-textarea">
                     Описание<span className="required-mark">*</span>
                   </label>
                   <textarea
+                    id="description-textarea"
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
@@ -543,6 +546,7 @@ const EditRecipePage = () => {
               <div className="form-section">
                 <h2>Изображения</h2>
                 <BulkImageUpload
+                  id="recipe-images-edit" 
                   label="Снимки на ястието (до 5 снимки)"
                   onChange={handleImagesChange}
                   currentImages={getAllImages()}
