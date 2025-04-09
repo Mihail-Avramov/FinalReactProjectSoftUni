@@ -127,7 +127,7 @@
 }
 
 .cancelButton:hover {
-  background-color: var(--bg-hover, #f0f0f0);
+  background-color: var(--bg-secondary);
   color: var(--text-primary);
   transform: translateY(-2px);
   box-shadow: var(--box-shadow);

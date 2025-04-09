@@ -185,7 +185,6 @@
   font-weight: normal;
 }
 
-/* Добавете тези стилове към FormInput.css */
 .form-control.is-valid {
   border-color: #28a745;
   padding-right: 2.5rem;
@@ -231,8 +230,6 @@
 .input-with-icon .validation-icon {
   right: 2.25rem;
 }
-
-/* Добавете тези стилове към съществуващия CSS файл */
 
 /* Форма в процес на изпращане */
 .form-submitting {
