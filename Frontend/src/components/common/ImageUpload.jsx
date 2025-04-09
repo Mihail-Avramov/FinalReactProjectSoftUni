@@ -4,6 +4,8 @@ import './ImageUpload.css';
 const ImageUpload = ({ label, onChange, currentImage, className, error }) => {
   const fileInputRef = useRef(null);
   const [dragActive, setDragActive] = useState(false);
+  // Generate a unique ID for the input field
+  const inputId = `image-upload-${Math.random().toString(36).substring(2, 9)}`;
   
   const handleClick = () => {
     fileInputRef.current.click();
@@ -46,7 +48,7 @@ const ImageUpload = ({ label, onChange, currentImage, className, error }) => {
   
   return (
     <div className={`image-upload-container ${className || ''}`}>
-      {label && <label className="image-upload-label">{label}</label>}
+      {label && <label htmlFor={inputId} className="image-upload-label">{label}</label>}
       
       <div 
         className={`image-upload-area ${dragActive ? 'active' : ''} ${currentImage ? 'has-image' : ''}`}
@@ -57,11 +59,13 @@ const ImageUpload = ({ label, onChange, currentImage, className, error }) => {
         onDrop={handleDrop}
       >
         <input 
+          id={inputId}
           ref={fileInputRef}
           type="file" 
           accept="image/jpeg,image/png,image/webp"
           onChange={handleChange}
           style={{ display: 'none' }}
+          aria-labelledby={label ? undefined : "upload-instructions"}
         />
         
         {currentImage ? (
@@ -74,14 +78,14 @@ const ImageUpload = ({ label, onChange, currentImage, className, error }) => {
         ) : (
           <div className="upload-placeholder">
             <i className="fa fa-cloud-upload-alt"></i>
-            <p>Плъзнете и пуснете изображение тук или кликнете за да изберете</p>
+            <p id="upload-instructions">Плъзнете и пуснете изображение тук или кликнете за да изберете</p>
             <span>Формати: JPG, PNG, WebP</span>
             <span>Максимален размер: 5 MB</span>
           </div>
         )}
       </div>
       
-      {error && <div className="image-upload-error">{error}</div>}
+      {error && <div className="image-upload-error" id="upload-error">{error}</div>}
     </div>
   );
 };
